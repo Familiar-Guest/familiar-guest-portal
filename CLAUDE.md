@@ -14,6 +14,9 @@
 **Target market:** US and Mexico vacation rental owners (individual/casual, not operators)
 **Guest origins served:** US, Canada, Latin America, Western Europe, and Asia (Japan, China, India, Taiwan, South Korea)
 
+### Initial market focus / beachhead (decided June 2026)
+Launch is focused on **US and Canadian homeowners who own and rent property in Mexico**, starting with the **Todos Santos · Los Cabos · La Paz corridor (Baja California Sur)**. These owners already rent on Airbnb and have a base of return guests. The product edge for this segment is **cross-border**: multi-currency payments + payouts, bilingual (EN/ES) booking, trust strong enough to book a home abroad, snowbird long-stays, and remote/absentee owner operations. See `docs/planning/` for the market analysis and feature briefs.
+
 ### The Core Positioning (do not drift from this)
 - Owner-first, not property-manager-first
 - Repeat/trusted guests, NOT a discovery/marketplace platform
@@ -123,12 +126,16 @@ When owner is uploading, display these prompts:
 
 ### Key rules
 - Card processing fees are ALWAYS passed through to the owner at cost (net zero to us)
+- **Currency conversion (FX) is also passed through at cost** for cross-border payouts (net zero). A modest FX spread is a possible FUTURE revenue line — not at launch.
+- **All core and cross-border features are available on EVERY plan.** Trust and money-movement are the product; do not paywall them. Plans differ only on commission-vs-flat, property count, caretaker seats, and reporting/support.
 - All owners must pass Stripe identity verification — no exceptions, no unverified accounts
 - Card on file required from owner ONLY if they enable free bookings
 - Stripe Connect Custom: owners identify as "getting paid by Familiar Guest," not as Stripe accounts
+- Plan prices are in USD (owners are US/Canadian). Offer ~2 months free on annual billing (Solo $290/yr, Pro $590/yr).
+- Plan tiering detail: Pay-as-you-go = unlimited properties (pay per booking), 1 caretaker seat. Solo = 1 property, 1 caretaker seat. Pro = up to 5 properties, 5 caretaker seats, consolidated multi-property reports, priority support.
 
 ### Crossover logic
-Owner should switch from Pay-as-you-go to Solo when annual booking volume through FG exceeds ~$7,000 (the point where $348/yr flat beats 5% commission).
+Owner should switch from Pay-as-you-go to Solo when annual booking volume through FG exceeds ~$7,000 (the point where $348/yr flat beats 5% commission). Given Los Cabos/Baja nightly rates, most active owners cross this quickly — steering the base toward predictable subscription revenue.
 
 ---
 
@@ -172,8 +179,20 @@ Auto-send these messages on schedule:
 
 ### Income Reporting
 - Annual income summary: total income, nights booked, occupancy rate, top guests
-- Export-ready for tax purposes
+- Export-ready for tax purposes (raw data for the owner's accountant)
 - Multi-property consolidated view (Pro plan)
+- **NOT building a cross-border tax helper at launch** (US/Canada vs. Mexican ISR/IVA/ISH). Too complex/liability-sensitive. Provide export data only; FG does not give tax advice.
+
+### Cross-Border Features (Mexico market — committed for launch)
+These six are the differentiators for US/Canadian owners renting in Mexico. Detail in `docs/planning/product-feature-brief-mexico.md`.
+1. **Multi-currency pricing + cross-border payouts** — show prices in USD/CAD/MXN; owner chooses payout currency and destination bank (US/Canada/Mexico). FX passed at cost.
+2. **Bilingual booking + AI-translated messaging** — EN/ES booking pages and two-way translated guest messaging.
+3. **Cross-border trust stack** — escrow + Verified Owner + Truvi screening/damage (Truvi supports Mexico), messaged as "safe to book a home in Mexico."
+4. **Long-stay support + installment payments** — weekly/monthly rates; deposit-now/balance-later for snowbird stays.
+5. **Remote-owner operations** — scoped caretaker/cleaner login (no payments or full guest list) + digital check-in (lockbox/smart codes).
+6. **Baja house-manual templates + season-timed re-invite** — local templates (water/cistern, power/blackouts, 4×4 roads, Spanish phrases) + guest import and re-invite timed to Nov–Apr high season.
+
+Property ownership verification (Gate 2) must accept **fideicomiso (bank trust)** and Mexican-corporation documents (coastal property is in the restricted zone). NOTE: Mexican tax/legal specifics (ISR/IVA/ISH, fideicomiso) need professional verification before any owner-facing claims.
 
 ---
 
@@ -229,9 +248,17 @@ The following are safety-critical and should be reviewed by an experienced engin
 | File | Description | Location |
 |---|---|---|
 | Marketing site mockup | Self-contained HTML, full design | docs/mockups/marketing-site.html |
-| Business Opportunity Brief | Markdown + original Word document | docs/business/ |
-| Industry & Competitive Assessment | Markdown + original Word document | docs/business/ |
+| Business Opportunity Brief | Markdown + PDF + Word (solo-founder financials) | docs/business/ |
+| Industry & Competitive Assessment | Markdown + PDF + Word | docs/business/ |
 | 3-Year Financial Model | Live Excel spreadsheet with flip-able assumptions | docs/business/ |
+| MVP Development Plan | 30-day build plan, Stripe test-mode strategy, costs | docs/planning/mvp-development-plan.md |
+| Differentiating Features Brief | Stack-ranked top-5 general features | docs/planning/differentiating-features-brief.md |
+| Baja Beachhead Features Brief | Market analysis + cross-border feature ranking | docs/planning/baja-beachhead-features-brief.md |
+| Product Feature Brief (Mexico) | **Authoritative** consolidated feature set + pricing | docs/planning/product-feature-brief-mexico.md |
+| Product Sheet (Mexico) | 3-page marketing sheet for owners | docs/marketing/product-sheet-mexico.md |
+| Owner Preview Invite | Founding-owner test invitation | docs/business/owner-preview-invite.md |
+
+**Doc generation:** styled docs are authored in Markdown with a CSS `<style>` block + YAML front matter, then rendered to PDF via `npx md-to-pdf <file.md>` and to Word via `npx markdown-docx -i <file.md> -o <file.docx>`. All use the brand design tokens below.
 
 ### Marketing site design tokens
 - Display font: Fraunces (Google Fonts, serif, warm editorial)
