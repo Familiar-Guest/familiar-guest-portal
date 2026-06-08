@@ -1,122 +1,181 @@
-__Familiar Guest__
+---
+pdf_options:
+  margin:
+    top: 30mm
+    bottom: 25mm
+    left: 22mm
+    right: 22mm
+  displayHeaderFooter: true
+  headerTemplate: "<span></span>"
+  footerTemplate: "<div style='font-size:9px; color:#8a7e72; width:100%; text-align:center; padding:0 40px;'>Familiar Guest — Industry & Competitive Assessment &nbsp;&nbsp;|&nbsp;&nbsp; Confidential</div>"
+stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Hanken+Grotesk:wght@300;400;500;600&display=swap
+---
 
-__Industry & Competitive Assessment__
+<style>
+  body { font-family: 'Hanken Grotesk', sans-serif; color: #2A241E; line-height: 1.65; font-size: 13px; }
+  h1, h2, h3 { font-family: 'Fraunces', serif; color: #14543F; }
+  h1 { font-size: 32px; margin-bottom: 2px; }
+  h2 { font-size: 19px; border-bottom: 2px solid #E6DBCB; padding-bottom: 6px; margin-top: 30px; }
+  h3 { font-size: 15px; color: #C0673E; margin-top: 18px; margin-bottom: 8px; }
+  table { font-size: 12px; border-collapse: collapse; width: 100%; margin: 14px 0; }
+  th { background-color: #14543F; color: white; padding: 8px 12px; text-align: left; font-weight: 500; }
+  td { padding: 8px 12px; border-bottom: 1px solid #E6DBCB; }
+  tr:nth-child(even) { background-color: #FBF6EE; }
+  .subtitle { font-family: 'Hanken Grotesk', sans-serif; font-size: 16px; color: #C0673E; font-weight: 500; margin-bottom: 20px; }
+  .lead { font-size: 14.5px; line-height: 1.7; color: #3d362e; }
+  .callout { background-color: #FBF6EE; border-left: 4px solid #14543F; padding: 14px 18px; margin: 18px 0; border-radius: 0 6px 6px 0; }
+  .callout p { margin: 4px 0; }
+  .highlight-box { background-color: #14543F; color: white; padding: 18px 22px; border-radius: 6px; margin: 20px 0; }
+  .highlight-box p { margin: 4px 0; color: white; }
+  .highlight-box strong { color: #e8d5b7; }
+  .stat-row { display: flex; justify-content: space-between; margin: 20px 0; }
+  .stat-box { text-align: center; flex: 1; padding: 16px 8px; }
+  .stat-number { font-family: 'Fraunces', serif; font-size: 28px; color: #14543F; font-weight: 700; }
+  .stat-label { font-size: 11px; color: #8a7e72; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 4px; }
+  blockquote { border-left: 3px solid #C0673E; padding-left: 16px; color: #5a5047; font-style: italic; margin: 16px 0; }
+  strong { color: #14543F; }
+  hr { border: none; border-top: 1px solid #E6DBCB; margin: 28px 0; }
+  ul { padding-left: 20px; }
+  li { margin-bottom: 6px; }
+  .page-break { page-break-before: always; }
+  .vs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 16px 0; }
+  .vs-card { border: 1px solid #E6DBCB; border-radius: 6px; padding: 14px 16px; }
+  .vs-card h4 { font-family: 'Fraunces', serif; color: #14543F; margin: 0 0 6px 0; font-size: 14px; }
+  .vs-card .gap { color: #C0673E; font-size: 12px; font-weight: 500; margin-top: 8px; }
+</style>
 
-*The direct rental booking market and owner\-focused competitors*
+# Familiar Guest
 
-# Executive Summary
+<div class="subtitle">Industry & Competitive Assessment</div>
 
-Direct booking is a structural, growing segment of the short\-term rental market, propelled by rising Airbnb fees \(now roughly 15\.5% per booking\) and owners’ desire to keep their guest relationships\. Direct channels already account for an estimated one\-third of U\.S\. vacation rental bookings\.
+<p class="lead">Direct booking is a structural, growing segment of the short-term rental market. Rising platform fees, the desire to own guest relationships, and a protection gap for off-platform bookings are pushing owners to go direct — but no one has made it effortless for the casual, individual owner.</p>
 
-The competitive field splits sharply between tools built for professional property managers and tools that enable individual owners\. Within the owner\-enabling group, every incumbent treats direct booking as a secondary feature bolted onto channel management, and most require the owner to drive their own traffic or to operate like a business\. The clearest exception, Houfy, is a fee\-free discovery marketplace rather than a trust\-and\-payments layer for an owner’s existing guests\.
+---
 
-__The open position is a dead\-simple, owner\-first product that gets an owner live in minutes with their own photos and description, syncs their calendar via iCal, focuses on repeat and trusted guests rather than discovery, and builds payments, escrow, and verification in by default\. That is the lane Familiar Guest targets\.__
+## The Direct Booking Market
 
-# The Direct Booking Market
+<div class="stat-row">
+  <div class="stat-box">
+    <div class="stat-number">$65–70B</div>
+    <div class="stat-label">U.S. & Mexico annual gross booking value</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-number">~33%</div>
+    <div class="stat-label">Share via direct booking channels</div>
+  </div>
+  <div class="stat-box">
+    <div class="stat-number">$9–13B</div>
+    <div class="stat-label">Realistically direct-bookable volume</div>
+  </div>
+</div>
 
-## Size and shape
+Across approximately 1.7 million U.S. and 300,000 Mexican listings, direct booking sites already account for roughly one-third of vacation rental bookings — second only to Airbnb.
 
-- The U\.S\. and Mexico short\-term rental market represents roughly $65–$70 billion in annual gross booking value, across about 1\.7 million U\.S\. and 300,000 Mexican listings\.
-- Direct booking sites already account for an estimated one\-third of U\.S\. vacation rental bookings, second only to Airbnb\.
-- Around 25–30% of an active owner’s bookings are repeat or referral guests, putting realistically direct\-bookable volume near $9–$13 billion\.
+### Why direct booking is accelerating
 
-## Why direct booking is growing
+- **Fee pressure.** Airbnb's host-only fee of ~15.5% per booking, applied to the full total including cleaning fees, sharpens the incentive to take repeat guests direct.
+- **Guest relationship ownership.** OTAs withhold guest contact details and discourage off-platform rebooking. Owners can't build a repeat-guest database from Airbnb alone.
+- **The protection gap.** Airbnb's AirCover does not apply to off-platform bookings, leaving a trust vacuum when owners and guests go direct on their own.
+- **Better economics per stay.** Industry data suggests direct bookings produce longer stays and longer booking windows — though vendor-published figures should be treated as directional.
 
-- Fee pressure: Airbnb completed its move to a host\-only fee of roughly 15\.5% per booking, applied to the full total including cleaning fees, sharpening the incentive to take repeat guests direct\.
-- Guest relationship ownership: OTAs withhold guest contact details and discourage off\-platform rebooking, so owners cannot easily build a repeat\-guest database from Airbnb alone\.
-- Protection gap: Airbnb’s AirCover does not apply to off\-platform bookings, leaving a trust gap that owners and guests must fill themselves when they go direct\.
-- Better economics per stay: industry data suggests direct bookings tend to produce longer stays and longer booking windows than OTA bookings, though some of the most\-cited figures are published by vendors and should be treated as directional\.
+---
 
-# The Owner vs\. Property\-Manager Divide
+## The Competitive Landscape
 
-The single most useful way to read this market is by who the software is built for\. Property\-manager platforms optimize for portfolios, channel distribution, and operational depth\. Owner\-focused tools optimize for simplicity and a single \(or few\) listings\. The two groups rarely compete for the same customer\.
+The market splits sharply by who the software is built for. This distinction matters more than feature lists.
 
-## Property\-manager platforms \(not our competitive set\)
+### Property-manager platforms (not our competitive set)
 
-Guesty is built to scale from the first property to the five\-hundredth, with enterprise complexity and pricing to match\. Hostaway targets experienced managers, typically with ten or more units, and is widely considered too complex and costly for a single\-property owner\. These platforms deliberately serve the professional operator; the casual owner who simply wants to take a few repeat guests direct is not their customer, which is precisely why a gap exists beneath them\.
+**Guesty** and **Hostaway** are built for professional operators managing ten to hundreds of units. Their complexity and pricing deliberately serve portfolio managers. The casual owner who wants to take a few repeat guests direct is not their customer — which is precisely why a gap exists.
 
-# Owner\-Focused Competitors
+<div class="page-break"></div>
 
-These are the platforms that actually court individual owners\. Each is credible, but each leaves room beneath it for a simpler, trust\-first product\.
+## Owner-Focused Competitors
 
-__Platform__
+These are the platforms that actually court individual owners. Each is credible, but each leaves room for a simpler, trust-first product.
 
-__Who it serves__
+<div class="vs-grid">
+  <div class="vs-card">
+    <h4>OwnerRez</h4>
+    <p>Branded site + booking engine with strong guest CRM. No commission; ~$40/mo flat. The most capable owner tool on the market.</p>
+    <p class="gap">Gap: Deep but utilitarian. Longer setup. No native payment processor — the owner assembles the pieces.</p>
+  </div>
+  <div class="vs-card">
+    <h4>Lodgify</h4>
+    <p>Website builder + booking engine, commission-free. From ~$16/mo. Clean product for owners who want their own branded site.</p>
+    <p class="gap">Gap: Value depends entirely on the owner's own SEO and marketing to drive traffic — a non-starter for casual owners.</p>
+  </div>
+  <div class="vs-card">
+    <h4>Hospitable</h4>
+    <p>Automation-first for solo Airbnb hosts. Direct booking is a paid add-on in select countries. From $29/mo.</p>
+    <p class="gap">Gap: Direct booking is thin and secondary. Built around OTA messaging automation, not the direct relationship.</p>
+  </div>
+  <div class="vs-card">
+    <h4>Smoobu</h4>
+    <p>Channel manager + simple direct booking. ~$27–$52/mo. Popular with small European hosts.</p>
+    <p class="gap">Gap: Lean on depth and customization. European focus limits U.S./Mexico relevance.</p>
+  </div>
+</div>
 
-__Direct\-booking approach & pricing__
+### What they all have in common
 
-__Gap for the casual owner__
+- **Direct booking is a feature, not the product.** Most are channel managers first; the booking site is an add-on.
+- **They assume the owner will do the work.** Lodgify's value depends on the owner's SEO skill. OwnerRez requires assembling multiple tools.
+- **Setup takes effort.** Onboarding is measured in days, not minutes.
+- **Trust infrastructure is bring-your-own.** None bundles escrow, owner verification, and guest screening as a default safety layer.
 
-__OwnerRez__
+---
 
-Power individual owners, small managers
+## The Wildcard: Fee-Free Marketplaces
 
-Branded site \+ booking engine, strong guest CRM, no commission; about $40/mo flat
+<div class="callout">
+<p><strong>Houfy</strong> is the most direct philosophical competitor and deserves honest attention. It charges 0% commission, $0 guest fees, and offers optional subscriptions at $8–$12/month. Its pitch — keep 100% of your rate — overlaps with the owner motivation Familiar Guest is built on.</p>
+</div>
 
-Deep but utilitarian; longer setup; no native payment processor
+**The crucial distinction:** Houfy is a **discovery marketplace** — it helps guests find listings. Familiar Guest is **not trying to find owners new guests.** It's the trust-and-payments layer for guests an owner already has.
 
-__Lodgify__
+The two can coexist. But Houfy proves that "free" is a live competitive force, and any paid plan must justify itself on simplicity, built-in trust (escrow, verification, screening), and freedom from marketplace ranking dynamics.
 
-Owners wanting their own branded website
+<div class="page-break"></div>
 
-Website builder \+ booking engine, commission\-free; from about $16/mo
+## Where Familiar Guest Fits
 
-Value hinges on the owner’s own SEO and marketing to drive traffic
+<div class="highlight-box">
+<p><strong>The open position:</strong> a dead-simple, owner-first product that gets an owner live in minutes with their own photos and description, syncs their calendar via iCal, focuses on repeat and trusted guests rather than discovery, and builds payments, escrow, and verification in by default.</p>
+<p>No incumbent owns all of these. That is the lane Familiar Guest targets.</p>
+</div>
 
-__Hospitable__
+### Head-to-head positioning
 
-Solo Airbnb hosts
+| Dimension | Familiar Guest | Closest competitor | Why we win |
+|---|---|---|---|
+| **Setup time** | Under an afternoon | OwnerRez: days | AI-assisted listing, no tool assembly |
+| **Payments** | Built in (Stripe, escrow) | OwnerRez: BYO processor | One less thing for the owner to figure out |
+| **Trust layer** | Escrow + verification + screening by default | Houfy: lighter protections | Peace of mind without extra setup |
+| **Guest focus** | Repeat/trusted guests | Lodgify: SEO-driven strangers | No marketing skill required |
+| **Direct booking** | The core product | Hospitable: paid add-on | Not an afterthought |
+| **Pricing** | 5% or $29/mo | Houfy: free | Justified by escrow, agreements, and support |
 
-Automation\-first; direct booking is a paid add\-on in select countries; from $29/mo
+---
 
-Direct booking is thin; built around OTA messaging automation
+## Competitive Risks — Honest Assessment
 
-__Smoobu__
+We are not without vulnerabilities. An honest read:
 
-Small hosts, Europe\-centric
+- **"Free" is a real competitor.** Houfy and DIY website builders set a low price anchor. Our fees must be visibly justified by simplicity and built-in safety.
+- **Low switching costs.** Booking tools aren't deeply sticky early on. The guest CRM and repeat-booking history create lock-in over time — that data must accumulate fast.
+- **Incumbent response.** OwnerRez, Lodgify, or Hospitable could streamline onboarding or bundle trust features. They have brand recognition and installed bases we don't.
+- **Calendar dependency.** Calendar sync relies on Airbnb's iCal feed, which Airbnb controls and could restrict. Listing content is owner-provided and has no platform dependency.
+- **Trust execution risk.** The differentiation rests on escrow, verification, and screening working flawlessly. A single high-profile failure would undercut the core promise faster than for a pure software tool.
 
-Channel manager \+ simple direct booking; roughly $27–$52/mo
+---
 
-Lean on depth and customization; European focus
+## Sources & Method
 
-__Houfy__
+*This assessment synthesizes publicly available industry data, vendor materials, and software-comparison sources as of mid-2026. Market-size figures carry wide error bars. Several competitor performance claims are vendor-published and flagged as such; they should be verified independently before being relied upon for planning.*
 
-Independent owners wanting fee\-free
+---
 
-Fee\-free discovery marketplace; 0% commission, $0 guest fees; optional $7\.99–$11\.99/mo
-
-A marketplace that relies on being found; lighter built\-in payments, escrow, and agreement tooling
-
-## What the owner\-focused incumbents have in common
-
-- Direct booking is a feature, not the soul of the product\. Most are channel managers or PMS tools first; the branded booking site is an add\-on, sometimes paid separately \(as with Hospitable\)\.
-- They assume the owner will do the work\. Lodgify’s direct\-booking value, for example, depends heavily on the owner’s own SEO and marketing skill to generate traffic — a non\-starter for the casual owner\.
-- Setup is real work\. OwnerRez and similar tools are powerful but utilitarian, with longer onboarding and, in OwnerRez’s case, no native payment processor — the owner assembles the pieces\.
-- Trust infrastructure is bring\-your\-own\. None bundles escrow, owner verification, and guest screening as a default safety layer; owners add third\-party tools \(Truvi, Safely, Waivo\) themselves\.
-
-# The Wildcard: Fee\-Free Marketplaces
-
-Houfy is the most direct philosophical competitor to an owner\-first, low\-fee concept and deserves honest attention\. It charges hosts 0% commission and guests no service fees, offers optional subscriptions in the $8–$12 per\-month range and a one\-time verification fee, and reports a large and growing global footprint with visibility through Google Vacation Rentals\. Its pitch — keep 100% of your rate and own the guest relationship — overlaps heavily with the owner motivation Familiar Guest is built on\. \(Houfy’s scale and performance figures are largely self\-reported and should be verified independently\.\)
-
-The crucial distinction: Houfy is a discovery marketplace — it competes on helping guests find listings\. Familiar Guest is not trying to find owners new guests; it is the trust\-and\-payments layer for guests an owner already has\. The two can coexist, but Houfy proves that “free” is a live competitive force, and any paid plan must justify itself against it on simplicity, built\-in trust \(escrow, verification, screening\), and the fact that it is not subject to marketplace ranking dynamics\.
-
-# Where Familiar Guest Fits
-
-Familiar Guest occupies a position none of the incumbents fully owns: owner\-first \(not property\-manager\), repeat\-guest\-focused \(not discovery\), with effortless onboarding \(owner uploads photos, AI\-assisted description, instant iCal calendar sync\) and trust built in by default \(escrow, mandatory owner verification, optional screening\)\. The closest competitors each miss at least one of these:
-
-- Versus OwnerRez and Lodgify: far simpler to set up, and trust and payments are built in rather than assembled by the owner\.
-- Versus Hospitable and Smoobu: direct booking and the guest relationship are the core product, not a secondary automation feature\.
-- Versus Houfy: a managed trust layer \(escrow, verified owners, screening\) for the owner’s own guests, rather than a discovery marketplace the owner must compete for visibility within\.
-
-# Competitive Risks — Honest Assessment
-
-- “Free” is a real competitor\. Houfy and DIY website builders set a low price anchor\. Familiar Guest’s fees must be visibly justified by simplicity and built\-in safety, or price\-sensitive owners will default to free\.
-- Low switching costs and feature commoditization\. Booking tools are not deeply sticky early on; the guest CRM and repeat\-booking history are what create lock\-in over time, so that data must accumulate fast\.
-- Incumbent response\. OwnerRez, Lodgify, or Hospitable could streamline onboarding or bundle trust features; they have brand recognition and installed bases that a newcomer lacks\.
-- Airbnb calendar dependency\. Calendar sync relies on Airbnb’s iCal feed, which Airbnb controls and could restrict\. Listing content is owner\-provided \(not pulled from Airbnb\), so onboarding itself has no Airbnb dependency\.
-- Trust execution risk\. The differentiation rests on escrow, verification, and screening actually working flawlessly; a single high\-profile failure would undercut the core promise faster than for a pure software tool\.
-
-# Sources & Method
-
-*This assessment synthesizes publicly available industry data, vendor materials, and software\-comparison sources as of mid\-2026\. Market\-size figures carry wide error bars and vary by methodology\. Several competitor performance and scale claims are vendor\-published and are flagged as such; they should be independently verified before being relied upon for planning\.*
-
+<div style="text-align: center; margin-top: 30px; color: #8a7e72; font-size: 11px;">
+familiarguest.com &nbsp;&nbsp;|&nbsp;&nbsp; June 2026
+</div>
