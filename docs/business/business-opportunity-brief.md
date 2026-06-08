@@ -6,9 +6,9 @@
 
 ## The Concept
 
-Familiar Guest is the simplest way for individual rental owners to take bookings directly from their own trusted guests — and, when they choose, from the public — without surrendering 15% or more, and the guest relationship, to Airbnb. Owners keep their existing listing exactly as it is, import it in minutes, and begin taking direct bookings under their own name, with payments, rental agreements, and trust safeguards handled automatically.
+Familiar Guest is the simplest way for individual rental owners to take bookings directly from their own trusted guests — and, when they choose, from the public — without surrendering 15% or more, and the guest relationship, to Airbnb. Owners create a listing in minutes, sync their calendar, and begin taking direct bookings under their own name, with payments, rental agreements, and trust safeguards handled automatically.
 
-The product is built around one promise: near-zero effort to set up. We pull the owner's listing and photos from their existing Airbnb listing, sync their Airbnb calendar instantly, and verify their identity once — then they simply share a booking link.
+The product is built around one promise: near-zero effort to set up. The owner uploads photos from their phone or cloud storage, answers a few quick questions (or pastes their own description and lets AI polish it), syncs their calendar via iCal, and verifies their identity once — then they simply share a booking link.
 
 ---
 
@@ -25,7 +25,7 @@ The product is built around one promise: near-zero effort to set up. We pull the
 
 Our entire go-to-market depends on removing effort. The owner's path to a live direct-booking link has four short steps:
 
-1. **Import in minutes:** pull listing details and photos straight from the owner's existing Airbnb listing — no retyping, no re-uploading.
+1. **Create your listing in minutes:** upload photos from your phone, cloud storage (Google Photos, iCloud, Dropbox), or computer — then paste your own description or answer a few questions and let AI write one for you.
 2. **Instant calendar sync:** connect the Airbnb calendar via iCal on day one so availability stays current and double-bookings are prevented.
 3. **Verify once:** a short, Stripe-backed identity check (legal name, date of birth, address, last four of SSN, and a payout account) that most owners clear in minutes — presented under Familiar Guest branding.
 4. **Share and book:** the owner sends a branded booking link to their guests; payment, the rental agreement, and the digital house manual are handled automatically.
@@ -114,5 +114,5 @@ If external capital is pursued, it would be for **growth acceleration** (marketi
 ## Recommended Next Steps
 
 1. **Validate with 30-50 target owners:** confirm the share of bookings that are repeat guests and their willingness to take them direct.
-2. **Build the core:** Airbnb listing and photo import, instant iCal sync, Stripe-verified onboarding, a branded booking link, and payments with escrow.
+2. **Build the core:** owner-driven listing creation (photo upload, AI description), iCal calendar sync, Stripe-verified onboarding, a branded booking link, and payments with escrow.
 3. **Launch trusted-guest mode** in one beachhead niche; add public bookings and screening once core retention is proven.

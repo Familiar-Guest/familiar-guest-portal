@@ -10,7 +10,7 @@ Direct booking is a structural, growing segment of the short\-term rental market
 
 The competitive field splits sharply between tools built for professional property managers and tools that enable individual owners\. Within the owner\-enabling group, every incumbent treats direct booking as a secondary feature bolted onto channel management, and most require the owner to drive their own traffic or to operate like a business\. The clearest exception, Houfy, is a fee\-free discovery marketplace rather than a trust\-and\-payments layer for an owner’s existing guests\.
 
-__The open position is a dead\-simple, owner\-first product that imports from Airbnb in minutes, focuses on repeat and trusted guests rather than discovery, and builds payments, escrow, and verification in by default\. That is the lane Familiar Guest targets\.__
+__The open position is a dead\-simple, owner\-first product that gets an owner live in minutes with their own photos and description, syncs their calendar via iCal, focuses on repeat and trusted guests rather than discovery, and builds payments, escrow, and verification in by default\. That is the lane Familiar Guest targets\.__
 
 # The Direct Booking Market
 
@@ -102,7 +102,7 @@ The crucial distinction: Houfy is a discovery marketplace — it competes on hel
 
 # Where Familiar Guest Fits
 
-Familiar Guest occupies a position none of the incumbents fully owns: owner\-first \(not property\-manager\), repeat\-guest\-focused \(not discovery\), with effortless onboarding \(import from Airbnb, instant iCal sync\) and trust built in by default \(escrow, mandatory owner verification, optional screening\)\. The closest competitors each miss at least one of these:
+Familiar Guest occupies a position none of the incumbents fully owns: owner\-first \(not property\-manager\), repeat\-guest\-focused \(not discovery\), with effortless onboarding \(owner uploads photos, AI\-assisted description, instant iCal calendar sync\) and trust built in by default \(escrow, mandatory owner verification, optional screening\)\. The closest competitors each miss at least one of these:
 
 - Versus OwnerRez and Lodgify: far simpler to set up, and trust and payments are built in rather than assembled by the owner\.
 - Versus Hospitable and Smoobu: direct booking and the guest relationship are the core product, not a secondary automation feature\.
@@ -113,7 +113,7 @@ Familiar Guest occupies a position none of the incumbents fully owns: owner\-fir
 - “Free” is a real competitor\. Houfy and DIY website builders set a low price anchor\. Familiar Guest’s fees must be visibly justified by simplicity and built\-in safety, or price\-sensitive owners will default to free\.
 - Low switching costs and feature commoditization\. Booking tools are not deeply sticky early on; the guest CRM and repeat\-booking history are what create lock\-in over time, so that data must accumulate fast\.
 - Incumbent response\. OwnerRez, Lodgify, or Hospitable could streamline onboarding or bundle trust features; they have brand recognition and installed bases that a newcomer lacks\.
-- Airbnb dependency\. The effortless\-onboarding promise leans on Airbnb’s iCal feed and listing data, which Airbnb controls and could restrict\.
+- Airbnb calendar dependency\. Calendar sync relies on Airbnb’s iCal feed, which Airbnb controls and could restrict\. Listing content is owner\-provided \(not pulled from Airbnb\), so onboarding itself has no Airbnb dependency\.
 - Trust execution risk\. The differentiation rests on escrow, verification, and screening actually working flawlessly; a single high\-profile failure would undercut the core promise faster than for a pure software tool\.
 
 # Sources & Method
