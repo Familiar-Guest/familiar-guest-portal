@@ -14,23 +14,36 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
   .page { padding: 22mm 20mm; min-height: 297mm; box-sizing: border-box; page-break-after: always; position: relative; }
   .page:last-child { page-break-after: auto; }
   h1, h2, h3 { font-family: 'Fraunces', serif; color: #14543F; }
-  p { font-size: 16px; line-height: 1.6; }
   .brand { font-family:'Fraunces',serif; font-size: 22px; color:#14543F; font-weight:700; letter-spacing:0.5px; }
-  .hero-title { font-size: 46px; line-height: 1.08; color:#14543F; font-weight:900; margin: 26px 0 14px 0; }
-  .hero-sub { font-size: 20px; color:#C0673E; font-weight:500; line-height:1.4; margin-bottom: 28px; }
-  .hero-band { background:#14543F; color:white; border-radius:12px; padding: 22px 26px; margin-top: 18px; }
-  .hero-band p { font-size: 18px; color:white; margin:0; line-height:1.5; }
+  .hero-title { font-size: 48px; line-height: 1.07; color:#14543F; font-weight:900; margin: 30px 0 16px 0; }
+  .hero-sub { font-size: 21px; color:#C0673E; font-weight:500; line-height:1.4; margin-bottom: 26px; }
+  .hero-band { background:#14543F; color:white; border-radius:12px; padding: 22px 26px; }
+  .hero-band p { font-size: 19px; color:white; margin:0; line-height:1.5; }
   .hero-band strong { color:#e8d5b7; }
-  h2.section { font-size: 30px; margin: 0 0 6px 0; }
+  h2.section { font-size: 31px; margin: 0 0 6px 0; }
   .kicker { font-size: 13px; text-transform: uppercase; letter-spacing: 2px; color:#C0673E; font-weight:700; margin-bottom: 4px; }
-  .problem { font-size: 18px; line-height:1.5; margin: 14px 0; padding-left: 30px; position: relative; }
-  .problem::before { content: "\2715"; position:absolute; left:0; top:0; color:#C0673E; font-weight:700; font-size:18px; }
-  .solverow { display:flex; gap: 14px; margin: 16px 0; align-items: flex-start; }
-  .solvecheck { color:#14543F; font-size: 22px; font-weight:700; line-height:1.2; }
-  .solvetext { font-size: 17px; line-height:1.45; }
-  .solvetext b { color:#14543F; }
-  .trust { background:#fff; border:1px solid #E6DBCB; border-radius:12px; padding: 20px 24px; margin-top: 22px; }
-  .trust p { font-size: 17px; margin:0; }
+  .problem { font-size: 19px; line-height:1.45; margin: 18px 0; padding-left: 32px; position: relative; }
+  .problem::before { content: "\2715"; position:absolute; left:0; top:0; color:#C0673E; font-weight:700; font-size:19px; }
+  .problem b { color:#14543F; }
+  .benefits { display:grid; grid-template-columns: 1fr 1fr; gap: 12px 22px; margin: 18px 0 8px 0; }
+  .ben { font-size: 16px; line-height:1.35; }
+  .ben b { color:#14543F; }
+  .booking { display:flex; gap: 16px; margin-top: 18px; }
+  .card { background:#fff; border:1px solid #E6DBCB; border-radius:12px; padding: 16px 18px; flex:1; }
+  .card-h { font-family:'Fraunces',serif; font-size:16px; color:#14543F; font-weight:700; margin-bottom: 10px; }
+  .cal-month { font-size:14px; font-weight:600; color:#2A241E; margin-bottom:8px; }
+  .cal-grid { display:grid; grid-template-columns: repeat(7, 1fr); gap:4px; }
+  .cal-dow { font-size:10px; text-transform:uppercase; color:#8a7e72; text-align:center; font-weight:600; }
+  .cal-day { text-align:center; font-size:13px; padding:7px 0; border-radius:7px; color:#2A241E; }
+  .cal-bk { background:#efe7d8; color:#b3a890; text-decoration: line-through; }
+  .cal-sel { background:#14543F; color:#fff; font-weight:700; }
+  .legend { display:flex; gap:14px; margin-top:12px; font-size:11px; color:#5a5047; align-items:center; }
+  .ldot { display:inline-block; width:11px; height:11px; border-radius:3px; vertical-align:middle; margin-right:4px; }
+  .payrow { display:flex; justify-content:space-between; font-size:14px; padding:7px 0; border-bottom:1px solid #F1E9DB; }
+  .payrow.muted { color:#8a7e72; }
+  .paytotal { display:flex; justify-content:space-between; font-size:17px; font-weight:700; color:#14543F; padding-top:10px; }
+  .paybtn { background:#14543F; color:#fff; text-align:center; padding:11px; border-radius:8px; font-weight:700; font-size:15px; margin-top:12px; }
+  .paynote { font-size:11.5px; color:#8a7e72; margin-top:9px; line-height:1.4; }
   .plans { display:flex; gap: 14px; margin-top: 20px; }
   .plan { flex:1; background:#fff; border:1px solid #E6DBCB; border-radius:12px; padding: 18px 16px; }
   .plan.feature { background:#14543F; border-color:#14543F; }
@@ -56,35 +69,29 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 </style>
 <div class="page">
 <div class="brand">Familiar Guest</div>
-<div class="hero-title">Your guests already<br>love your place.<br>Keep what you earn.</div>
-<div class="hero-sub">Direct bookings for your home in Mexico — without losing 15% and your guest relationships to Airbnb.</div>
-<div class="hero-band"><p>You own a home in <strong>Los Cabos, Todos Santos, or La Paz</strong>. You have guests who come back year after year. Familiar Guest lets you book them directly — under your own name — with payments, agreements, and trust handled for you. <strong>Live in an afternoon.</strong></p></div>
-<div style="margin-top: 40px;"><div class="kicker">Sound familiar?</div><h2 class="section">The problems you live with</h2></div>
-<div class="problem">Airbnb takes about <b>15.5% of every booking</b> — even from repeat guests who already know you.</div>
-<div class="problem">The platform <b>owns your guest list.</b> You can't easily invite past guests back next season.</div>
-<div class="problem">Getting paid <b>across borders</b> is a headache — currencies, fees, and foreign bank accounts.</div>
-<div class="problem">Your guests hesitate: <b>"Is it safe to send money</b> for a home in another country?"</div>
-<div class="problem">You're managing the whole thing <b>from thousands of miles away.</b></div>
+<div class="hero-title">Your guests love<br>your place. Keep<br>what you earn.</div>
+<div class="hero-sub">Direct bookings for your home in Mexico — without losing 15% to Airbnb.</div>
+<div class="hero-band"><p>You own a home in <strong>Los Cabos, Todos Santos, or La Paz</strong> and have guests who return year after year. Book them directly — under your own name — with payments, agreements, and trust handled for you. <strong>Live in an afternoon.</strong></p></div>
+<div style="margin-top: 44px;"><div class="kicker">Sound familiar?</div><h2 class="section">The problems you live with</h2></div>
+<div class="problem">Airbnb takes <b>~15.5% of every booking</b> — even from repeat guests.</div>
+<div class="problem">The platform <b>owns your guest list</b> — you can't easily invite past guests back.</div>
+<div class="problem"><b>Cross-border payments</b> are a headache — currencies, fees, foreign accounts.</div>
+<div class="problem">Guests hesitate: <b>"Is it safe to send money</b> for a home in Mexico?"</div>
 <div class="footer">familiarguest.com</div>
 </div>
 <div class="page">
 <div class="kicker">Here's the fix</div>
-<h2 class="section">How Familiar Guest helps</h2>
-<p style="margin-top:4px;">Everything Airbnb does for the booking — none of the things that frustrate you.</p>
-<div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Keep your rate.</b> Pay just 5% per booking, or a flat $29/month — never a 15% cut.</div></div>
-<div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Own your guests.</b> A private guest list that's yours — with one-click re-invites timed to the winter season.</div></div>
-<div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Get paid your way.</b> Take payment in dollars, Canadian dollars, or pesos — and get paid to a U.S., Canadian, or Mexican bank.</div></div>
-<div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Trust built in.</b> Guest funds are held safely until check-in. Every owner is verified. Optional ID screening and up to $1M damage protection.</div></div>
-<div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Two languages, automatically.</b> Booking and messaging work in English and Spanish, with translation handled for you.</div></div>
-<div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Run it from anywhere.</b> Give your local caretaker their own limited access, and let guests check in on their own.</div></div>
-<div class="trust"><p>🛡️ <b>The trust difference:</b> because we hold the payment in escrow until check-in, your guests can book a home in Mexico with total confidence — and you look as professional as any resort, under your own property's name.</p></div>
-<div style="margin-top: 28px;"><div class="kicker">Effortless from day one</div><h2 class="section" style="font-size:26px;">Live in an afternoon</h2><p style="margin-top:6px;">Add your photos and details. Sync your calendar. Verify once. Share your private booking link. That's it — your guests book on their phone, no app required.</p></div>
+<h2 class="section">Everything you need, built in</h2>
+<div class="benefits"><div class="ben">💵 <b>Keep your rate</b> — 5% or $29/mo, no 15% cut</div><div class="ben">👥 <b>Own your guest list</b> — re-invite each season</div><div class="ben">🌎 <b>Get paid your way</b> — USD, CAD, or pesos</div><div class="ben">🛡️ <b>Trust built in</b> — escrow + verified owners</div><div class="ben">🗣️ <b>Two languages</b> — English & Spanish, auto</div><div class="ben">🔑 <b>Run it remotely</b> — caretaker + self check-in</div></div>
+<div class="kicker" style="margin-top:22px;">See it in action</div>
+<h2 class="section" style="font-size:26px;">A booking, start to finish</h2>
+<div class="booking"><div class="card"><div class="card-h">1 · Guest picks open dates</div><div class="cal-month">March 2026 — Casa del Mar</div><div class="cal-grid"><div class="cal-dow">S</div><div class="cal-dow">M</div><div class="cal-dow">T</div><div class="cal-dow">W</div><div class="cal-dow">T</div><div class="cal-dow">F</div><div class="cal-dow">S</div><div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day cal-bk">4</div><div class="cal-day cal-bk">5</div><div class="cal-day cal-bk">6</div><div class="cal-day cal-bk">7</div><div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day cal-sel">14</div><div class="cal-day cal-sel">15</div><div class="cal-day cal-sel">16</div><div class="cal-day cal-sel">17</div><div class="cal-day cal-sel">18</div><div class="cal-day cal-sel">19</div><div class="cal-day cal-sel">20</div><div class="cal-day cal-sel">21</div><div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day cal-bk">28</div><div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div></div><div class="legend"><span><span class="ldot" style="background:#FBF6EE;border:1px solid #E6DBCB;"></span>Open</span><span><span class="ldot" style="background:#14543F;"></span>Their stay</span><span><span class="ldot" style="background:#efe7d8;"></span>Booked</span></div></div><div class="card"><div class="card-h">2 · Guest pays securely</div><div class="payrow"><span>$280 × 7 nights</span><span>$1,960</span></div><div class="payrow"><span>Cleaning fee</span><span>$120</span></div><div class="payrow muted"><span>Refundable deposit (held)</span><span>$300</span></div><div class="paytotal"><span>Total due today</span><span>$2,080</span></div><div class="paybtn">Confirm &amp; Pay</div><div class="paynote">Held in escrow until check-in. Pay in USD, CAD, or MXN — or split 50% now, 50% before arrival.</div></div></div>
 <div class="footer">familiarguest.com</div>
 </div>
 <div class="page">
 <div class="kicker">Simple pricing</div>
 <h2 class="section">Plans that fit how you rent</h2>
-<p style="margin-top:4px;">Card and currency fees passed through at cost — no markup, ever.</p>
+<p style="font-size:16px;margin-top:4px;">Card and currency fees passed through at cost — no markup, ever.</p>
 <div class="plans"><div class="plan"><div class="plan-name">Pay-as-you-go</div><div class="plan-price">5%</div><div class="plan-unit">per booking · no monthly fee</div><div class="plan-for">For seasonal owners or trying it out.</div><ul><li>All features included</li><li>Unlimited properties</li><li>Cancel anytime</li></ul></div><div class="plan feature"><div class="plan-name">Solo</div><div class="plan-price">$29</div><div class="plan-unit">per month · 1 property</div><div class="plan-for">For active owners — no commission.</div><ul><li>0% commission</li><li>Free friends &amp; family bookings</li><li>Everything in Pay-as-you-go</li></ul></div><div class="plan"><div class="plan-name">Pro</div><div class="plan-price">$59</div><div class="plan-unit">per month · up to 5 homes</div><div class="plan-for">For owners with multiple homes.</div><ul><li>Up to 5 properties</li><li>Consolidated income reports</li><li>5 caretaker logins</li><li>Priority support</li></ul></div></div>
 <div class="everyplan">Every plan includes cross-border payments, bilingual booking, escrow, verified-owner trust, calendar sync, and your private guest list.</div>
 <div class="addons"><p><b>Add when you need it:</b></p><p>🔎 <b>Guest Screening</b> — $5/booking — ID + fraud check for new guests</p><p>🛡️ <b>Protected Booking</b> — $19.99/booking — screening + up to $1M damage protection</p></div>
