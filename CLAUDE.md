@@ -9,9 +9,9 @@
 
 **Familiar Guest** is a private rental booking and guest-management platform for individual vacation-property owners — not professional property managers. It lets owners take direct bookings from their own repeat and trusted guests, with payments, rental agreements, and trust safeguards handled automatically.
 
-**Domain:** familiarguest.com  
-**GitHub:** https://github.com/Familiar-Guest/familiar-guest-portal  
-**Target market:** US and Mexico vacation rental owners (individual/casual, not operators)  
+**Domain:** familiarguest.com
+**GitHub:** https://github.com/Familiar-Guest/familiar-guest-portal
+**Target market:** US and Mexico vacation rental owners (individual/casual, not operators)
 **Guest origins served:** US, Canada, Latin America, Western Europe, and Asia (Japan, China, India, Taiwan, South Korea)
 
 ### The Core Positioning (do not drift from this)
@@ -67,19 +67,19 @@ Triggers: owner tries to list a property or connect a payout account.
 - Use **Stripe Connect Custom** accounts with **embedded/hosted verification components**
 - Stripe collects: legal name, date of birth, address, SSN last 4, bank account
 - Most owners clear in minutes; ID document upload only if auto-verify fails
-- On pass → owner can use Familiar Guest in **Trusted-Guest Mode** (send booking links to known guests, collect payment)
-- On fail → cannot proceed; support flow
+- On pass -> owner can use Familiar Guest in **Trusted-Guest Mode** (send booking links to known guests, collect payment)
+- On fail -> cannot proceed; support flow
 
 ### Gate 2 — Property ownership verification (required for public listings only)
 Triggers: owner enables "open to public" on any listing.
 - Owner uploads ONE document in their verified name matching the listing address: property tax statement, deed, utility bill, or insurance declaration page
 - Manual/lightweight review at launch — no API to automate this
-- On pass → "Verified Owner" badge awarded, **Public Mode** unlocked (escrow + booking guarantee apply)
-- Until pass → trusted-guest mode only, no public listing
+- On pass -> "Verified Owner" badge awarded, **Public Mode** unlocked (escrow + booking guarantee apply)
+- Until pass -> trusted-guest mode only, no public listing
 
 ### Content and Photo Onboarding (no Airbnb scraping — see above)
-- **Connect cloud storage:** Google Photos, iCloud, Google Drive, or Dropbox OAuth → owner selects an album → photos come in. Owner authorizes access to their own storage — fully compliant.
-- **Mobile upload:** QR code or text-a-link → owner picks from phone camera roll
+- **Connect cloud storage:** Google Photos, iCloud, Google Drive, or Dropbox OAuth -> owner selects an album -> photos come in. Owner authorizes access to their own storage — fully compliant.
+- **Mobile upload:** QR code or text-a-link -> owner picks from phone camera roll
 - **Drag-and-drop:** standard multi-file upload from computer
 - **AI-written description:** owner pastes their own existing text OR answers a few quick questions; we generate a polished title, description, and amenity list for them to review and edit
 - **NO concierge service** — decided against offering this
@@ -94,7 +94,7 @@ When owner is uploading, display these prompts:
 *Tip: Shoot in daylight, tidy up first, hold your phone sideways. Eight to twelve photos is plenty.*
 
 ### Calendar Sync (iCal — the ONLY mechanism, no OTA API)
-- **Inbound:** owner pastes each platform's iCal export URL into Familiar Guest. FG fetches and re-checks on a frequent schedule (target: every 15–30 min) to keep our availability view fresh.
+- **Inbound:** owner pastes each platform's iCal export URL into Familiar Guest. FG fetches and re-checks on a frequent schedule (target: every 15-30 min) to keep our availability view fresh.
 - **Outbound:** FG generates a unique .ics export URL per listing. Owner pastes this URL into each other platform's "import calendar" field. The other platform re-reads it on its own schedule (typically hours — not real-time).
 - **Important:** two-way iCal is two one-way feeds. It is NOT real-time. A double-booking window of up to several hours exists on the outbound side. Display a clear "last synced" timestamp and set owner expectations accordingly.
 - Platforms supporting iCal import/export (no custom dev needed): Airbnb, VRBO, Booking.com, Google Calendar, Apple/iCloud Calendar, and virtually all PMS tools (OwnerRez, Hostaway, Guesty, Lodgify, Hospitable, Smoobu).
@@ -194,7 +194,7 @@ Auto-send these messages on schedule:
 - Owner marks a booking as "free" (friends/family) — $0 guest payment
 - Owner is charged $5 per free booking from their card on file
 - Card on file only required if the owner has the free-bookings feature enabled
-- If charge fails → booking is blocked with an error to the owner; guest does not see this
+- If charge fails -> booking is blocked with an error to the owner; guest does not see this
 
 ### Supabase schema considerations
 Key entities: owners, properties, listings, guests, bookings, agreements, calendar_feeds, payouts, screening_results
@@ -214,8 +214,8 @@ Key entities: owners, properties, listings, guests, bookings, agreements, calend
 9. **Guest screening add-on** — Truvi/Superhog embedded integration
 10. **One-click rebook + referral system**
 
-### What nearshore help should handle
-The following are safety-critical and should be reviewed or owned by an experienced engineer before going to production:
+### What outside contract help should review
+The following are safety-critical and should be reviewed by an experienced engineer before going to production ($5,000 budget):
 - Stripe Connect webhook handling (silent failure risk — if a booking webhook fails at 11pm, the confirmation never sends)
 - Escrow hold-and-release logic (wrong payout timing has legal and financial consequences)
 - Stripe Connect negative balance and fraud liability
@@ -228,10 +228,10 @@ The following are safety-critical and should be reviewed or owned by an experien
 
 | File | Description | Location |
 |---|---|---|
-| Marketing site mockup | Self-contained HTML, full design | See project docs |
-| Business Opportunity Brief | 3-page Word document | See project docs |
-| Industry & Competitive Assessment | 4-page Word document | See project docs |
-| 3-Year Financial Model | Live Excel spreadsheet with flip-able assumptions | See project docs |
+| Marketing site mockup | Self-contained HTML, full design | docs/mockups/marketing-site.html |
+| Business Opportunity Brief | Markdown + original Word document | docs/business/ |
+| Industry & Competitive Assessment | Markdown + original Word document | docs/business/ |
+| 3-Year Financial Model | Live Excel spreadsheet with flip-able assumptions | docs/business/ |
 
 ### Marketing site design tokens
 - Display font: Fraunces (Google Fonts, serif, warm editorial)
@@ -258,17 +258,35 @@ The following are safety-critical and should be reviewed or owned by an experien
 
 ---
 
-## Financial Context
+## Financial Context (revised June 2026 — solo-founder model)
+
+### Development model
+Solo founder with professional developer and product management experience, building with AI-assisted tools (Claude Code, Cursor). $5,000 budgeted for contract review of safety-critical components. No full-time hires planned until unit economics justify it.
+
+### P&L Summary
 
 | Metric | Year 1 | Year 2 | Year 3 |
 |---|---|---|---|
-| Active owners (year-end) | 500 | 3,500 | 11,500 |
+| Active owners (year-end) | 600 | 3,500 | 12,000 |
 | Revenue | $87,500 | $700,000 | $2,625,000 |
 | Gross margin | 78% | 78% | 78% |
-| Operating expenses | $350,000 | $800,000 | $1,500,000 |
-| Operating profit/(loss) | ($281,750) | ($254,000) | $547,500 |
+| Operating expenses | $11,355 | $15,655 | $47,755 |
+| Operating profit/(loss) | $56,895 | $530,345 | $1,999,745 |
+| Operating margin | 65% | 76% | 76% |
 
-Peak cumulative funding need: ~$536K. Seed raise target: $750K–$1M.
+### Operating Expense Breakdown
+
+| Category | Year 1 | Year 2 | Year 3 |
+|---|---|---|---|
+| Infrastructure (Vercel, Supabase, domain) | $555 | $855 | $2,415 |
+| SaaS & services (Resend, DocuSeal, monitoring) | $360 | $1,260 | $2,700 |
+| AI & dev tools (Claude, Cursor) | $1,440 | $1,440 | $1,440 |
+| Outside help & professional (contract dev, legal, insurance, accounting) | $8,500 | $6,500 | $11,000 |
+| Marketing & acquisition | $500 | $5,000 | $14,000 |
+| Customer support (tooling + part-time contractor in Y3) | $0 | $600 | $16,200 |
+| **Total** | **$11,355** | **$15,655** | **$47,755** |
+
+Profitable from Year 1 with no external funding required. Total 3-year OpEx ~$75K.
 
 Blended ARPU ~$350/active owner/year (mix of 5% commission and $29 Solo plan, skewed toward casual owners).
 
@@ -296,5 +314,5 @@ Blended ARPU ~$350/active owner/year (mix of 5% commission and $29 Solo plan, sk
 
 ---
 
-*Last updated: June 2026 — captured from the initial product design and strategy conversation.*
+*Last updated: June 2026 — revised with solo-founder operating model.*
 *For questions about decisions in this file, the rationale is in the original chat session.*
