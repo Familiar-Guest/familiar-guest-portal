@@ -23,6 +23,7 @@ Launch is focused on **US and Canadian homeowners who own and rent property in M
 - Invisible infrastructure: Familiar Guest brand stays in the background; the booking page carries the owner's property name
 - Simple to start — an owner should be live in under an afternoon
 - Trust built in by default (escrow, owner verification, optional guest screening)
+- **Tax Payments &amp; Accounting built in** — FG calculates/collects lodging taxes, withholds &amp; remits Mexican host taxes where it is the platform-of-record, and gives owners clean, tax-ready accounting across all their units. A core differentiator no competitor offers. (Handling + reporting, NOT tax advice.)
 
 ---
 
@@ -191,20 +192,26 @@ Auto-send these messages on schedule:
 - Contains: WiFi, check-in codes, appliance instructions, parking, house rules, local recommendations
 - Updated once by owner, delivered automatically forever
 
+### Tax Payments &amp; Accounting (CORE DIFFERENTIATOR)
+The hardest part of cross-border renting, turned into a built-in feature. No competitor (Airbnb, OwnerRez, Lodgify, Hospitable, Houfy) offers owner-facing cross-border tax handling + accounting.
+- **Automatic lodging-tax handling** — calculate, collect, and (where FG is the platform-of-record) remit Mexican IVA/ISH and US occupancy/TOT per booking.
+- **Mexican host-tax withholding** — where required as a digital platform, withhold and remit ISR/IVA to SAT on the owner's behalf (this is largely mandatory under Mexican rules — make it a feature, not a burden).
+- **Tax-ready accounting** — per-booking tax breakdown, year-end income &amp; tax statements, and clean exports for the owner's accountant (US Schedule E, Mexican filings), consolidated across all units.
+- **Boundary:** this is tax HANDLING + REPORTING, NOT tax ADVICE. FG never advises; owners use their own cross-border tax professional. Implementation is phased (line items + Mexico withholding + exports first; fuller multi-jurisdiction accounting follows) and gated on counsel — see `docs/business/compliance-and-tax-addendum.md`.
+
 ### Income Reporting
 - Annual income summary: total income, nights booked, occupancy rate, top guests
-- Export-ready for tax purposes (raw data for the owner's accountant)
-- Multi-property consolidated view (Pro plan)
-- **NOT building a cross-border tax helper at launch** (US/Canada vs. Mexican ISR/IVA/ISH). Too complex/liability-sensitive. Provide export data only; FG does not give tax advice.
+- Multi-property consolidated view (Pro plan); feeds the Tax Payments &amp; Accounting feature above
 
 ### Cross-Border Features (Mexico market — committed for launch)
-These six are the differentiators for US/Canadian owners renting in Mexico. Detail in `docs/planning/product-feature-brief-mexico.md`.
+These are the differentiators for US/Canadian owners renting in Mexico. Detail in `docs/planning/product-feature-brief-mexico.md`.
 1. **Multi-currency pricing + cross-border payouts** — show prices in USD/CAD/MXN; owner chooses payout currency and destination bank (US/Canada/Mexico). FX passed at cost.
 2. **Bilingual booking + AI-translated messaging** — EN/ES booking pages and two-way translated guest messaging.
 3. **Cross-border trust stack** — escrow + Verified Owner + Truvi screening/damage (Truvi supports Mexico), messaged as "safe to book a home in Mexico."
 4. **Long-stay support + installment payments** — weekly/monthly rates; deposit-now/balance-later for snowbird stays.
 5. **Remote-owner operations** — scoped caretaker/cleaner login (no payments or full guest list) + digital check-in (lockbox/smart codes).
 6. **Baja house-manual templates + season-timed re-invite** — local templates (water/cistern, power/blackouts, 4×4 roads, Spanish phrases) + guest import and re-invite timed to Nov–Apr high season.
+7. **Tax Payments &amp; Accounting** — see the dedicated section above; the standout cross-border differentiator.
 
 Property ownership verification (Gate 2) must accept **fideicomiso (bank trust)** and Mexican-corporation documents (coastal property is in the restricted zone). NOTE: Mexican tax/legal specifics (ISR/IVA/ISH, fideicomiso) need professional verification before any owner-facing claims.
 

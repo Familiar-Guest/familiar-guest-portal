@@ -124,8 +124,14 @@ Features are grouped by function. Each is marked <span class="pill">core</span> 
 - <span class="pill">core</span> **Income summary** — total income, nights booked, occupancy, top guests; export-ready.
 - <span class="pill">core</span> **Consolidated multi-property view** — across all of an owner's listings (Pro plan).
 
+### J. Tax Payments &amp; Accounting <span class="pill-x">core differentiator</span>
+The hardest part of cross-border renting, made automatic — and something no competitor offers.
+- <span class="pill-x">cross-border</span> **Automatic lodging-tax handling** — calculate, collect, and (where FG is the platform-of-record) remit Mexican IVA/ISH and US occupancy/TOT per booking.
+- <span class="pill-x">cross-border</span> **Mexican host-tax withholding** — withhold and remit ISR/IVA to SAT on the owner's behalf where required of a digital platform.
+- <span class="pill-x">cross-border</span> **Tax-ready accounting** — per-booking tax breakdown, year-end income &amp; tax statements, and clean exports for the owner's accountant (US Schedule E, Mexican filings), consolidated across all units.
+
 <div class="warn">
-<p><strong>Not in this release:</strong> the cross-border tax helper (US/Canada vs. Mexican ISR/IVA/ISH reconciliation) is intentionally excluded for now due to complexity and liability. Income exports give owners and their accountants the raw data; Familiar Guest does not provide tax advice.</p>
+<p><strong>Boundary &amp; phasing:</strong> Tax Payments &amp; Accounting is tax <strong>handling and reporting, not tax advice</strong> — owners use their own cross-border tax professional. It is built in phases (tax line items + Mexico withholding + exports first; fuller multi-jurisdiction accounting next) and is gated on legal/tax counsel — see the Compliance &amp; Tax Addendum.</p>
 </div>
 
 <div class="page-break"></div>
@@ -182,10 +188,12 @@ Plans are priced in **USD** (owners are US/Canadian and think in dollars). Card 
 
 | Included at launch | Deferred (post-launch) |
 |---|---|
-| All core features + the 6 cross-border features above | Cross-border tax helper |
-| Trusted-guest + public modes | Platform-backed booking guarantee (needs funded reserve) |
-| Truvi screening & damage coverage (add-ons) | Guest "trust passport" / portable reputation |
+| All core features + the cross-border features above | Fuller multi-jurisdiction tax accounting (phase 2 of Tax Payments & Accounting) |
+| Tax Payments & Accounting — phase 1 (tax line items, Mexico withholding, exports) | Platform-backed booking guarantee (needs funded reserve) |
+| Trusted-guest + public modes; Truvi screening & damage (add-ons) | Guest "trust passport" / portable reputation |
 | Three-tier pricing + two add-ons | Double-booking radar, owner-owned reviews (next iteration) |
+
+*Note: tax payments/accounting roll-out is gated on counsel and the Mexico platform-withholding determination (Compliance & Tax Addendum).*
 
 ---
 

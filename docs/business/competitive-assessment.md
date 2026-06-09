@@ -154,7 +154,8 @@ The two can coexist. But Houfy proves that "free" is a live competitive force, a
 | **Trust layer** | Escrow + verification + screening by default | Houfy: lighter protections | Peace of mind without extra setup |
 | **Guest focus** | Repeat/trusted guests | Lodgify: SEO-driven strangers | No marketing skill required |
 | **Direct booking** | The core product | Hospitable: paid add-on | Not an afterthought |
-| **Pricing** | 5% or from $15/mo | Houfy: free | Justified by escrow, agreements, and support |
+| **Tax payments &amp; accounting** | Built-in cross-border tax handling + tax-ready accounting | **None offer it** | Solves the hardest part of cross-border renting — a moat no incumbent has |
+| **Pricing** | 5% or from $15/mo | Houfy: free | Justified by escrow, agreements, tax handling, and support |
 
 ---
 

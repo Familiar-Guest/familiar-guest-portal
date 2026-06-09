@@ -99,6 +99,7 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 <div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Get paid your way.</b> Take payment in dollars, Canadian dollars, or pesos — paid out to a U.S., Canadian, or Mexican bank.</div></div>
 <div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Trust built in.</b> Funds held safely until check-in. Every owner verified. Optional ID screening and up to $1M damage protection.</div></div>
 <div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Two languages, automatically.</b> Booking and guest messaging work in English and Spanish, translated for you.</div></div>
+<div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Taxes &amp; accounting handled.</b> We calculate and collect lodging taxes, remit Mexican host taxes where required, and hand you tax-ready statements across all your homes — the hardest part of renting in Mexico, done for you.</div></div>
 <div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Run it from anywhere.</b> Give your local caretaker their own access, and let guests check in on their own.</div></div>
 <div class="trust"><p>🛡️ <b>The trust difference:</b> because we hold the payment in escrow until check-in, your guests book a home in Mexico with total confidence — and you look as polished as any resort, under your own property's name.</p></div>
 <div class="footer">famguest.com</div>
