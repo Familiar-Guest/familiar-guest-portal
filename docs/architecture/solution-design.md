@@ -79,7 +79,7 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 | **Income reporting** | Summary + consolidated (Pro) | Owner value at tax time; Pro upsell |
 | **Season re-invite + one-click rebook** | Timed Nov–Apr nudges | Recurring revenue from the existing guest base |
 | **Long-stay rates + installments** | Weekly/monthly + split pay | Fits snowbird behavior; closes large bookings |
-| **Tax Payments &amp; Accounting** | Calculate/collect/remit lodging taxes; withhold &amp; remit Mexican host taxes; tax-ready statements &amp; exports across units | **Core differentiator** — solves the hardest part of cross-border renting; no competitor offers it; drives retention &amp; trust (handling + reporting, not advice) |
+| **Rental Income &amp; Tax Payment Accounting** | Track rental income; calculate/collect/remit lodging taxes; withhold &amp; remit Mexican host taxes; documents for tax reporting across units | **Core differentiator** — solves the hardest part of cross-border renting; no competitor offers it; drives retention &amp; trust (handling + reporting, not advice) |
 | **FX spread (recommended)** | Modest transparent currency margin | GMV-linked revenue — the hedge against OpEx outrunning revenue |
 
 <div class="page-break"></div>

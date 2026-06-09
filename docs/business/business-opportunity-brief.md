@@ -137,7 +137,7 @@ All owners must pass identity verification before listing a property or collecti
 | **Hospitable** | OTA automation; direct booking is a paid add-on | Direct booking is our core product, not a bolt-on |
 | **Houfy** | Fee-free discovery marketplace | We're a trust layer for known guests, not a marketplace |
 
-**Our lane:** effortless setup, repeat-guest focus, trust built in by default, and **cross-border tax payments &amp; accounting handled for the owner** — a combination no incumbent offers.
+**Our lane:** effortless setup, repeat-guest focus, trust built in by default, and **rental-income &amp; tax accounting handled for the owner** — a combination no incumbent offers.
 
 <div class="page-break"></div>
 

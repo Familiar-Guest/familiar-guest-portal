@@ -85,7 +85,7 @@ Features are grouped by function. Each is marked <span class="pill">core</span> 
 - <span class="pill-x">cross-border</span> **Bilingual booking page + AI-translated messaging** — guest and owner each communicate in their own language; AI translates both ways in real time.
 - <span class="pill-x">cross-border</span> **Multi-currency display** — prices shown in the guest's currency (USD / CAD / MXN), all-in and transparent.
 - <span class="pill-x">cross-border</span> **Long-stay support** — weekly and monthly rates for snowbird stays.
-- <span class="pill-x">cross-border</span> **Installment payments** — deposit now, balance before arrival (or split a long stay), reducing friction on large bookings.
+- <span class="pill-x">cross-border</span> **Split payments / installments** — collect a booking in two parts (an initial deposit now, balance before arrival), reducing friction on large bookings.
 - <span class="pill">core</span> **Rental agreement** — auto-generated per booking (DocuSeal), signed digitally before payment clears; stored permanently.
 
 <div class="page-break"></div>
@@ -124,11 +124,12 @@ Features are grouped by function. Each is marked <span class="pill">core</span> 
 - <span class="pill">core</span> **Income summary** — total income, nights booked, occupancy, top guests; export-ready.
 - <span class="pill">core</span> **Consolidated multi-property view** — across all of an owner's listings (Pro plan).
 
-### J. Tax Payments &amp; Accounting <span class="pill-x">core differentiator</span>
+### J. Rental Income &amp; Tax Payment Accounting <span class="pill-x">core differentiator</span>
 The hardest part of cross-border renting, made automatic — and something no competitor offers.
+- <span class="pill-x">cross-border</span> **Rental-income tracking** — every booking's income recorded and consolidated across all of an owner's units.
 - <span class="pill-x">cross-border</span> **Automatic lodging-tax handling** — calculate, collect, and (where FG is the platform-of-record) remit Mexican IVA/ISH and US occupancy/TOT per booking.
 - <span class="pill-x">cross-border</span> **Mexican host-tax withholding** — withhold and remit ISR/IVA to SAT on the owner's behalf where required of a digital platform.
-- <span class="pill-x">cross-border</span> **Tax-ready accounting** — per-booking tax breakdown, year-end income &amp; tax statements, and clean exports for the owner's accountant (US Schedule E, Mexican filings), consolidated across all units.
+- <span class="pill-x">cross-border</span> **Documents for tax reporting** — per-booking tax breakdown, year-end income &amp; tax statements, and clean exports for the owner's accountant (US Schedule E, Mexican filings).
 
 <div class="warn">
 <p><strong>Boundary &amp; phasing:</strong> Tax Payments &amp; Accounting is tax <strong>handling and reporting, not tax advice</strong> — owners use their own cross-border tax professional. It is built in phases (tax line items + Mexico withholding + exports first; fuller multi-jurisdiction accounting next) and is gated on legal/tax counsel — see the Compliance &amp; Tax Addendum.</p>
@@ -188,8 +189,8 @@ Plans are priced in **USD** (owners are US/Canadian and think in dollars). Card 
 
 | Included at launch | Deferred (post-launch) |
 |---|---|
-| All core features + the cross-border features above | Fuller multi-jurisdiction tax accounting (phase 2 of Tax Payments & Accounting) |
-| Tax Payments & Accounting — phase 1 (tax line items, Mexico withholding, exports) | Platform-backed booking guarantee (needs funded reserve) |
+| All core features + the cross-border features above | Fuller multi-jurisdiction tax accounting (phase 2 of Rental Income & Tax Payment Accounting) |
+| Rental Income & Tax Payment Accounting — phase 1 (income tracking, tax line items, Mexico withholding, reporting documents) | Platform-backed booking guarantee (needs funded reserve) |
 | Trusted-guest + public modes; Truvi screening & damage (add-ons) | Guest "trust passport" / portable reputation |
 | Three-tier pricing + two add-ons | Double-booking radar, owner-owned reviews (next iteration) |
 
