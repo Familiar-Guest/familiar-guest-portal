@@ -265,6 +265,7 @@ The following are safety-critical and should be reviewed by an experienced engin
 | Product Sheet (Mexico) | 3-page marketing sheet for owners | docs/marketing/product-sheet-mexico.md |
 | Owner Brochure (Mexico) | 4-page owner marketing brochure incl. first-month-free offer | docs/marketing/owner-brochure-mexico.md |
 | Financial Model & Feasibility (v2) | Re-modeled P&L, OpEx-risk analysis, strategy | docs/business/financial-model-v2.md |
+| Solution Design | Features→value, architecture diagram, data quality, monitoring/auto-resolution, personas | docs/architecture/solution-design.md |
 | Owner Preview Invite | Founding-owner test invitation | docs/business/owner-preview-invite.md |
 
 **Doc generation:** styled docs are authored in Markdown with a CSS `<style>` block + YAML front matter, then rendered to PDF via `npx md-to-pdf <file.md>` and to Word via `npx markdown-docx -i <file.md> -o <file.docx>`. All use the brand design tokens below.
