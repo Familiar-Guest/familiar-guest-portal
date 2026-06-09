@@ -15,7 +15,7 @@
 **Guest origins served:** US, Canada, Latin America, Western Europe, and Asia (Japan, China, India, Taiwan, South Korea)
 
 ### Initial market focus / beachhead (decided June 2026)
-Launch is focused on **US and Canadian homeowners who own and rent property in Mexico**, starting with the **Todos Santos · Los Cabos · La Paz corridor (Baja California Sur)**. These owners already rent on Airbnb and have a base of return guests. The product edge for this segment is **cross-border**: multi-currency payments + payouts, bilingual (EN/ES) booking, trust strong enough to book a home abroad, snowbird long-stays, and remote/absentee owner operations. See `docs/planning/` for the market analysis and feature briefs.
+Launch is focused on **US and Canadian homeowners who own and rent property in Mexico**, starting with the **Todos Santos · Los Cabos · La Paz corridor (Baja California Sur)**. These owners already rent on Airbnb and have a base of return guests. **Owner profile: 1–10 units in Mexico — MOST have 2+, often a multi-unit compound** (still individual/casual owners, NOT professional property managers). This makes Host (up to 5 units) the likely modal plan and makes consolidated reporting + caretaker access especially relevant. The product edge for this segment is **cross-border**: multi-currency payments + payouts, bilingual (EN/ES) booking, trust strong enough to book a home abroad, snowbird long-stays, and remote/absentee owner operations. See `docs/planning/` for the market analysis and feature briefs.
 
 ### The Core Positioning (do not drift from this)
 - Owner-first, not property-manager-first
@@ -313,7 +313,7 @@ Authoritative model: `docs/business/financial-model-v2.md` (+ `Familiar_Guest_Fi
 | Operating profit (Base) | $6,420 | $131,360 | $592,600 |
 | Operating margin (Base) | 12% | 30% | 36% |
 
-**Blended ARPU dropped ~$350 → ~$218** (the $15 Starter dominates a single-home beachhead). Mix assumed: PAYG 25% / Starter 50% / Host 20% / Pro 5%.
+**Blended ARPU re-modeled ~$350 → ~$218** on a Starter-heavy mix (PAYG 25% / Starter 50% / Host 20% / Pro 5%). ⚠️ **REVISIT:** the owner profile is now 2+ units typical (often compounds), so the mix should skew toward **Host** (up to 5 units), which would push ARPU meaningfully ABOVE $218. The current $218/$54.5K/$436K/$1.635M figures are conservative pending a re-model with a Host-leaning mix.
 
 ### THE central risk — guard against OpEx outrunning revenue
 Subscription revenue AND support cost both scale with owner count. A cross-border, money-handling product is support-heavy. The prior ultra-lean OpEx ($11k–$48k) is unrealistic at 12,000 owners. Stress case (support staffed ~linearly) → Year 3 OpEx ~$1.15M → **operating LOSS despite $1.5M revenue.**

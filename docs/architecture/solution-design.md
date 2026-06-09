@@ -142,7 +142,7 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 
 | Persona | Who they are | Primary goals | Key interactions |
 |---|---|---|---|
-| **Owner** | US/Canadian, owns 1 home in Baja, rents on Airbnb, has repeat guests, mostly absentee | Take repeat guests direct, keep earnings, get paid cross-border, minimal effort | Onboard &amp; verify, build listing, sync calendar, share link, manage bookings/payouts, work the guest CRM |
+| **Owner** | US/Canadian; owns **1–10 units in Mexico — most have 2+, often a multi-unit compound**; rents on Airbnb, has repeat guests, mostly absentee | Take repeat guests direct across all their units, keep earnings, get paid cross-border, minimal effort | Onboard &amp; verify, build listings (often several), sync calendars, share links, manage multi-unit bookings/payouts, work the guest CRM |
 | **Returning Guest** | From US, Canada, or Mexico; knows/trusts the owner; may be a snowbird | Book a trusted home easily, pay safely in own currency &amp; language | Open link, pick dates, sign agreement, pay (or split), get check-in info &amp; house manual |
 | **Caretaker** | Local (Mexico) cleaner/property manager | Know who's arriving and prepare the home | Scoped portal: upcoming arrivals, prep tasks, check-in details (no payments / no full guest list) |
 | **Founder / Admin** | Platform operator (you) | Keep the platform trustworthy and running; support owners | Review property-ownership (Gate 2) docs, handle escalations, watch monitoring dashboards |
@@ -159,6 +159,7 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 - **Owner ↔ Guest** messaging is bilingual and AI-translated both ways; the owner never needs Spanish, the guest never needs English.
 - **Caretaker** sees only operational data for confirmed stays — never payment or guest-contact detail beyond what's needed to host.
 - **Admin** touches a booking only on exception (verification review or an escalated incident); the happy path is fully automated.
+- **Multi-unit / compound owners** (the typical case — most owners have 2+ units) manage several listings under one account; consolidated income reporting (Pro) and scoped caretaker access are especially relevant to them, and a single shared guest CRM spans all their units.
 
 ---
 
