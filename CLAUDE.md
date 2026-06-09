@@ -59,6 +59,14 @@ Launch is focused on **US and Canadian homeowners who own and rent property in M
 
 5. **Do NOT allow an owner to list a property or collect payment before Stripe identity verification is complete.** This is a hard gate — no exceptions, no workarounds.
 
+### Cross-border tax & compliance (homes in US OR Mexico; non-US renters) — see `docs/business/compliance-and-tax-addendum.md`
+6. **Mexico digital-platform tax withholding is the top compliance risk.** If FG processes payments for Mexico-located stays, Mexico may require FG to withhold/remit ISR + IVA and register with SAT (possibly an RFC/entity). Resolve the structure with Mexican counsel BEFORE taking live MX payments.
+7. **Verification must work for non-US persons.** SSN-based checks fail for Mexican/other owners and guests — use passport/INE/CURP/RFC. Gate-2 ownership accepts fideicomiso/escritura (MX) and deeds/tax statements (US). Confirm Truvi covers non-US guest IDs.
+8. **E-signatures differ by country.** DocuSeal is fine, but the legal wrapper differs: US = ESIGN/UETA; Mexico = Código de Comercio, with NOM-151 conservation for stronger evidentiary weight. Rental agreement + booking terms must be **bilingual (EN/ES)** with a governing-law clause keyed to the home's country; respect PROFECO consumer rules for Mexican guests.
+9. **Privacy is multi-jurisdiction.** LFPDPPP (Mexico — Spanish aviso de privacidad), GDPR (EU/UK guests), CCPA/CPRA (California), PIPEDA (Canada). Maintain a subprocessor list + DPAs; minimize PII.
+10. **Tax handling, not advice.** Show lodging-tax line items (US TOT / MX ISH), collect W-9/W-8BEN, support 1099-K, and provide income exports — but FG gives NO tax advice. Watch US marketplace-facilitator lodging-tax laws as US homes are added.
+11. **Keep Stripe as merchant-of-record so FG never takes fund custody** (avoids money-transmitter licensing). "Escrow" = Stripe delayed payout; describe it accurately, never as a regulated trust.
+
 ---
 
 ## Owner Onboarding Flow
@@ -266,6 +274,8 @@ The following are safety-critical and should be reviewed by an experienced engin
 | Owner Brochure (Mexico) | 4-page owner marketing brochure incl. first-month-free offer | docs/marketing/owner-brochure-mexico.md |
 | Financial Model & Feasibility (v2) | Re-modeled P&L, OpEx-risk analysis, strategy | docs/business/financial-model-v2.md |
 | Solution Design | Features→value, architecture diagram, data quality, monitoring/auto-resolution, personas | docs/architecture/solution-design.md |
+| Compliance & Tax Addendum | Cross-border tax/compliance (US+MX, non-US renters, e-sign/verification differences) | docs/business/compliance-and-tax-addendum.md |
+| Setup To-Do Checklist | Phased setup, YOU/CLAUDE/BOTH/COUNSEL tagging | docs/planning/setup-todo-checklist.md |
 | Owner Preview Invite | Founding-owner test invitation | docs/business/owner-preview-invite.md |
 
 **Doc generation:** styled docs are authored in Markdown with a CSS `<style>` block + YAML front matter, then rendered to PDF via `npx md-to-pdf <file.md>` and to Word via `npx markdown-docx -i <file.md> -o <file.docx>`. All use the brand design tokens below.

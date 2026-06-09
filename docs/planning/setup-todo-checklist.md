@@ -70,6 +70,24 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 
 ---
 
+## Phase 0.5 · Legal, Tax &amp; Compliance (start in parallel — see Compliance &amp; Tax Addendum)
+
+| ☐ | Step | Who |
+|---|---|---|
+| ☐ | Engage cross-border tax attorney + Mexican counsel + privacy counsel | <span class="who you">YOU</span> |
+| ☐ | ⚠ Resolve Mexico digital-platform withholding (ISR/IVA, SAT/RFC) before live MX payments | <span class="who you">YOU</span> |
+| ☐ | Determine US marketplace-facilitator lodging-tax duties per state | <span class="who you">YOU</span> |
+| ☐ | Confirm Stripe MX connected accounts + cross-border payout structure | <span class="who you">YOU</span> |
+| ☐ | Platform entity (US LLC; possible MX entity/RFC) + insurance (GL, E&amp;O, cyber) | <span class="who you">YOU</span> |
+| ☐ | Bilingual ToS, Privacy Policy, Owner Agreement, Booking Terms (EN/ES) | <span class="who you">YOU</span> |
+| ☐ | Multi-jurisdiction privacy policy + Mexican aviso de privacidad; subprocessor DPAs | <span class="who both">BOTH</span> |
+| ☐ | W-9 (US) / W-8BEN (non-US) collection; 1099-K handling | <span class="who you">YOU</span> |
+| ☐ | Verification for non-US IDs (passport/INE/CURP/RFC); confirm Truvi non-US coverage | <span class="who both">BOTH</span> |
+| ☐ | Gate-2 ownership docs accept fideicomiso/escritura + US deeds | <span class="who ai">CLAUDE</span> |
+| ☐ | Lodging-tax line items (US TOT / MX ISH) + owner local-STR attestation | <span class="who ai">CLAUDE</span> |
+
+---
+
 ## Phase 1 · Scaffold &amp; Deploy Skeleton
 
 | ☐ | Step | Who |
