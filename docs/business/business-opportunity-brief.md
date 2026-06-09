@@ -143,43 +143,54 @@ All owners must pass identity verification before listing a property or collecti
 
 ## Financial Projections
 
-*Solo-founder model: platform built by the founder using AI-assisted development tools, deployed on Vercel, with a $5,000 budget for outside contract review of safety-critical components.*
+*Re-modeled on the Starter/Host/Pro pricing (blended ARPU ~$218) with realistic operating costs and Mexican taxes &amp; cross-border fees factored in. Full detail in the v2 financial model.*
 
 ### Revenue & Profitability
 
 | Metric | Year 1 | Year 2 | Year 3 |
 |---|---|---|---|
+| Avg active owners | 250 | 2,000 | 7,500 |
 | Active owners (year-end) | 600 | 3,500 | 12,000 |
-| **Revenue** | **$87,500** | **$700,000** | **$2,625,000** |
-| Gross profit (78% margin) | $68,250 | $546,000 | $2,047,500 |
-| Operating expenses | $11,355 | $15,655 | $47,755 |
-| **Operating profit** | **$56,895** | **$530,345** | **$1,999,745** |
-| **Operating margin** | **65%** | **76%** | **76%** |
+| Blended ARPU | $218 | $218 | $218 |
+| **Revenue** | **$54,500** | **$436,000** | **$1,635,000** |
+| Gross profit (76% margin) | $41,420 | $331,360 | $1,242,600 |
+| Operating expenses (incl. cross-border compliance) | $41,000 | $212,000 | $675,000 |
+| **Operating profit** | **$420** | **$119,360** | **$567,600** |
+| **Operating margin** | **1%** | **27%** | **35%** |
+
+### Taxes, fees &amp; cross-border costs — how they're treated
+
+- **Owner rental taxes are pass-through, not our revenue.** Mexican income tax (ISR), VAT (IVA 16%), and the state lodging tax (ISH ~3%) are the owner's obligation; where required, Familiar Guest withholds and remits them to SAT on the owner's behalf. They do not inflate the figures above. (US homes: owner income tax + local occupancy/TOT handled the same way.)
+- **IVA on our own service fee (Mexico)** is added to the owner's invoice and remitted — net-zero to us. *Downside risk:* if it must be absorbed rather than passed on, it would cut ~14% from Mexico-sourced service revenue.
+- **Payment processing &amp; currency conversion** are passed through at cost (net-zero). A modest optional FX spread is potential upside (see v2 model), not assumed here.
+- **Cross-border compliance is a real cost** — Mexican SAT registration, Mexican accounting, and withholding administration — and is carried as an explicit operating-expense line (below).
 
 ### Where the money goes
 
 | Category | Year 1 | Year 2 | Year 3 |
 |---|---|---|---|
-| Infrastructure (hosting, database, domain) | $555 | $855 | $2,415 |
-| SaaS services (email, e-signatures, monitoring) | $360 | $1,260 | $2,700 |
-| AI & development tools | $1,440 | $1,440 | $1,440 |
-| Professional services (contract dev, legal, insurance) | $8,500 | $6,500 | $11,000 |
-| Marketing & acquisition | $500 | $5,000 | $14,000 |
-| Customer support | $0 | $600 | $16,200 |
-| **Total** | **$11,355** | **$15,655** | **$47,755** |
+| Infrastructure (hosting, database, domain) | $600 | $3,000 | $12,000 |
+| SaaS services (e-signatures, monitoring, misc) | $900 | $4,000 | $12,000 |
+| AI & development tools (incl. AI support/translation) | $1,500 | $3,000 | $8,000 |
+| Professional services (contract dev, legal, insurance, accounting) | $12,000 | $20,000 | $40,000 |
+| **Cross-border tax & compliance** (MX SAT/RFC, Mexican accounting, withholding admin) | $6,000 | $15,000 | $35,000 |
+| Marketing & acquisition | $5,000 | $35,000 | $100,000 |
+| Customer support (AI-deflected + nearshore) | $15,000 | $132,000 | $468,000 |
+| **Total** | **$41,000** | **$212,000** | **$675,000** |
 
 <div class="callout">
-<p><strong>Profitable from Year 1.</strong> No external funding required. Total operating expenses across three years sum to approximately $75,000. If capital is pursued, it would be for growth acceleration — not survival.</p>
+<p><strong>Roughly breakeven in Year 1, solidly profitable in Years 2–3.</strong> Customer support is the dominant cost at scale — held sublinear with AI-first, nearshore support. A small buffer (covering Year-1 legal, Mexican compliance setup, and support ramp) is prudent, but no large raise is required. The biggest swing factor remains support cost per owner.</p>
 </div>
 
 ### Key assumptions
 
-- Blended ARPU of ~$218/active owner/year (mix of 5% commission and the $15 Starter / $29 Host / $49 Pro plans, weighted toward casual owners). See the v2 financial model for the full re-projection. Revisit as the plan mix is validated with real owners.
-- 78% gross margin after Stripe platform fees, hosting, and third-party APIs
-- Growth driven by low-friction onboarding and owner/guest referrals; modest paid marketing begins in Year 2
-- First hire (part-time support) in Year 3 as owner base crosses ~5,000
+- Blended ARPU of ~$218/active owner/year (mix of 5% commission and the $15 Starter / $29 Host / $49 Pro plans). Mix and ARPU to be validated with real owners; a Host-leaning mix would raise ARPU.
+- 76% gross margin after Stripe platform fees, hosting, third-party APIs, and cross-border payment/vendor costs.
+- Mexican rental taxes (ISR/IVA/ISH) and US occupancy taxes are pass-through (not revenue); cross-border compliance is carried as an explicit OpEx line.
+- Customer support is the largest cost at scale — held sublinear via AI-first deflection + nearshore (Mexico) support; growth driven mainly by referrals.
+- Revenue calculated on average active owners per year.
 
-*These are illustrative projections, not guarantees. Results depend on owner acquisition and retention.*
+*Illustrative projections, not guarantees. The Mexican tax/withholding structure and the plan mix must be validated with counsel and real owners; both can move these numbers materially.*
 
 ---
 
@@ -188,6 +199,8 @@ All owners must pass identity verification before listing a property or collecti
 - **Adoption inertia.** Repeat guests may rebook on Airbnb out of habit. Converting them requires the booking link to be easier than what they already do.
 - **Calendar dependency.** Calendar sync relies on Airbnb's iCal feed, which Airbnb controls and could restrict. Listing content is owner-provided and has no platform dependency.
 - **Trust execution.** The differentiation rests on escrow, verification, and screening working flawlessly. A single high-profile failure would undercut the core promise.
+- **Cross-border tax exposure.** Mexico may require Familiar Guest to register with SAT and withhold/remit ISR and IVA on host earnings as a digital platform. This must be resolved with Mexican counsel before live Mexican payments; it can affect structure, cost, and timing.
+- **Support cost at scale.** A money-handling, cross-border product is support-heavy; if support scales linearly with owners it can erode margin. Mitigated by AI-first deflection and nearshore support.
 
 ---
 
