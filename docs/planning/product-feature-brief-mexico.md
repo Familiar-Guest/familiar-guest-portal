@@ -135,24 +135,26 @@ Features are grouped by function. Each is marked <span class="pill">core</span> 
 Plans are priced in **USD** (owners are US/Canadian and think in dollars). Card processing and currency conversion are always passed through at cost on every plan.
 
 <table>
-<tr><th>&nbsp;</th><th>Pay-as-you-go</th><th>Solo</th><th>Pro</th></tr>
-<tr><td><strong>Price</strong></td><td>5% per paid booking<br>+ fees at cost</td><td><strong>$29</strong> / month</td><td><strong>$59</strong> / month</td></tr>
-<tr><td>Best for</td><td>Seasonal / testing</td><td>Active owners, 1–5 homes</td><td>Owners with 6–10 homes</td></tr>
-<tr><td>Properties</td><td>Pay per booking</td><td>Up to 5</td><td>6–10</td></tr>
-<tr><td>Commission</td><td>5% per paid booking</td><td class="check">None</td><td class="check">None</td></tr>
-<tr><td>Free bookings</td><td>$5 each</td><td class="check">Included</td><td class="check">Included</td></tr>
-<tr><td>Multi-currency + cross-border payouts</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
-<tr><td>Bilingual booking + AI translation</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
-<tr><td>Escrow + Verified Owner</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
-<tr><td>Rental agreement (e-sign)</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
-<tr><td>Calendar sync (iCal)</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
-<tr><td>Long-stay rates + installments</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
-<tr><td>Guest CRM + season re-invite</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
-<tr><td>Automated bilingual messaging</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
-<tr><td>Digital house manual (Baja templates)</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
-<tr><td>Consolidated multi-property reports</td><td class="dash">—</td><td class="dash">—</td><td class="check">✓</td></tr>
-<tr><td>Priority support</td><td class="dash">—</td><td class="dash">—</td><td class="check">✓</td></tr>
+<tr><th>&nbsp;</th><th>Pay-as-you-go</th><th>Starter</th><th>Host</th><th>Pro</th></tr>
+<tr><td><strong>Price</strong></td><td>5% per booking</td><td><strong>$12</strong> / mo</td><td><strong>$29</strong> / mo</td><td><strong>$49</strong> / mo</td></tr>
+<tr><td>Best for</td><td>Seasonal / testing</td><td>Single-home owners</td><td>Active owners, up to 5 homes</td><td>Owners with 6–10 homes</td></tr>
+<tr><td>Properties</td><td>Pay per booking</td><td>1</td><td>Up to 5</td><td>6–10</td></tr>
+<tr><td>Commission</td><td>5% per booking</td><td class="check">None</td><td class="check">None</td><td class="check">None</td></tr>
+<tr><td>Free bookings</td><td>$5 each</td><td class="check">Included</td><td class="check">Included</td><td class="check">Included</td></tr>
+<tr><td>Multi-currency + cross-border payouts</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Bilingual booking + AI translation</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Escrow + Verified Owner</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Rental agreement (e-sign)</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Calendar sync (iCal)</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Long-stay rates + installments</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Guest CRM + season re-invite</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Automated bilingual messaging</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Digital house manual (Baja templates)</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
+<tr><td>Consolidated multi-property reports</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td class="check">✓</td></tr>
+<tr><td>Priority support</td><td class="dash">—</td><td class="dash">—</td><td class="dash">—</td><td class="check">✓</td></tr>
 </table>
+
+<p style="font-size:11.5px; color:#8a7e72; margin-top:6px;"><strong>All plans are subject to payment processing fees</strong> (card + currency conversion), passed through to the owner at cost.</p>
 
 ### Add-ons (any plan)
 
@@ -165,9 +167,9 @@ Plans are priced in **USD** (owners are US/Canadian and think in dollars). Card 
 
 - **Every core and cross-border feature is available on every plan.** Trust and money-movement are the product — paywalling them would undercut the value proposition. Plans differ on **commission vs. flat fee, property count, and reporting/support.** (All plans include 5 caretaker seats — a baseline feature, not a marketed differentiator.)
 - **Property cap is 10 for now** — we are focused on individual renters, not portfolio managers, so no tiers above 10 properties.
-- **The crossover:** an owner books more than ~$7,000/year through Familiar Guest should move from Pay-as-you-go (5%) to Solo ($348/yr). Given Los Cabos/Baja nightly rates, most active owners cross this quickly — which steers the base toward predictable subscription revenue.
-- **Annual option:** offer ~2 months free on annual billing (Solo $290/yr, Pro $590/yr) to improve retention and cash flow.
-- **Fees at cost:** card + FX passed through with no markup preserves the trust positioning. *(A modest FX spread is a possible future revenue line, but not at launch.)*
+- **The crossover:** an owner booking more than ~$2,880/year through Familiar Guest should move from Pay-as-you-go (5%) to **Starter** ($144/yr), then to **Host** when they add a second property. Given Los Cabos/Baja nightly rates, most active owners cross the first threshold quickly — steering the base toward predictable subscription revenue.
+- **Annual option:** offer ~2 months free on annual billing (Starter $120/yr, Host $290/yr, Pro $490/yr) to improve retention and cash flow.
+- **Payment fees:** every plan is subject to payment processing fees (card + FX), passed through with no markup — preserving the trust positioning. *(A modest FX spread is a possible future revenue line, but not at launch.)*
 
 <div class="callout">
 <p><strong>Why this works for the Mexico market:</strong> the owner keeps essentially all of their nightly rate (vs. losing ~15.5% to Airbnb), pays only a small flat fee or commission, and gets cross-border payments, bilingual booking, and a built-in trust layer that a DIY site or a Venmo request can never match.</p>

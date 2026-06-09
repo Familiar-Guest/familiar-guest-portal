@@ -109,16 +109,19 @@ When owner is uploading, display these prompts:
 ### Plans
 | Plan | Price | What's included |
 |---|---|---|
-| Pay-as-you-go | 5% commission + card fees; $5 per free booking | No monthly, cancel anytime |
-| Solo | $29/mo (up to 5 properties) | Unlimited bookings, no commission, free bookings included |
-| Pro | $59/mo (6–10 properties) | Everything in Solo + consolidated income reports |
+| Pay-as-you-go | 5% commission + payment fees; $5 per free booking | No monthly, cancel anytime |
+| Starter | $12/mo (1 property) | No commission, free bookings included |
+| Host | $29/mo (up to 5 properties) | Unlimited bookings, no commission, free bookings included |
+| Pro | $49/mo (6–10 properties) | Everything in Host + consolidated income reports + priority support |
+
+**All plans are subject to payment processing fees** (card + currency conversion), passed through to the owner at cost.
 
 **With damage protection bundled (option in discussion):**
 | Plan | Price |
 |---|---|
-| Pay-as-you-go | 6.5% + card fees |
-| Solo | ~$49/mo (damage included, fair-use cap ~4 bookings/mo) |
-| Pro | ~$99/mo (included, fair-use cap ~6/mo) |
+| Pay-as-you-go | 6.5% + payment fees |
+| Host | ~$49/mo (damage included, fair-use cap ~4 bookings/mo) |
+| Pro | ~$89/mo (included, fair-use cap ~6/mo) |
 
 ### Add-ons (any plan)
 - **Guest Screening:** $5/booking (our cost ~$4, +25% markup) — ID + fraud check
@@ -131,12 +134,13 @@ When owner is uploading, display these prompts:
 - All owners must pass Stripe identity verification — no exceptions, no unverified accounts
 - Card on file required from owner ONLY if they enable free bookings
 - Stripe Connect Custom: owners identify as "getting paid by Familiar Guest," not as Stripe accounts
-- Plan prices are in USD (owners are US/Canadian). Offer ~2 months free on annual billing (Solo $290/yr, Pro $590/yr).
-- Plan tiering detail: Pay-as-you-go = pay per booking. Solo = up to 5 properties. Pro = 6–10 properties, consolidated multi-property reports, priority support. **All plans include 5 caretaker seats** — this is a baseline feature, NOT a marketed/highlighted differentiator; keep it out of pricing comparisons and sales copy.
+- Plan prices are in USD (owners are US/Canadian). Offer ~2 months free on annual billing (Starter $120/yr, Host $290/yr, Pro $490/yr).
+- Plan tiering detail: Pay-as-you-go = pay per booking. Starter = 1 property. Host = up to 5 properties. Pro = 6–10 properties, consolidated multi-property reports, priority support. **All plans include 5 caretaker seats** — this is a baseline feature, NOT a marketed/highlighted differentiator; keep it out of pricing comparisons and sales copy.
+- **ALL plans (including monthly subscriptions) are subject to payment processing fees** — card + FX, passed through at cost. State this clearly on every pricing surface.
 - **Property cap: 10 per owner for now.** We are deliberately NOT offering tiers above 10 properties — the focus is individual renters, not professional managers/portfolios.
 
 ### Crossover logic
-Owner should switch from Pay-as-you-go to Solo when annual booking volume through FG exceeds ~$7,000 (the point where $348/yr flat beats 5% commission). Given Los Cabos/Baja nightly rates, most active owners cross this quickly — steering the base toward predictable subscription revenue.
+Owner should switch from Pay-as-you-go to **Starter** when annual booking volume exceeds ~$2,880 (the point where the $144/yr Starter flat fee beats 5% commission), then to **Host** when they add a second property. Given Los Cabos/Baja nightly rates, most active owners cross the first threshold quickly — steering the base toward predictable subscription revenue.
 
 ---
 
@@ -316,7 +320,7 @@ Solo founder with professional developer and product management experience, buil
 
 Profitable from Year 1 with no external funding required. Total 3-year OpEx ~$75K.
 
-Blended ARPU ~$350/active owner/year (mix of 5% commission and $29 Solo plan, skewed toward casual owners).
+Blended ARPU ~$350/active owner/year planning assumption (mix of 5% commission and the $12 Starter / $29 Host / $49 Pro plans, skewed toward casual owners). NOTE: adding the $12 Starter and lowering Pro to $49 may pull blended ARPU down — revisit the financial model when validating with real owners.
 
 ---
 
