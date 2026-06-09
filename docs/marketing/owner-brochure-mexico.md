@@ -49,19 +49,19 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
   .paynote { font-size:11px; color:#8395A0; margin-top:8px; line-height:1.4; }
   .trust { background:#fff; border:1px solid #D5DEE3; border-radius:12px; padding: 16px 20px; margin-top: 16px; }
   .trust p { font-size: 16px; margin:0; }
-  .plans { display:flex; gap: 12px; margin-top: 16px; }
-  .plan { flex:1; background:#fff; border:1px solid #D5DEE3; border-radius:12px; padding: 16px 14px; }
+  .plans { display:flex; gap: 9px; margin-top: 16px; }
+  .plan { flex:1; background:#fff; border:1px solid #D5DEE3; border-radius:12px; padding: 13px 11px; }
   .plan.feature { background:#135A73; border-color:#135A73; }
-  .plan-name { font-family:'Fraunces',serif; font-size:18px; font-weight:700; color:#135A73; }
+  .plan-name { font-family:'Fraunces',serif; font-size:15px; font-weight:700; color:#135A73; }
   .plan.feature .plan-name { color:#fff; }
-  .plan-price { font-family:'Fraunces',serif; font-size:28px; font-weight:900; color:#E07B39; margin: 5px 0 2px 0; }
+  .plan-price { font-family:'Fraunces',serif; font-size:23px; font-weight:900; color:#E07B39; margin: 4px 0 1px 0; }
   .plan.feature .plan-price { color:#F4C58E; }
-  .plan-unit { font-size:12.5px; color:#8395A0; }
+  .plan-unit { font-size:10.5px; color:#8395A0; }
   .plan.feature .plan-unit { color:#bcd5e0; }
-  .plan-for { font-size:12.5px; color:#4A5A63; margin: 7px 0 9px 0; min-height: 32px; }
+  .plan-for { font-size:10.5px; color:#4A5A63; margin: 6px 0 8px 0; min-height: 42px; }
   .plan.feature .plan-for { color:#cfe0e8; }
-  .plan ul { padding-left:17px; margin:0; }
-  .plan li { font-size:13px; line-height:1.5; margin-bottom:4px; }
+  .plan ul { padding-left:15px; margin:0; }
+  .plan li { font-size:11px; line-height:1.45; margin-bottom:3px; }
   .plan.feature li { color:#e6eef2; }
   .offer { background:#E07B39; color:#fff; border-radius:14px; padding: 22px 24px; margin-top: 18px; }
   .offer h3 { color:#fff; font-size: 24px; margin:0 0 6px 0; }
@@ -81,6 +81,9 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
   .feat-t { font-family:'Fraunces',serif; font-size:14px; color:#135A73; font-weight:700; margin-bottom:4px; }
   .feat-d { font-size:11.5px; color:#33454E; line-height:1.45; }
   .feat-only { font-size:9.5px; color:#E07B39; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-top:6px; }
+  .feat.wide { width:100%; display:flex; gap:14px; align-items:center; }
+  .feat.wide .feat-ic { margin-bottom:0; flex:0 0 auto; }
+  .feat.wide .feat-t { margin-bottom:2px; }
 </style>
 <div class="page">
 <div class="brand">Familiar Guest</div>
@@ -128,6 +131,7 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 <div class="feat hl"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#E07B39" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4L6 21z"/><path d="M9 8h6"/><path d="M9 12h6"/></svg></div><div class="feat-t">Rental Income &amp; Tax Payment Accounting</div><div class="feat-d">Track rental income, handle lodging taxes, and get the documents you need for tax reporting — across all your homes.</div><div class="feat-only">No competitor offers this</div></div>
 <div class="feat"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#135A73" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.5 14.5l1.5 1.5 3-3.5"/></svg></div><div class="feat-t">Rental Agreement</div><div class="feat-d">A rental agreement auto-generated and e-signed before every booking is confirmed.</div></div>
 <div class="feat"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#135A73" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div><div class="feat-t">Screening &amp; Protection</div><div class="feat-d">Optional guest ID screening and up to $1M in damage protection on any booking.</div></div>
+<div class="feat wide"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#135A73" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9a6 6 0 0 1 12 0c0 4.5 2 5.5 2 5.5H4S6 13.5 6 9z"/><path d="M10 18.5a2 2 0 0 0 4 0"/></svg></div><div><div class="feat-t">Reminder &amp; Check-in Messages</div><div class="feat-d">Automatic reminders and check-in instructions by text, WhatsApp, and email — including a Google Maps link with GPS directions to the home (essential in Mexico, where street addresses aren't always reliable).</div></div></div>
 </div>
 <div class="footer">famguest.com</div>
 </div>
@@ -143,8 +147,7 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 <div class="kicker">Simple pricing</div>
 <h2 class="section">Plans that fit how you rent</h2>
 <p class="lead">No commission on monthly plans. All plans are subject to payment processing fees, passed through at cost — no markup, ever.</p>
-<div class="plans"><div class="plan"><div class="plan-name">Starter</div><div class="plan-price">$15</div><div class="plan-unit">per month · 1 property</div><div class="plan-for">For single-home owners.</div><ul><li>0% commission</li><li>1 property</li><li>Free friends &amp; family bookings</li></ul></div><div class="plan feature"><div class="plan-name">Host</div><div class="plan-price">$29</div><div class="plan-unit">per month · up to 5 homes</div><div class="plan-for">For active owners.</div><ul><li>0% commission</li><li>Up to 5 properties</li><li>Everything in Starter</li></ul></div><div class="plan"><div class="plan-name">Pro</div><div class="plan-price">$49</div><div class="plan-unit">per month · 6–10 homes</div><div class="plan-for">For owners with several homes.</div><ul><li>6–10 properties</li><li>Consolidated income reports</li><li>Priority support</li></ul></div></div>
-<p style="font-size:14px; color:#4A5A63; margin-top:11px; text-align:center;">Prefer no monthly fee? <b>Pay-as-you-go</b> — just 5% per booking.</p>
+<div class="plans"><div class="plan"><div class="plan-name">Pay-as-you-go</div><div class="plan-price">5%</div><div class="plan-unit">per booking · no monthly fee</div><div class="plan-for">For seasonal owners or trying it out.</div><ul><li>All features included</li><li>No monthly fee</li><li>Cancel anytime</li></ul></div><div class="plan"><div class="plan-name">Starter</div><div class="plan-price">$15</div><div class="plan-unit">per month · 1 property</div><div class="plan-for">For single-home owners.</div><ul><li>0% commission</li><li>1 property</li><li>Free friends &amp; family bookings</li></ul></div><div class="plan feature"><div class="plan-name">Host</div><div class="plan-price">$29</div><div class="plan-unit">per month · up to 5 homes</div><div class="plan-for">For active owners with a few homes.</div><ul><li>0% commission</li><li>Up to 5 properties</li><li>Everything in Starter</li></ul></div><div class="plan"><div class="plan-name">Pro</div><div class="plan-price">$49</div><div class="plan-unit">per month · 6–10 homes</div><div class="plan-for">For owners with several homes.</div><ul><li>6–10 properties</li><li>Consolidated income reports</li><li>Priority support</li></ul></div></div>
 <div class="everyplan">Every plan includes cross-border payments, bilingual booking, escrow, verified-owner trust, calendar sync, tax handling, and your private guest list. Optional add-ons: Guest Screening ($5/booking) and Protected Booking with up to $1M damage protection ($19.99/booking).</div>
 <div class="offer">
 <h3>★ Your first month is free</h3>

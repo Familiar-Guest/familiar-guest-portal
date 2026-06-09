@@ -108,6 +108,7 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 | **Financial integrity** | Webhook signature verification; idempotency keys; nightly Stripe↔DB reconciliation; amounts stored in minor units + currency code; captured FX rate per transaction | No double charges, lost payments, or mismatched payouts |
 | **Booking integrity** | Explicit state machine; DB constraints; availability locks preventing overlapping dates | Eliminates double-bookings and invalid states |
 | **Calendar data** | iCal parse validation; per-feed "last synced" timestamp; stale-feed (&gt;45 min) detection | Availability stays accurate across platforms |
+| **Property location** | GPS coordinates (lat/long) required for Mexican listings — addresses are unreliable; validate range | Accurate map display and Google Maps directions in check-in messages |
 | **Identity / PII** | Stripe-hosted KYC (no SSN/ID stored); RLS on every table; encryption at rest; least-privilege roles | Compliance and security; limits breach blast radius |
 | **CRM records** | Schema validation; email/phone normalization; duplicate detection/merge | A clean, trustworthy guest list (the moat) |
 | **Documents** | Signed-agreement integrity (immutable store + checksum); retention policy | Defensible legal record per booking |

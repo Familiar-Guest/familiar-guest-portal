@@ -74,6 +74,7 @@ Features are grouped by function. Each is marked <span class="pill">core</span> 
 - <span class="pill">core</span> **Owner identity verification (Gate 1)** — Stripe-powered KYC; required before listing or collecting payment.
 - <span class="pill">core</span> **Property ownership verification (Gate 2)** — for public listings; accepts Mexico-appropriate proof including **fideicomiso (bank trust)** and Mexican-corporation documents. Unlocks the Verified Owner badge and public mode.
 - <span class="pill-x">cross-border</span> **Bilingual setup (EN/ES)** — the owner works in English; the listing publishes in both English and Spanish.
+- <span class="pill-x">cross-border</span> **GPS coordinates (required for Mexico)** — capture lat/long at listing creation (Mexican street addresses are unreliable); powers map display and the Google Maps directions link in check-in messages.
 
 ### B. Calendar & Availability
 - <span class="pill">core</span> **Inbound iCal sync** — paste export URLs from Airbnb, VRBO, Booking.com, Google/Apple Calendar, and PMS tools; refreshed every 15–30 min.
@@ -114,7 +115,7 @@ Features are grouped by function. Each is marked <span class="pill">core</span> 
 - <span class="pill-x">cross-border</span> **Guest import + season-timed re-invite** — import past guests (contacts/spreadsheet) and auto-send "book again" invites timed to the Nov–Apr high season.
 - <span class="pill">core</span> **One-click rebook** — post-checkout "same dates next year?" with details pre-filled.
 - <span class="pill">core</span> **Referral system** — a trusted guest shares a link; the new guest is pre-vetted by association.
-- <span class="pill">core</span> **Automated messaging (bilingual)** — confirmation, pre-arrival, check-in, mid-stay, checkout, deposit-release, via Resend.
+- <span class="pill">core</span> **Reminder &amp; check-in messages (bilingual, multi-channel)** — confirmation, pre-arrival, check-in, mid-stay, checkout, deposit-release — delivered by **text (SMS), WhatsApp, and email**. Check-in messages include a **Google Maps GPS-directions link** to the home.
 
 ### H. Digital House Manual
 - <span class="pill">core</span> **Private link** — accessible without an app; updated once, delivered forever.

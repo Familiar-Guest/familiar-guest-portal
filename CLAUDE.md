@@ -36,6 +36,7 @@ Launch is focused on **US and Canadian homeowners who own and rent property in M
 | Database | Supabase (Postgres) | Auth, storage, edge functions included |
 | Payments | Stripe Connect **Custom** accounts | Maximum owner insulation from Stripe brand |
 | Email (transactional) | Resend | Booking confirmations, guest messaging, reminders |
+| Messaging (SMS/WhatsApp) | Twilio (or similar) | Reminder &amp; check-in messages via text + WhatsApp |
 | Calendar sync | iCal (.ics) | Standard — works with all platforms, no per-platform dev |
 | E-signatures | DocuSeal | Rental agreements |
 | Guest screening | Truvi (formerly Superhog) | Supports US + Mexico; Safely and Waivo are US-only |
@@ -95,6 +96,11 @@ Triggers: owner enables "open to public" on any listing.
 - **Drag-and-drop:** standard multi-file upload from computer
 - **AI-written description:** owner pastes their own existing text OR answers a few quick questions; we generate a polished title, description, and amenity list for them to review and edit
 - **NO concierge service** — decided against offering this
+
+### Property location — GPS coordinates (REQUIRED for Mexico)
+- **All Mexican listings must capture GPS coordinates (lat/long) at listing creation.** Street addresses in Mexico are often unreliable/unused, so coordinates are the source of truth for the property location.
+- Used to generate the **Google Maps directions link** sent in check-in messages, and for map display on the booking page.
+- US listings: capture coordinates too (improves directions), but a street address is acceptable as primary.
 
 ### Suggested Photos (show this guidance in onboarding UI)
 When owner is uploading, display these prompts:
@@ -178,11 +184,11 @@ Owner should switch from Pay-as-you-go to **Starter** when annual booking volume
 - **Rental agreement:** auto-generated per booking (DocuSeal), guest signs digitally before payment clears; signed copies stored permanently
 - **Booking guarantee (future):** platform-backed promise for public bookings — do NOT launch this until a funded reserve exists and clear payout rules are written
 
-### Messaging (automated)
-Auto-send these messages on schedule:
+### Messaging — Reminder &amp; Check-in Messages (automated, multi-channel)
+Delivered by **text (SMS), WhatsApp, and email** (owner/guest choice). Bilingual (EN/ES).
 1. Booking confirmation (immediate)
 2. Pre-arrival info (configurable days before check-in)
-3. Check-in instructions (day of check-in)
+3. Check-in instructions (day of check-in) — **includes a Google Maps link with GPS directions to the home**
 4. Mid-stay check-in (optional)
 5. Checkout reminder
 6. Deposit release confirmation
