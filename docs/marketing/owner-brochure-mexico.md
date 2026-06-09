@@ -72,6 +72,15 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
   .cta h3 { font-size:23px; margin:0 0 6px 0; }
   .cta p { font-size:16px; margin:0; color:#33454E; }
   .footer { position:absolute; bottom: 11mm; left:18mm; right:18mm; text-align:center; color:#8395A0; font-size:11px; }
+  .feat-grid { display:flex; flex-wrap:wrap; gap:14px; margin-top:18px; }
+  .feat { width: calc(33.333% - 10px); box-sizing:border-box; background:#fff; border:1px solid #D5DEE3; border-radius:12px; padding:15px 14px; }
+  .feat-ic { width:44px; height:44px; border-radius:10px; background:#EAF1F4; display:flex; align-items:center; justify-content:center; margin-bottom:10px; }
+  .feat-ic svg { width:24px; height:24px; }
+  .feat.hl { border-color:#E07B39; }
+  .feat.hl .feat-ic { background:#FBE7D6; }
+  .feat-t { font-family:'Fraunces',serif; font-size:14px; color:#135A73; font-weight:700; margin-bottom:4px; }
+  .feat-d { font-size:11.5px; color:#33454E; line-height:1.45; }
+  .feat-only { font-size:9.5px; color:#E07B39; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; margin-top:6px; }
 </style>
 <div class="page">
 <div class="brand">Familiar Guest</div>
@@ -102,6 +111,23 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 <div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Taxes &amp; accounting handled.</b> We calculate and collect lodging taxes, remit Mexican host taxes where required, and hand you tax-ready statements across all your homes — the hardest part of renting in Mexico, done for you.</div></div>
 <div class="solverow"><div class="solvecheck">✓</div><div class="solvetext"><b>Run it from anywhere.</b> Give your local caretaker their own access, and let guests check in on their own.</div></div>
 <div class="trust"><p>🛡️ <b>The trust difference:</b> because we hold the payment in escrow until check-in, your guests book a home in Mexico with total confidence — and you look as polished as any resort, under your own property's name.</p></div>
+<div class="footer">famguest.com</div>
+</div>
+<div class="page">
+<div class="kicker">What you get</div>
+<h2 class="section">Key features</h2>
+<p class="lead">Everything that makes a direct booking as easy and trustworthy as a major platform — under your own name.</p>
+<div class="feat-grid">
+<div class="feat"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#135A73" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7 0l2-2a5 5 0 0 0-7-7l-1 1"/><path d="M14 11a5 5 0 0 0-7 0l-2 2a5 5 0 0 0 7 7l1-1"/></svg></div><div class="feat-t">Direct Booking Link</div><div class="feat-d">A private, branded booking page in your property's name — no marketplace, no guest account required.</div></div>
+<div class="feat"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#135A73" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/><circle cx="12" cy="15.5" r="1.1"/></svg></div><div class="feat-t">Escrow-Protected Payments</div><div class="feat-d">Guest funds are held securely until check-in, so every booking is safe for both sides.</div></div>
+<div class="feat"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#135A73" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18"/><path d="M12 3c2.6 2.6 2.6 15.4 0 18"/><path d="M12 3c-2.6 2.6-2.6 15.4 0 18"/></svg></div><div class="feat-t">Multi-Currency &amp; Payouts</div><div class="feat-d">Charge in USD, CAD, or pesos and get paid to a U.S., Canadian, or Mexican bank.</div></div>
+<div class="feat"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#135A73" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="16" rx="2"/><path d="M4 9h16"/><path d="M8 3v4"/><path d="M16 3v4"/></svg></div><div class="feat-t">Instant Calendar Sync</div><div class="feat-d">Two-way iCal sync with Airbnb, VRBO, and more keeps availability current and avoids double-bookings.</div></div>
+<div class="feat"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#135A73" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="9" r="3"/><path d="M3.5 19a5.5 5.5 0 0 1 11 0"/><path d="M16 7a3 3 0 0 1 0 6"/><path d="M17.5 19a5.5 5.5 0 0 0-2.2-4.4"/></svg></div><div class="feat-t">Your Private Guest List</div><div class="feat-d">A guest CRM you own — stay history, notes, and one-click re-invites each season.</div></div>
+<div class="feat"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#135A73" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H10l-4 3v-3H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z"/><path d="M7 8h8"/><path d="M7 11h5"/></svg></div><div class="feat-t">Bilingual Messaging</div><div class="feat-d">Booking and guest communication in English and Spanish, translated automatically.</div></div>
+<div class="feat hl"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#E07B39" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-2-1.4-2 1.4-2-1.4-2 1.4-2-1.4L6 21z"/><path d="M9 8h6"/><path d="M9 12h6"/></svg></div><div class="feat-t">Tax Payments &amp; Accounting</div><div class="feat-d">Lodging taxes calculated, collected, and remitted — with tax-ready statements across your homes.</div><div class="feat-only">No competitor offers this</div></div>
+<div class="feat"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#135A73" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.5 14.5l1.5 1.5 3-3.5"/></svg></div><div class="feat-t">Rental Agreement</div><div class="feat-d">A rental agreement auto-generated and e-signed before every booking is confirmed.</div></div>
+<div class="feat"><div class="feat-ic"><svg viewBox="0 0 24 24" fill="none" stroke="#135A73" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.6-7 9-4-1.4-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></svg></div><div class="feat-t">Screening &amp; Protection</div><div class="feat-d">Optional guest ID screening and up to $1M in damage protection on any booking.</div></div>
+</div>
 <div class="footer">famguest.com</div>
 </div>
 <div class="page">
