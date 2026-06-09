@@ -77,7 +77,7 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 <div class="problem">The platform <b>owns your guest list</b> — you can't easily invite past guests back.</div>
 <div class="problem"><b>Cross-border payments</b> are a headache — currencies, fees, foreign accounts.</div>
 <div class="problem">Guests hesitate: <b>"Is it safe to send money</b> for a home in Mexico?"</div>
-<div class="footer">familiarguest.com</div>
+<div class="footer">famguest.com</div>
 </div>
 <div class="page">
 <div class="kicker">Here's the fix</div>
@@ -86,7 +86,7 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 <div class="kicker" style="margin-top:22px;">See it in action</div>
 <h2 class="section" style="font-size:26px;">A booking, start to finish</h2>
 <div class="booking"><div class="card"><div class="card-h">1 · Guest picks open dates</div><div class="cal-month">March 2026 — Casa del Mar</div><div class="cal-grid"><div class="cal-dow">S</div><div class="cal-dow">M</div><div class="cal-dow">T</div><div class="cal-dow">W</div><div class="cal-dow">T</div><div class="cal-dow">F</div><div class="cal-dow">S</div><div class="cal-day">1</div><div class="cal-day">2</div><div class="cal-day">3</div><div class="cal-day cal-bk">4</div><div class="cal-day cal-bk">5</div><div class="cal-day cal-bk">6</div><div class="cal-day cal-bk">7</div><div class="cal-day">8</div><div class="cal-day">9</div><div class="cal-day">10</div><div class="cal-day">11</div><div class="cal-day">12</div><div class="cal-day">13</div><div class="cal-day cal-sel">14</div><div class="cal-day cal-sel">15</div><div class="cal-day cal-sel">16</div><div class="cal-day cal-sel">17</div><div class="cal-day cal-sel">18</div><div class="cal-day cal-sel">19</div><div class="cal-day cal-sel">20</div><div class="cal-day cal-sel">21</div><div class="cal-day">22</div><div class="cal-day">23</div><div class="cal-day">24</div><div class="cal-day">25</div><div class="cal-day">26</div><div class="cal-day">27</div><div class="cal-day cal-bk">28</div><div class="cal-day">29</div><div class="cal-day">30</div><div class="cal-day">31</div></div><div class="legend"><span><span class="ldot" style="background:#FBF6EE;border:1px solid #E6DBCB;"></span>Open</span><span><span class="ldot" style="background:#14543F;"></span>Their stay</span><span><span class="ldot" style="background:#efe7d8;"></span>Booked</span></div></div><div class="card"><div class="card-h">2 · Guest pays securely</div><div class="payrow"><span>$280 × 7 nights</span><span>$1,960</span></div><div class="payrow"><span>Cleaning fee</span><span>$120</span></div><div class="payrow muted"><span>Refundable deposit (held)</span><span>$300</span></div><div class="paytotal"><span>Total due today</span><span>$2,080</span></div><div class="paybtn">Confirm &amp; Pay</div><div class="paynote">Held in escrow until check-in. Pay in USD, CAD, or MXN — or split 50% now, 50% before arrival.</div></div></div>
-<div class="footer">familiarguest.com</div>
+<div class="footer">famguest.com</div>
 </div>
 <div class="page">
 <div class="kicker">Simple pricing</div>
@@ -95,6 +95,6 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 <div class="plans"><div class="plan"><div class="plan-name">Pay-as-you-go</div><div class="plan-price">5%</div><div class="plan-unit">per booking · no monthly fee</div><div class="plan-for">For seasonal owners or trying it out.</div><ul><li>All features included</li><li>Unlimited properties</li><li>Cancel anytime</li></ul></div><div class="plan feature"><div class="plan-name">Solo</div><div class="plan-price">$29</div><div class="plan-unit">per month · 1 property</div><div class="plan-for">For active owners — no commission.</div><ul><li>0% commission</li><li>Free friends &amp; family bookings</li><li>Everything in Pay-as-you-go</li></ul></div><div class="plan"><div class="plan-name">Pro</div><div class="plan-price">$59</div><div class="plan-unit">per month · up to 5 homes</div><div class="plan-for">For owners with multiple homes.</div><ul><li>Up to 5 properties</li><li>Consolidated income reports</li><li>5 caretaker logins</li><li>Priority support</li></ul></div></div>
 <div class="everyplan">Every plan includes cross-border payments, bilingual booking, escrow, verified-owner trust, calendar sync, and your private guest list.</div>
 <div class="addons"><p><b>Add when you need it:</b></p><p>🔎 <b>Guest Screening</b> — $5/booking — ID + fraud check for new guests</p><p>🛡️ <b>Protected Booking</b> — $19.99/booking — screening + up to $1M damage protection</p></div>
-<div class="cta"><h3>Keep your guests. Keep your earnings.</h3><p>Get set up in an afternoon at <b>familiarguest.com</b></p></div>
-<div class="footer">familiarguest.com &nbsp;·&nbsp; Direct booking, made effortless for everyday rental owners</div>
+<div class="cta"><h3>Keep your guests. Keep your earnings.</h3><p>Get set up in an afternoon at <b>famguest.com</b></p></div>
+<div class="footer">famguest.com &nbsp;·&nbsp; Direct booking, made effortless for everyday rental owners</div>
 </div>

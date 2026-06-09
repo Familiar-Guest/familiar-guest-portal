@@ -187,5 +187,5 @@ Plans are priced in **USD** (owners are US/Canadian and think in dollars). Card 
 ---
 
 <div style="text-align: center; margin-top: 26px; color: #8a7e72; font-size: 11px;">
-familiarguest.com &nbsp;&nbsp;|&nbsp;&nbsp; June 2026
+famguest.com &nbsp;&nbsp;|&nbsp;&nbsp; June 2026
 </div>

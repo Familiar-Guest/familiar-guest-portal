@@ -9,7 +9,7 @@
 
 **Familiar Guest** is a private rental booking and guest-management platform for individual vacation-property owners — not professional property managers. It lets owners take direct bookings from their own repeat and trusted guests, with payments, rental agreements, and trust safeguards handled automatically.
 
-**Domain:** familiarguest.com
+**Domain:** famguest.com
 **GitHub:** https://github.com/Familiar-Guest/familiar-guest-portal
 **Target market:** US and Mexico vacation rental owners (individual/casual, not operators)
 **Guest origins served:** US, Canada, Latin America, Western Europe, and Asia (Japan, China, India, Taiwan, South Korea)

@@ -197,5 +197,5 @@ All owners must pass identity verification before listing a property or collecti
 ---
 
 <div style="text-align: center; margin-top: 30px; color: #8a7e72; font-size: 11px;">
-familiarguest.com &nbsp;&nbsp;|&nbsp;&nbsp; June 2026
+famguest.com &nbsp;&nbsp;|&nbsp;&nbsp; June 2026
 </div>

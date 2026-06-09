@@ -160,5 +160,5 @@ Your invitation is coming soon with a direct link to set up your property. The w
 ---
 
 <div style="text-align: center; margin-top: 30px; color: #8a7e72; font-size: 11px;">
-familiarguest.com
+famguest.com
 </div>

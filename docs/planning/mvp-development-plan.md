@@ -114,7 +114,7 @@ With test mode + free tiers, the platform itself is **effectively free**. Your o
 | DocuSeal (self-hosted or free) | **$0** | Self-host on Supabase/Railway, or open-source instance |
 | Monitoring (Sentry free) | **$0** | Error tracking |
 | GitHub | **$0** | Already set up |
-| Domain (familiarguest.com) | **~$0–$12/yr** | Likely already owned |
+| Domain (famguest.com) | **~$0–$12/yr** | Likely already owned |
 | **Claude Code (the builder)** | **$20–$100** | Pro at $20/mo for light use; Max 5× at $100/mo for a full month of heavy building (recommended) |
 | **Total out of pocket** | **≈ $20–$112** | Essentially just the AI subscription |
 
@@ -221,5 +221,5 @@ The test answers one question: *is this easy and trustworthy enough that owners 
 ---
 
 <div style="text-align: center; margin-top: 28px; color: #8a7e72; font-size: 11px;">
-familiarguest.com &nbsp;&nbsp;|&nbsp;&nbsp; June 2026
+famguest.com &nbsp;&nbsp;|&nbsp;&nbsp; June 2026
 </div>
