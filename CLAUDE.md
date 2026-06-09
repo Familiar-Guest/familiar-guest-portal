@@ -255,7 +255,8 @@ The following are safety-critical and should be reviewed by an experienced engin
 | Marketing site mockup | Self-contained HTML, full design | docs/mockups/marketing-site.html |
 | Business Opportunity Brief | Markdown + PDF + Word (solo-founder financials) | docs/business/ |
 | Industry & Competitive Assessment | Markdown + PDF + Word | docs/business/ |
-| 3-Year Financial Model | Live Excel spreadsheet with flip-able assumptions | docs/business/ |
+| 3-Year Financial Model (v2) | **Authoritative** — re-modeled for Starter/Host/Pro; feasibility + OpEx-risk analysis | docs/business/financial-model-v2.md + Familiar_Guest_Financial_Model_v2.xlsx |
+| 3-Year Financial Model (v1, legacy) | Original Excel (pre-pricing-change) | docs/business/Familiar_Guest_Financial_Model.xlsx |
 | MVP Development Plan | 30-day build plan, Stripe test-mode strategy, costs | docs/planning/mvp-development-plan.md |
 | Differentiating Features Brief | Stack-ranked top-5 general features | docs/planning/differentiating-features-brief.md |
 | Baja Beachhead Features Brief | Market analysis + cross-border feature ranking | docs/planning/baja-beachhead-features-brief.md |
@@ -295,32 +296,33 @@ The following are safety-critical and should be reviewed by an experienced engin
 ### Development model
 Solo founder with professional developer and product management experience, building with AI-assisted tools (Claude Code, Cursor). $5,000 budgeted for contract review of safety-critical components. No full-time hires planned until unit economics justify it.
 
-### P&L Summary
+### P&L Summary (v2 — re-modeled June 2026 for Starter/Host/Pro pricing)
+Authoritative model: `docs/business/financial-model-v2.md` (+ `Familiar_Guest_Financial_Model_v2.xlsx`).
 
 | Metric | Year 1 | Year 2 | Year 3 |
 |---|---|---|---|
-| Active owners (year-end) | 600 | 3,500 | 12,000 |
-| Revenue | $87,500 | $700,000 | $2,625,000 |
-| Gross margin | 78% | 78% | 78% |
-| Operating expenses | $11,355 | $15,655 | $47,755 |
-| Operating profit/(loss) | $56,895 | $530,345 | $1,999,745 |
-| Operating margin | 65% | 76% | 76% |
+| Avg active owners | 250 | 2,000 | 7,500 |
+| Blended ARPU | $200 | $200 | $200 |
+| Revenue (subscription/commission) | $50,000 | $400,000 | $1,500,000 |
+| Gross profit (76%) | $38,000 | $304,000 | $1,140,000 |
+| Operating expenses (Base) | $35,000 | $200,000 | $650,000 |
+| Operating profit (Base) | $3,000 | $104,000 | $490,000 |
+| Operating margin (Base) | 6% | 26% | 33% |
 
-### Operating Expense Breakdown
+**Blended ARPU dropped ~$350 → ~$200** (the $12 Starter dominates a single-home beachhead). Mix assumed: PAYG 25% / Starter 50% / Host 20% / Pro 5%.
 
-| Category | Year 1 | Year 2 | Year 3 |
-|---|---|---|---|
-| Infrastructure (Vercel, Supabase, domain) | $555 | $855 | $2,415 |
-| SaaS & services (Resend, DocuSeal, monitoring) | $360 | $1,260 | $2,700 |
-| AI & dev tools (Claude, Cursor) | $1,440 | $1,440 | $1,440 |
-| Outside help & professional (contract dev, legal, insurance, accounting) | $8,500 | $6,500 | $11,000 |
-| Marketing & acquisition | $500 | $5,000 | $14,000 |
-| Customer support (tooling + part-time contractor in Y3) | $0 | $600 | $16,200 |
-| **Total** | **$11,355** | **$15,655** | **$47,755** |
+### THE central risk — guard against OpEx outrunning revenue
+Subscription revenue AND support cost both scale with owner count. A cross-border, money-handling product is support-heavy. The prior ultra-lean OpEx ($11k–$48k) is unrealistic at 12,000 owners. Stress case (support staffed ~linearly) → Year 3 OpEx ~$1.15M → **operating LOSS despite $1.5M revenue.**
 
-Profitable from Year 1 with no external funding required. Total 3-year OpEx ~$75K.
+**The fix (do these): add revenue that scales with GMV, not owner count.**
+1. **Modest transparent FX spread (~0.5–1%)** — biggest lever; GMV-linked; still beats banks. With a 0.75% spread the business stays profitable even in the Stress OpEx case. (Keep card processing at cost; apply spread to FX only.)
+2. **AI-first bilingual support** (extend the AI Concierge) — deflect >70% of tickets; keeps the owner-scaling cost sublinear.
+3. **Tilt revenue to GMV-linked streams** — add-on attach, test 6% PAYG take, small per-booking fee.
+4. **Nearshore variable support**, no premature FT hires.
+5. **Protect ARPU** — test Starter $15–19 or hold $12 strictly as an upgrade funnel; annual billing.
+6. **Tripwire metric:** track support-cost-per-owner and OpEx-growth-rate vs revenue-growth-rate monthly; support cost per owner must trend flat/down.
 
-Blended ARPU ~$350/active owner/year planning assumption (mix of 5% commission and the $12 Starter / $29 Host / $49 Pro plans, skewed toward casual owners). NOTE: adding the $12 Starter and lowering Pro to $49 may pull blended ARPU down — revisit the financial model when validating with real owners.
+Pricing note: **$12 Starter is the thinnest-margin plan** — viable only with AI support deflection, else raise to $15–19. PAYG 5% is generous (room to test 6%).
 
 ---
 
