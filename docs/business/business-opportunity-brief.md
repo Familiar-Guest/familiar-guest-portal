@@ -108,8 +108,8 @@ All owners must pass identity verification before listing a property or collecti
 | Plan | Price | Best for |
 |---|---|---|
 | **Pay-as-you-go** | 5% per booking + card fees | Seasonal or low-volume owners testing direct booking |
-| **Solo** | $29/month — no commission | Active owners with 6+ bookings per year |
-| **Pro** | $59/month — up to 5 properties, no commission | Multi-property owners |
+| **Solo** | $29/month — up to 5 properties, no commission | Active owners with 6+ bookings per year |
+| **Pro** | $59/month — 6–10 properties, no commission | Owners with several homes |
 
 ### Optional add-ons
 

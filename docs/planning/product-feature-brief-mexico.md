@@ -137,8 +137,8 @@ Plans are priced in **USD** (owners are US/Canadian and think in dollars). Card 
 <table>
 <tr><th>&nbsp;</th><th>Pay-as-you-go</th><th>Solo</th><th>Pro</th></tr>
 <tr><td><strong>Price</strong></td><td>5% per paid booking<br>+ fees at cost</td><td><strong>$29</strong> / month</td><td><strong>$59</strong> / month</td></tr>
-<tr><td>Best for</td><td>Seasonal / testing</td><td>Active single-home owners</td><td>Multi-property owners</td></tr>
-<tr><td>Properties</td><td>Unlimited (pay per booking)</td><td>1</td><td>Up to 5</td></tr>
+<tr><td>Best for</td><td>Seasonal / testing</td><td>Active owners, 1–5 homes</td><td>Owners with 6–10 homes</td></tr>
+<tr><td>Properties</td><td>Pay per booking</td><td>Up to 5</td><td>6–10</td></tr>
 <tr><td>Commission</td><td>5% per paid booking</td><td class="check">None</td><td class="check">None</td></tr>
 <tr><td>Free bookings</td><td>$5 each</td><td class="check">Included</td><td class="check">Included</td></tr>
 <tr><td>Multi-currency + cross-border payouts</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
@@ -150,7 +150,6 @@ Plans are priced in **USD** (owners are US/Canadian and think in dollars). Card 
 <tr><td>Guest CRM + season re-invite</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
 <tr><td>Automated bilingual messaging</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
 <tr><td>Digital house manual (Baja templates)</td><td class="check">✓</td><td class="check">✓</td><td class="check">✓</td></tr>
-<tr><td>Caretaker seats</td><td>1</td><td>1</td><td>5</td></tr>
 <tr><td>Consolidated multi-property reports</td><td class="dash">—</td><td class="dash">—</td><td class="check">✓</td></tr>
 <tr><td>Priority support</td><td class="dash">—</td><td class="dash">—</td><td class="check">✓</td></tr>
 </table>
@@ -164,7 +163,8 @@ Plans are priced in **USD** (owners are US/Canadian and think in dollars). Card 
 
 ### Pricing logic
 
-- **Every core and cross-border feature is available on every plan.** Trust and money-movement are the product — paywalling them would undercut the value proposition. Plans differ on **commission vs. flat fee, property count, caretaker seats, and reporting/support.**
+- **Every core and cross-border feature is available on every plan.** Trust and money-movement are the product — paywalling them would undercut the value proposition. Plans differ on **commission vs. flat fee, property count, and reporting/support.** (All plans include 5 caretaker seats — a baseline feature, not a marketed differentiator.)
+- **Property cap is 10 for now** — we are focused on individual renters, not portfolio managers, so no tiers above 10 properties.
 - **The crossover:** an owner books more than ~$7,000/year through Familiar Guest should move from Pay-as-you-go (5%) to Solo ($348/yr). Given Los Cabos/Baja nightly rates, most active owners cross this quickly — which steers the base toward predictable subscription revenue.
 - **Annual option:** offer ~2 months free on annual billing (Solo $290/yr, Pro $590/yr) to improve retention and cash flow.
 - **Fees at cost:** card + FX passed through with no markup preserves the trust positioning. *(A modest FX spread is a possible future revenue line, but not at launch.)*

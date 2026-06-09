@@ -114,8 +114,8 @@ This is the part that makes direct booking actually work for both sides:
 | Plan | Price | Best for |
 |---|---|---|
 | **Pay-as-you-go** | 5% per booking + card processing fees | Seasonal owners or light usage |
-| **Solo** | $29/month, no commission (1 property) | Active owners with 6+ bookings/year |
-| **Pro** | $59/month, no commission (up to 5 properties) | Multi-property owners |
+| **Solo** | $29/month, no commission (up to 5 properties) | Active owners with 6+ bookings/year |
+| **Pro** | $59/month, no commission (6–10 properties) | Owners with several homes |
 
 **Optional add-ons (any plan):**
 

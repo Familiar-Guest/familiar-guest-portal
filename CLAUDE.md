@@ -110,8 +110,8 @@ When owner is uploading, display these prompts:
 | Plan | Price | What's included |
 |---|---|---|
 | Pay-as-you-go | 5% commission + card fees; $5 per free booking | No monthly, cancel anytime |
-| Solo | $29/mo (1 property) | Unlimited bookings, no commission, free bookings included |
-| Pro | $59/mo (up to 5 properties) | Everything in Solo + consolidated income reports |
+| Solo | $29/mo (up to 5 properties) | Unlimited bookings, no commission, free bookings included |
+| Pro | $59/mo (6–10 properties) | Everything in Solo + consolidated income reports |
 
 **With damage protection bundled (option in discussion):**
 | Plan | Price |
@@ -127,12 +127,13 @@ When owner is uploading, display these prompts:
 ### Key rules
 - Card processing fees are ALWAYS passed through to the owner at cost (net zero to us)
 - **Currency conversion (FX) is also passed through at cost** for cross-border payouts (net zero). A modest FX spread is a possible FUTURE revenue line — not at launch.
-- **All core and cross-border features are available on EVERY plan.** Trust and money-movement are the product; do not paywall them. Plans differ only on commission-vs-flat, property count, caretaker seats, and reporting/support.
+- **All core and cross-border features are available on EVERY plan.** Trust and money-movement are the product; do not paywall them. Plans differ only on commission-vs-flat, property count, and reporting/support.
 - All owners must pass Stripe identity verification — no exceptions, no unverified accounts
 - Card on file required from owner ONLY if they enable free bookings
 - Stripe Connect Custom: owners identify as "getting paid by Familiar Guest," not as Stripe accounts
 - Plan prices are in USD (owners are US/Canadian). Offer ~2 months free on annual billing (Solo $290/yr, Pro $590/yr).
-- Plan tiering detail: Pay-as-you-go = unlimited properties (pay per booking), 1 caretaker seat. Solo = 1 property, 1 caretaker seat. Pro = up to 5 properties, 5 caretaker seats, consolidated multi-property reports, priority support.
+- Plan tiering detail: Pay-as-you-go = pay per booking. Solo = up to 5 properties. Pro = 6–10 properties, consolidated multi-property reports, priority support. **All plans include 5 caretaker seats** — this is a baseline feature, NOT a marketed/highlighted differentiator; keep it out of pricing comparisons and sales copy.
+- **Property cap: 10 per owner for now.** We are deliberately NOT offering tiers above 10 properties — the focus is individual renters, not professional managers/portfolios.
 
 ### Crossover logic
 Owner should switch from Pay-as-you-go to Solo when annual booking volume through FG exceeds ~$7,000 (the point where $348/yr flat beats 5% commission). Given Los Cabos/Baja nightly rates, most active owners cross this quickly — steering the base toward predictable subscription revenue.
