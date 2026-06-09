@@ -45,7 +45,7 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 
 <div class="subtitle">Re-modeled for the Starter / Host / Pro pricing — June 2026</div>
 
-<p class="lead">The new lineup (Starter $12, Host $29, Pro $49, plus 5% Pay-as-you-go) lowers blended revenue per owner. This model re-projects the business on that basis, stress-tests the central risk you flagged — operating expenses outrunning revenue — and recommends strategy changes to keep the business durably profitable.</p>
+<p class="lead">The new lineup (Starter $15, Host $29, Pro $49, plus 5% Pay-as-you-go) lowers blended revenue per owner. This model re-projects the business on that basis, stress-tests the central risk you flagged — operating expenses outrunning revenue — and recommends strategy changes to keep the business durably profitable.</p>
 
 <div class="highlight-box">
 <p><strong>Verdict:</strong> the business is viable and profitable in the base case, but the margin is now <strong>made or broken by one variable: the cost of supporting cross-border owners as the base grows.</strong> Subscription revenue scales with owner count; so does support. To make revenue outrun OpEx you must add revenue that scales with <strong>booking volume (GMV)</strong> — chiefly a modest FX spread and add-on attach — and hold support cost per owner flat with AI-first, nearshore support.</p>
@@ -61,7 +61,7 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 | Year-end owners | 600 / 3,500 / 12,000 | Unchanged |
 | Plan mix (PAYG / Starter / Host / Pro) | 25% / 50% / 20% / 5% | Beachhead skews to single-home owners → Starter-heavy |
 | Annual value per owner — PAYG | $90 | Low-volume by self-selection (<$2,880/yr bookings) |
-| Annual value — Starter / Host / Pro | $144 / $348 / $588 | 12× monthly |
+| Annual value — Starter / Host / Pro | $180 / $348 / $588 | 12× monthly |
 | Add-on margin per owner / yr | ~$6 | Screening/protection attach, modest |
 | Gross margin | 76% | After Stripe platform fees, hosting, DocuSeal, AI, email |
 | Avg booking volume (GMV) per owner | ~$10,000/yr | Cross-border Baja, higher ADRs (validate in test) |
@@ -71,14 +71,14 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 | Plan | Mix | Annual value | Contribution |
 |---|---:|---:|---:|
 | Pay-as-you-go | 25% | $90 | $22.50 |
-| Starter | 50% | $144 | $72.00 |
+| Starter | 50% | $180 | $90.00 |
 | Host | 20% | $348 | $69.60 |
 | Pro | 5% | $588 | $29.40 |
 | Add-ons | — | — | ~$6.00 |
-| **Blended ARPU** | | | **≈ $200** |
+| **Blended ARPU** | | | **≈ $218** |
 
 <div class="warn">
-<p><strong>ARPU dropped from ~$350 to ~$200 — a 43% reduction.</strong> The $12 Starter, expected to be the most-adopted plan in a single-home beachhead, is the main driver. Revenue projections fall proportionally unless we add GMV-linked revenue (below).</p>
+<p><strong>ARPU dropped from ~$350 to ~$218 — a 38% reduction.</strong> The $15 Starter, expected to be the most-adopted plan in a single-home beachhead, is the main driver. Revenue projections fall proportionally unless we add GMV-linked revenue (below).</p>
 </div>
 
 ---
@@ -88,14 +88,14 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 | Line | Year 1 | Year 2 | Year 3 |
 |---|---:|---:|---:|
 | Avg active owners | 250 | 2,000 | 7,500 |
-| Blended ARPU | $200 | $200 | $200 |
-| **Revenue** | **$50,000** | **$400,000** | **$1,500,000** |
-| Gross profit (76%) | $38,000 | $304,000 | $1,140,000 |
+| Blended ARPU | $218 | $218 | $218 |
+| **Revenue** | **$54,500** | **$436,000** | **$1,635,000** |
+| Gross profit (76%) | $41,420 | $331,360 | $1,242,600 |
 | Operating expenses (Base) | $35,000 | $200,000 | $650,000 |
-| **Operating profit** | **$3,000** | **$104,000** | **$490,000** |
-| Operating margin | 6% | 26% | 33% |
+| **Operating profit** | **$6,420** | **$131,360** | **$592,600** |
+| Operating margin | 12% | 30% | 36% |
 
-Profitable, but Year 1 is now wafer-thin, and the OpEx line is the swing factor.
+Profitable in the base case, with healthier margins than the $12 Starter produced — but the OpEx line is still the swing factor.
 
 <div class="page-break"></div>
 
@@ -107,16 +107,16 @@ The earlier solo-founder model assumed ~$11k–$48k OpEx across three years. **T
 
 | | Year 1 | Year 2 | Year 3 |
 |---|---:|---:|---:|
-| Gross profit (constant) | $38,000 | $304,000 | $1,140,000 |
+| Gross profit (constant) | $41,420 | $331,360 | $1,242,600 |
 | **Lean** OpEx (AI-deflected support, mostly solo) | $25,000 | $90,000 | $280,000 |
-| → Operating profit | <span class="pos">$13,000</span> | <span class="pos">$214,000</span> | <span class="pos">$860,000</span> |
+| → Operating profit | <span class="pos">$16,420</span> | <span class="pos">$241,360</span> | <span class="pos">$962,600</span> |
 | **Base** OpEx (small support team + marketing) | $35,000 | $200,000 | $650,000 |
-| → Operating profit | <span class="pos">$3,000</span> | <span class="pos">$104,000</span> | <span class="pos">$490,000</span> |
+| → Operating profit | <span class="pos">$6,420</span> | <span class="pos">$131,360</span> | <span class="pos">$592,600</span> |
 | **Stress** OpEx (support scales ~linearly w/ owners) | $50,000 | $350,000 | $1,150,000 |
-| → Operating profit | <span class="loss">($12,000)</span> | <span class="loss">($46,000)</span> | <span class="loss">($10,000)</span> |
+| → Operating profit | <span class="loss">($8,580)</span> | <span class="loss">($18,640)</span> | <span class="pos">$92,600</span> |
 
 <div class="warn">
-<p><strong>The danger is real:</strong> in the Stress case the company generates $1.5M of revenue in Year 3 and still loses money. A cross-border, money-handling product is support-heavy; if each owner generates even a few bilingual support tickets a year and support is staffed linearly, OpEx eats the entire gross profit. This is exactly the failure mode to guard against.</p>
+<p><strong>The danger is real:</strong> in the Stress case the company is loss-making in Years 1–2 and only marginally profitable (~6%) in Year 3 despite $1.6M of revenue. A cross-border, money-handling product is support-heavy; if each owner generates even a few bilingual support tickets a year and support is staffed linearly, OpEx all but eats the gross profit. The $15 Starter improves this versus $12, but the failure mode is still live — this is what to guard against.</p>
 </div>
 
 ---
@@ -131,12 +131,12 @@ At ~$10,000 GMV per owner and a modest, transparent 0.75% currency-conversion sp
 
 | Line | Year 1 | Year 2 | Year 3 |
 |---|---:|---:|---:|
-| Subscription/commission revenue | $50,000 | $400,000 | $1,500,000 |
+| Subscription/commission revenue | $54,500 | $436,000 | $1,635,000 |
 | FX-spread revenue (0.75% of GMV) | $18,750 | $150,000 | $562,500 |
-| **Total revenue** | **$68,750** | **$550,000** | **$2,062,500** |
-| Gross profit (76%) | $52,250 | $418,000 | $1,567,500 |
-| Operating profit @ Base OpEx | <span class="pos">$17,250</span> | <span class="pos">$218,000</span> | <span class="pos">$917,500</span> |
-| Operating profit @ **Stress** OpEx | <span class="pos">$2,250</span> | <span class="pos">$68,000</span> | <span class="pos">$417,500</span> |
+| **Total revenue** | **$73,250** | **$586,000** | **$2,197,500** |
+| Gross profit (76%) | $55,670 | $445,360 | $1,670,100 |
+| Operating profit @ Base OpEx | <span class="pos">$20,670</span> | <span class="pos">$245,360</span> | <span class="pos">$1,020,100</span> |
+| Operating profit @ **Stress** OpEx | <span class="pos">$5,670</span> | <span class="pos">$95,360</span> | <span class="pos">$520,100</span> |
 
 <div class="good">
 <p><strong>This is the hedge.</strong> With a GMV-linked revenue line, even the Stress OpEx case stays profitable in every year. FX-spread revenue grows with booking dollars (and with each new high-value Baja booking) — not with the number of support tickets. It structurally protects you against OpEx outrunning revenue.</p>
@@ -148,7 +148,7 @@ At ~$10,000 GMV per owner and a modest, transparent 0.75% currency-conversion sp
 
 | Plan | Verdict | Note |
 |---|---|---|
-| **Starter $12** | ⚠️ Thinnest margin | After ~$8/yr payment fees, even a few support tickets can erase the margin. Viable only if AI deflects most support, or if priced at $15–$19. Best used as a funnel that upgrades to Host. |
+| **Starter $15** | ⚠️ Thinnest margin (improved) | Raised from $12 to $15 to protect the margin. Still the tightest plan — keep AI support deflection on it, and use it as a funnel that upgrades to Host. |
 | **Host $29 (up to 5)** | ✅ Strong value | Arguably underpriced for 5 properties — fine for adoption; capture upside via add-ons + FX rather than a higher fee. |
 | **Pro $49 (6–10)** | ✅ Reasonable | Small segment; not a volume driver. |
 | **PAYG 5%** | ✅ Very generous | vs. Airbnb's ~15.5%. Room to test 6% and still be a dramatic bargain — pure GMV-linked upside. |
@@ -162,12 +162,12 @@ At ~$10,000 GMV per owner and a modest, transparent 0.75% currency-conversion sp
 2. **Make AI the first line of support.** Extend the AI Concierge into bilingual support that deflects >70% of tickets. Support is the cost that scales with owners — AI deflection is what keeps it sublinear. *(Directly attacks the Stress scenario.)*
 3. **Tilt revenue toward GMV-linked streams.** Push add-on attach (screening/protection), test a +1pt PAYG take (6%), and consider a small per-booking fee. Revenue then tracks booking volume while OpEx tracks owner count — keep the former growing faster.
 4. **Nearshore, variable support.** Use bilingual Mexico-based contract support tied to ticket volume; avoid premature full-time hires. Keep support a variable cost, not a fixed one.
-5. **Protect ARPU.** Test Starter at $15–$19, or hold $12 strictly as an upgrade funnel; default new owners to PAYG and let the crossover pull them up; push annual billing (cash + retention).
+5. **Protect ARPU.** Starter is now set at $15 (raised from $12); default new owners to PAYG and let the crossover pull them up; push annual billing (cash + retention) and upgrades to Host.
 6. **Keep CAC near zero.** Lean on owner + guest referral loops inside the tight Baja expat community; let marketing stay sublinear to owner growth.
 7. **Instrument the tripwire.** Track **support cost per owner** and **OpEx growth rate vs. revenue growth rate** monthly. Rule of thumb: support cost per owner must trend flat or down. If it rises two months running, fix deflection before adding owners.
 
 <div class="callout">
-<p><strong>Net:</strong> the lineup is viable, but a Starter-heavy mix at $12 makes subscription revenue alone too thin to comfortably outrun support cost at scale. Adding a small FX spread and add-on attach — both GMV-linked — plus AI-first support is what converts this from "profitable if we're disciplined" to "structurally hard to lose money."</p>
+<p><strong>Net:</strong> the lineup is viable, and the $15 Starter helps, but a Starter-heavy mix still makes subscription revenue alone too thin to comfortably outrun support cost at scale. Adding a small FX spread and add-on attach — both GMV-linked — plus AI-first support is what converts this from "profitable if we're disciplined" to "structurally hard to lose money."</p>
 </div>
 
 ---

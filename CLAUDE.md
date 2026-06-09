@@ -110,7 +110,7 @@ When owner is uploading, display these prompts:
 | Plan | Price | What's included |
 |---|---|---|
 | Pay-as-you-go | 5% commission + payment fees; $5 per free booking | No monthly, cancel anytime |
-| Starter | $12/mo (1 property) | No commission, free bookings included |
+| Starter | $15/mo (1 property) | No commission, free bookings included |
 | Host | $29/mo (up to 5 properties) | Unlimited bookings, no commission, free bookings included |
 | Pro | $49/mo (6–10 properties) | Everything in Host + consolidated income reports + priority support |
 
@@ -134,13 +134,14 @@ When owner is uploading, display these prompts:
 - All owners must pass Stripe identity verification — no exceptions, no unverified accounts
 - Card on file required from owner ONLY if they enable free bookings
 - Stripe Connect Custom: owners identify as "getting paid by Familiar Guest," not as Stripe accounts
-- Plan prices are in USD (owners are US/Canadian). Offer ~2 months free on annual billing (Starter $120/yr, Host $290/yr, Pro $490/yr).
+- Plan prices are in USD (owners are US/Canadian). Offer ~2 months free on annual billing (Starter $150/yr, Host $290/yr, Pro $490/yr).
+- **Launch offer: first month free** on any monthly plan (for testing). Owners remain liable for payment processing/card fees and any add-ons they use (guest screening, damage protection). The free month waives the subscription fee only.
 - Plan tiering detail: Pay-as-you-go = pay per booking. Starter = 1 property. Host = up to 5 properties. Pro = 6–10 properties, consolidated multi-property reports, priority support. **All plans include 5 caretaker seats** — this is a baseline feature, NOT a marketed/highlighted differentiator; keep it out of pricing comparisons and sales copy.
 - **ALL plans (including monthly subscriptions) are subject to payment processing fees** — card + FX, passed through at cost. State this clearly on every pricing surface.
 - **Property cap: 10 per owner for now.** We are deliberately NOT offering tiers above 10 properties — the focus is individual renters, not professional managers/portfolios.
 
 ### Crossover logic
-Owner should switch from Pay-as-you-go to **Starter** when annual booking volume exceeds ~$2,880 (the point where the $144/yr Starter flat fee beats 5% commission), then to **Host** when they add a second property. Given Los Cabos/Baja nightly rates, most active owners cross the first threshold quickly — steering the base toward predictable subscription revenue.
+Owner should switch from Pay-as-you-go to **Starter** when annual booking volume exceeds ~$3,600 (the point where the $180/yr Starter flat fee beats 5% commission), then to **Host** when they add a second property. Given Los Cabos/Baja nightly rates, most active owners cross the first threshold quickly — steering the base toward predictable subscription revenue.
 
 ---
 
@@ -262,6 +263,8 @@ The following are safety-critical and should be reviewed by an experienced engin
 | Baja Beachhead Features Brief | Market analysis + cross-border feature ranking | docs/planning/baja-beachhead-features-brief.md |
 | Product Feature Brief (Mexico) | **Authoritative** consolidated feature set + pricing | docs/planning/product-feature-brief-mexico.md |
 | Product Sheet (Mexico) | 3-page marketing sheet for owners | docs/marketing/product-sheet-mexico.md |
+| Owner Brochure (Mexico) | 4-page owner marketing brochure incl. first-month-free offer | docs/marketing/owner-brochure-mexico.md |
+| Financial Model & Feasibility (v2) | Re-modeled P&L, OpEx-risk analysis, strategy | docs/business/financial-model-v2.md |
 | Owner Preview Invite | Founding-owner test invitation | docs/business/owner-preview-invite.md |
 
 **Doc generation:** styled docs are authored in Markdown with a CSS `<style>` block + YAML front matter, then rendered to PDF via `npx md-to-pdf <file.md>` and to Word via `npx markdown-docx -i <file.md> -o <file.docx>`. All use the brand design tokens below.
@@ -302,14 +305,14 @@ Authoritative model: `docs/business/financial-model-v2.md` (+ `Familiar_Guest_Fi
 | Metric | Year 1 | Year 2 | Year 3 |
 |---|---|---|---|
 | Avg active owners | 250 | 2,000 | 7,500 |
-| Blended ARPU | $200 | $200 | $200 |
-| Revenue (subscription/commission) | $50,000 | $400,000 | $1,500,000 |
-| Gross profit (76%) | $38,000 | $304,000 | $1,140,000 |
+| Blended ARPU | $218 | $218 | $218 |
+| Revenue (subscription/commission) | $54,500 | $436,000 | $1,635,000 |
+| Gross profit (76%) | $41,420 | $331,360 | $1,242,600 |
 | Operating expenses (Base) | $35,000 | $200,000 | $650,000 |
-| Operating profit (Base) | $3,000 | $104,000 | $490,000 |
-| Operating margin (Base) | 6% | 26% | 33% |
+| Operating profit (Base) | $6,420 | $131,360 | $592,600 |
+| Operating margin (Base) | 12% | 30% | 36% |
 
-**Blended ARPU dropped ~$350 → ~$200** (the $12 Starter dominates a single-home beachhead). Mix assumed: PAYG 25% / Starter 50% / Host 20% / Pro 5%.
+**Blended ARPU dropped ~$350 → ~$218** (the $15 Starter dominates a single-home beachhead). Mix assumed: PAYG 25% / Starter 50% / Host 20% / Pro 5%.
 
 ### THE central risk — guard against OpEx outrunning revenue
 Subscription revenue AND support cost both scale with owner count. A cross-border, money-handling product is support-heavy. The prior ultra-lean OpEx ($11k–$48k) is unrealistic at 12,000 owners. Stress case (support staffed ~linearly) → Year 3 OpEx ~$1.15M → **operating LOSS despite $1.5M revenue.**
@@ -319,10 +322,10 @@ Subscription revenue AND support cost both scale with owner count. A cross-borde
 2. **AI-first bilingual support** (extend the AI Concierge) — deflect >70% of tickets; keeps the owner-scaling cost sublinear.
 3. **Tilt revenue to GMV-linked streams** — add-on attach, test 6% PAYG take, small per-booking fee.
 4. **Nearshore variable support**, no premature FT hires.
-5. **Protect ARPU** — test Starter $15–19 or hold $12 strictly as an upgrade funnel; annual billing.
+5. **Protect ARPU** — Starter set at $15 (raised from $12); protect its margin via AI support deflection; push annual billing and upgrades to Host.
 6. **Tripwire metric:** track support-cost-per-owner and OpEx-growth-rate vs revenue-growth-rate monthly; support cost per owner must trend flat/down.
 
-Pricing note: **$12 Starter is the thinnest-margin plan** — viable only with AI support deflection, else raise to $15–19. PAYG 5% is generous (room to test 6%).
+Pricing note: **$15 Starter is the thinnest-margin plan** — protect its margin with AI support deflection. PAYG 5% is far below Airbnb, but note that once a guest adds screening/damage coverage it can exceed Airbnb on very short (1–2 night) stays — keep that in mind in messaging. Room to test 6% PAYG later.
 
 ---
 

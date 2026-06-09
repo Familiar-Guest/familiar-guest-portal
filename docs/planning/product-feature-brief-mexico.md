@@ -136,7 +136,7 @@ Plans are priced in **USD** (owners are US/Canadian and think in dollars). Card 
 
 <table>
 <tr><th>&nbsp;</th><th>Pay-as-you-go</th><th>Starter</th><th>Host</th><th>Pro</th></tr>
-<tr><td><strong>Price</strong></td><td>5% per booking</td><td><strong>$12</strong> / mo</td><td><strong>$29</strong> / mo</td><td><strong>$49</strong> / mo</td></tr>
+<tr><td><strong>Price</strong></td><td>5% per booking</td><td><strong>$15</strong> / mo</td><td><strong>$29</strong> / mo</td><td><strong>$49</strong> / mo</td></tr>
 <tr><td>Best for</td><td>Seasonal / testing</td><td>Single-home owners</td><td>Active owners, up to 5 homes</td><td>Owners with 6–10 homes</td></tr>
 <tr><td>Properties</td><td>Pay per booking</td><td>1</td><td>Up to 5</td><td>6–10</td></tr>
 <tr><td>Commission</td><td>5% per booking</td><td class="check">None</td><td class="check">None</td><td class="check">None</td></tr>
@@ -167,8 +167,9 @@ Plans are priced in **USD** (owners are US/Canadian and think in dollars). Card 
 
 - **Every core and cross-border feature is available on every plan.** Trust and money-movement are the product — paywalling them would undercut the value proposition. Plans differ on **commission vs. flat fee, property count, and reporting/support.** (All plans include 5 caretaker seats — a baseline feature, not a marketed differentiator.)
 - **Property cap is 10 for now** — we are focused on individual renters, not portfolio managers, so no tiers above 10 properties.
-- **The crossover:** an owner booking more than ~$2,880/year through Familiar Guest should move from Pay-as-you-go (5%) to **Starter** ($144/yr), then to **Host** when they add a second property. Given Los Cabos/Baja nightly rates, most active owners cross the first threshold quickly — steering the base toward predictable subscription revenue.
-- **Annual option:** offer ~2 months free on annual billing (Starter $120/yr, Host $290/yr, Pro $490/yr) to improve retention and cash flow.
+- **The crossover:** an owner booking more than ~$3,600/year through Familiar Guest should move from Pay-as-you-go (5%) to **Starter** ($180/yr), then to **Host** when they add a second property. Given Los Cabos/Baja nightly rates, most active owners cross the first threshold quickly — steering the base toward predictable subscription revenue.
+- **Annual option:** offer ~2 months free on annual billing (Starter $150/yr, Host $290/yr, Pro $490/yr) to improve retention and cash flow.
+- **Launch offer:** first month free on any monthly plan for testing. Add-ons (screening, damage protection) and payment processing fees still apply during the free month.
 - **Payment fees:** every plan is subject to payment processing fees (card + FX), passed through with no markup — preserving the trust positioning. *(A modest FX spread is a possible future revenue line, but not at launch.)*
 
 <div class="callout">

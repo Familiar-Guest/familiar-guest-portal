@@ -114,7 +114,7 @@ This is the part that makes direct booking actually work for both sides:
 | Plan | Price | Best for |
 |---|---|---|
 | **Pay-as-you-go** | 5% per booking + payment fees | Seasonal owners or light usage |
-| **Starter** | $12/month, no commission (1 property) | Single-home owners |
+| **Starter** | $15/month, no commission (1 property) | Single-home owners |
 | **Host** | $29/month, no commission (up to 5 properties) | Active owners with multiple homes |
 | **Pro** | $49/month, no commission (6–10 properties) | Owners with several homes |
 
@@ -129,7 +129,7 @@ This is the part that makes direct booking actually work for both sides:
 
 Card processing fees (Stripe) are always passed through at cost — we don't mark them up.
 
-> **When does a monthly plan beat Pay-as-you-go?** If you book more than ~$2,880/year through Familiar Guest, the $12/month Starter plan saves you money vs. the 5% commission.
+> **When does a monthly plan beat Pay-as-you-go?** If you book more than ~$3,600/year through Familiar Guest, the $15/month Starter plan saves you money vs. the 5% commission.
 
 ---
 

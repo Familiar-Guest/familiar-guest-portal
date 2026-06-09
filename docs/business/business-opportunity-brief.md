@@ -108,7 +108,7 @@ All owners must pass identity verification before listing a property or collecti
 | Plan | Price | Best for |
 |---|---|---|
 | **Pay-as-you-go** | 5% per booking + payment fees | Seasonal or low-volume owners testing direct booking |
-| **Starter** | $12/month — 1 property, no commission | Single-home owners |
+| **Starter** | $15/month — 1 property, no commission | Single-home owners |
 | **Host** | $29/month — up to 5 properties, no commission | Active owners with multiple homes |
 | **Pro** | $49/month — 6–10 properties, no commission | Owners with several homes |
 
@@ -122,7 +122,7 @@ All owners must pass identity verification before listing a property or collecti
 | **Protected Booking** | $19.99 per booking | Screening + up to $1M damage protection |
 
 <div class="callout">
-<p><strong>Crossover point:</strong> An owner booking more than ~$2,880/year through Familiar Guest saves money by switching from Pay-as-you-go (5%) to the $12/month Starter plan, then to Host when they add a second property.</p>
+<p><strong>Crossover point:</strong> An owner booking more than ~$3,600/year through Familiar Guest saves money by switching from Pay-as-you-go (5%) to the $15/month Starter plan, then to Host when they add a second property.</p>
 </div>
 
 ---
@@ -174,7 +174,7 @@ All owners must pass identity verification before listing a property or collecti
 
 ### Key assumptions
 
-- Blended ARPU of ~$350/active owner/year (mix of 5% commission and the $12 Starter / $29 Host / $49 Pro plans, weighted toward casual owners). Revisit as the plan mix is validated with real owners.
+- Blended ARPU of ~$218/active owner/year (mix of 5% commission and the $15 Starter / $29 Host / $49 Pro plans, weighted toward casual owners). See the v2 financial model for the full re-projection. Revisit as the plan mix is validated with real owners.
 - 78% gross margin after Stripe platform fees, hosting, and third-party APIs
 - Growth driven by low-friction onboarding and owner/guest referrals; modest paid marketing begins in Year 2
 - First hire (part-time support) in Year 3 as owner base crosses ~5,000
