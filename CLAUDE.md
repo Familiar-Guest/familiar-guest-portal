@@ -209,6 +209,9 @@ The hardest part of cross-border renting, turned into a built-in feature. No com
 - Annual income summary: total income, nights booked, occupancy rate, top guests
 - Multi-property consolidated view (Pro plan); feeds the Rental Income &amp; Tax Payment Accounting feature above
 
+### Owner Settings &amp; Site Parameters
+Central Settings page where the owner configures policies/parameters once (per-unit overrides allowed): **cleaning fee — fixed amount OR per-day charge**; extra-guest/pet fees; damage-deposit default; check-in/out times; min/max nights, gaps &amp; blackout dates; cancellation policy; house rules/quiet hours; lodging-tax rates by jurisdiction; default currency &amp; payout prefs; instant-book vs request-to-book; guest discount rules; notification preferences (channels/timing); default language. Full inventory: `docs/planning/feature-catalog.md`.
+
 ### Cross-Border Features (Mexico market — committed for launch)
 These are the differentiators for US/Canadian owners renting in Mexico. Detail in `docs/planning/product-feature-brief-mexico.md`.
 1. **Multi-currency pricing + cross-border payouts** — show prices in USD/CAD/MXN; owner chooses payout currency and destination bank (US/Canada/Mexico). FX passed at cost.

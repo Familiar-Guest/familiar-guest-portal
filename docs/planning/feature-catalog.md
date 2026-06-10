@@ -73,7 +73,8 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 | Digital house manual (incl. Baja templates) | <span class="tag core">CORE</span> | WiFi, codes, parking, local recs |
 | Damage-deposit amount config | <span class="tag core">CORE</span> | Per unit |
 | Cancellation policy selection | <span class="tag new">NEW</span> | Flexible/moderate/strict |
-| Cleaning fee / extra-guest fee config | <span class="tag new">NEW</span> | Per-booking fees |
+| Cleaning fee — **fixed amount or per-day charge** | <span class="tag new">NEW</span> | Owner chooses the model; set in Owner Settings (group 18), per-unit override |
+| Extra-guest fee &amp; pet fee | <span class="tag new">NEW</span> | Optional per-booking fees |
 | Min/max nights, gaps, blackout dates | <span class="tag new">NEW</span> | Availability rules |
 | Unit-level tax settings (rates by jurisdiction) | <span class="tag new">NEW</span> | Feeds tax accounting |
 | Multi-unit / compound management | <span class="tag core">CORE</span> | Many units, one account |
@@ -222,6 +223,8 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 | Lodging-tax handling (IVA/ISH/US TOT calc/collect/remit) | <span class="tag core">CORE</span> | Where platform-of-record |
 | Mexican host-tax withholding (ISR/IVA → SAT) | <span class="tag core">CORE</span> | Counsel-gated |
 | Documents for tax reporting (Schedule E, MX filings) | <span class="tag core">CORE</span> | Handling, not advice |
+| Guest receipts / booking invoices | <span class="tag new">NEW</span> | Per booking |
+| Mexican electronic invoice (CFDI / factura via SAT) | <span class="tag new">NEW</span> | Often required for Mexican guests; needs SAT integration |
 | Payout statements / financial ledger (CSV) | <span class="tag new">NEW</span> | |
 | Expense tracking (cleaning, fees) for net income | <span class="tag new">NEW</span> | |
 | 1099-K visibility (US) | <span class="tag new">NEW</span> | |
@@ -272,10 +275,56 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 | Data retention / deletion (DSAR workflow) | <span class="tag new">NEW</span> | |
 | Consent management | <span class="tag new">NEW</span> | |
 
+<div class="page-break"></div>
+
+## 18 · <span class="grpnum">Owner Settings &amp; Site Parameters</span>
+
+A central **Settings page** where the owner configures policies and parameters once — with per-unit overrides where it makes sense.
+
+| Feature | Status | Notes |
+|---|---|---|
+| Central Owner Settings page | <span class="tag new">NEW</span> | One place for all policies/parameters |
+| **Cleaning fee — fixed amount OR per-day charge** | <span class="tag new">NEW</span> | Owner picks the model; per-unit override |
+| Extra-guest fee &amp; pet fee | <span class="tag new">NEW</span> | Optional per-booking |
+| Damage-deposit default | <span class="tag core">CORE</span> | Per-unit override |
+| Check-in / check-out times | <span class="tag new">NEW</span> | Drives messaging + house manual |
+| Min/max nights, gap &amp; blackout rules | <span class="tag new">NEW</span> | Availability policy |
+| Cancellation policy (flexible / moderate / strict) | <span class="tag new">NEW</span> | Drives the refund flow |
+| House rules &amp; quiet hours | <span class="tag new">NEW</span> | Shown to guest |
+| Lodging-tax rates by jurisdiction | <span class="tag new">NEW</span> | Feeds tax accounting |
+| Default currency &amp; payout preferences | <span class="tag new">NEW</span> | |
+| Instant-book vs request-to-book default | <span class="tag new">NEW</span> | Per unit / guest tier |
+| Guest discount rules (returning / long-stay / last-minute) | <span class="tag new">NEW</span> | Owner-set price tiers |
+| Message &amp; notification preferences (channels, timing) | <span class="tag new">NEW</span> | SMS/WhatsApp/email + quiet hours |
+| Default language (EN/ES) | <span class="tag new">NEW</span> | |
+| Per-unit overrides of global settings | <span class="tag new">NEW</span> | Compounds with varied units |
+
+## 19 · <span class="grpnum">Notifications &amp; Owner Alerts</span>
+
+| Feature | Status | Notes |
+|---|---|---|
+| New-booking / payment-received / cancellation alerts | <span class="tag new">NEW</span> | |
+| Payout-sent notification | <span class="tag new">NEW</span> | |
+| New-message alert | <span class="tag new">NEW</span> | |
+| Calendar-conflict alert | <span class="tag new">NEW</span> | Ties to double-booking radar |
+| Channel preferences (email / SMS / WhatsApp) | <span class="tag new">NEW</span> | |
+| Daily / weekly digest | <span class="tag new">NEW</span> | |
+
+## 20 · <span class="grpnum">Account, Security &amp; Data</span>
+
+| Feature | Status | Notes |
+|---|---|---|
+| Account security (2FA, login alerts) | <span class="tag new">NEW</span> | |
+| Session / device management | <span class="tag new">NEW</span> | |
+| Owner data export (bookings, guests, financials) | <span class="tag new">NEW</span> | |
+| Account deletion / DSAR workflow | <span class="tag new">NEW</span> | Compliance |
+| Staff roles &amp; permissions | <span class="tag new">NEW</span> | Caretaker + future roles |
+| Activity / audit log | <span class="tag new">NEW</span> | |
+
 ---
 
 <div class="legend">
-<p><strong>What this exercise surfaced (highest-value NEW items):</strong> a <strong>promo-code &amp; discount engine</strong> (your price-tiers-including-free requirement), a <strong>refunds + deposit-claim flow</strong> (missing from payments), a <strong>guest portal</strong> (renter side is thin today), <strong>subscription/billing management</strong> (trial→paid, cancel, dunning), and <strong>cancellation/modification</strong> in the booking process. These are the gaps to scope next.</p>
+<p><strong>What this exercise surfaced (highest-value NEW items):</strong> a central <strong>Owner Settings page</strong> (policies + parameters, incl. cleaning fee as fixed or per-day), a <strong>promo-code &amp; discount engine</strong> (your price-tiers-including-free requirement), a <strong>refunds + deposit-claim flow</strong>, a <strong>guest portal</strong>, <strong>subscription/billing management</strong> (trial→paid, cancel, dunning), <strong>cancellation/modification</strong> in booking, <strong>owner notifications</strong>, <strong>invoicing/receipts incl. Mexican CFDI</strong>, and <strong>account security + data export/deletion</strong>. These are the gaps to scope next for a fully functioning system.</p>
 </div>
 
 <div style="text-align:center; margin-top:12px; color:#8a7e72; font-size:11px;">famguest.com &nbsp;|&nbsp; Feature Catalog &nbsp;|&nbsp; June 2026</div>
