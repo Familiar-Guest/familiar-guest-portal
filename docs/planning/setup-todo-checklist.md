@@ -62,6 +62,7 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 | ☐ | Create **Supabase** account + project | <span class="who you">YOU</span> |
 | ☐ | Create **Stripe** account, enable **Connect**, add bank/identity | <span class="who you">YOU</span> |
 | ☐ | Create **Resend** account | <span class="who you">YOU</span> |
+| ☐ | Create **Twilio** account (SMS + WhatsApp for reminder/check-in messages) | <span class="who you">YOU</span> |
 | ☐ | Create **Anthropic API** account + key (AI copy/translation/support) | <span class="who you">YOU</span> |
 | ☐ | Create **Sentry** account (error monitoring) | <span class="who you">YOU</span> |
 | ☐ | Choose a password/secrets manager; share secrets safely | <span class="who you">YOU</span> |
@@ -109,9 +110,12 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 |---|---|---|
 | ☐ | Owner signup + dashboard | <span class="who ai">CLAUDE</span> |
 | ☐ | Listing creation form | <span class="who ai">CLAUDE</span> |
+| ☐ | GPS coordinate capture (lat/long) — **required for MX listings**, source of truth for location | <span class="who ai">CLAUDE</span> |
+| ☐ | Owner Settings &amp; site parameters page (fees, deposit, check-in/out, min/max nights, blackout, cancellation, tax rates, currency, instant-vs-request, notif prefs, language; per-unit overrides) | <span class="who ai">CLAUDE</span> |
 | ☐ | Photo upload — drag/drop + mobile | <span class="who ai">CLAUDE</span> |
 | ☐ | Cloud photo OAuth (Google/Dropbox/iCloud) — register OAuth apps | <span class="who both">BOTH</span> |
 | ☐ | AI-written listing description (Anthropic) | <span class="who ai">CLAUDE</span> |
+| ☐ | Scoped caretaker/cleaner access (5 seats; no payments/full guest list) + digital check-in (lockbox/smart codes) | <span class="who ai">CLAUDE</span> |
 | ☐ | Stripe Connect Custom account creation + embedded KYC | <span class="who ai">CLAUDE</span> |
 | ☐ | Complete Stripe platform profile &amp; Connect agreement | <span class="who you">YOU</span> |
 
@@ -159,10 +163,24 @@ stylesheet: https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,4
 | ☐ | Step | Who |
 |---|---|---|
 | ☐ | Verify Resend sending domain (DNS records) | <span class="who both">BOTH</span> |
-| ☐ | Automated bilingual email sequence | <span class="who ai">CLAUDE</span> |
+| ☐ | Configure Twilio SMS + WhatsApp sender (number/WABA approval) | <span class="who both">BOTH</span> |
+| ☐ | Automated bilingual sequence across email + SMS + WhatsApp (owner/guest channel choice) | <span class="who ai">CLAUDE</span> |
+| ☐ | Check-in message includes Google Maps GPS directions link | <span class="who ai">CLAUDE</span> |
 | ☐ | Digital house manual (Baja templates) | <span class="who ai">CLAUDE</span> |
 
 <div class="page-break"></div>
+
+## Phase 7.5 · Rental Income &amp; Tax Payment Accounting ⚠ (CORE differentiator — gated on counsel)
+
+| ☐ | Step | Who |
+|---|---|---|
+| ☐ | Per-booking tax breakdown + lodging-tax line items (US TOT / MX ISH/IVA) | <span class="who ai">CLAUDE</span> |
+| ☐ | ⚠ Mexican host-tax withholding &amp; remittance (ISR/IVA to SAT) where FG is platform-of-record | <span class="who ai">CLAUDE</span> |
+| ☐ | ⚠ Confirm withholding/remittance structure + SAT registration before going live | <span class="who you">YOU</span> |
+| ☐ | Rental income ledger + year-end income &amp; tax statements (consolidated across units) | <span class="who ai">CLAUDE</span> |
+| ☐ | Accountant exports (US Schedule E, Mexican filings) + W-9/W-8BEN, 1099-K data | <span class="who ai">CLAUDE</span> |
+| ☐ | Multi-property consolidated income view (Pro) | <span class="who ai">CLAUDE</span> |
+| ☐ | Boundary guardrails: handling + reporting only, **no tax advice** in any owner-facing copy | <span class="who both">BOTH</span> |
 
 ## Phase 8 · Trust Add-ons (can run in parallel; partly deferred)
 
