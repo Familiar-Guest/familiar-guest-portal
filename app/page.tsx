@@ -599,22 +599,43 @@ export default function Home() {
                 Get started
               </a>
             </div>
-            <div className="plan feature">
-              <span className="tag">Most popular</span>
-              <h3>Solo</h3>
+            <div className="plan">
+              <h3>Starter</h3>
               <div className="amt">
-                $29<span>/mo</span>
+                $15<span>/mo</span>
               </div>
               <p className="pdesc">One property, unlimited bookings, no commission.</p>
               <ul>
                 <li>
+                  <Check /> 1 property
+                </li>
+                <li>
                   <Check /> Unlimited paid &amp; free bookings
                 </li>
                 <li>
-                  <Check /> Full guest book &amp; messaging
+                  <Check /> No per-booking commission
+                </li>
+              </ul>
+              <a href="#waitlist" className="btn btn-ghost">
+                Get started
+              </a>
+            </div>
+            <div className="plan feature">
+              <span className="tag">Most popular</span>
+              <h3>Host</h3>
+              <div className="amt">
+                $29<span>/mo</span>
+              </div>
+              <p className="pdesc">Up to 5 properties — built for multi-unit owners.</p>
+              <ul>
+                <li>
+                  <Check /> Up to 5 properties
                 </li>
                 <li>
-                  <Check /> No per-booking commission
+                  <Check /> Everything in Starter
+                </li>
+                <li>
+                  <Check /> Full guest book &amp; messaging
                 </li>
               </ul>
               <a href="#waitlist" className="btn btn-primary">
@@ -624,18 +645,18 @@ export default function Home() {
             <div className="plan">
               <h3>Pro</h3>
               <div className="amt">
-                $59<span>/mo</span>
+                $49<span>/mo</span>
               </div>
-              <p className="pdesc">For owners with a small portfolio.</p>
+              <p className="pdesc">For a small portfolio, with consolidated reporting.</p>
               <ul>
                 <li>
-                  <Check /> Everything in Solo
+                  <Check /> 6–10 properties
                 </li>
                 <li>
-                  <Check /> Up to 5 properties
+                  <Check /> Everything in Host
                 </li>
                 <li>
-                  <Check /> Consolidated income reports
+                  <Check /> Consolidated reports + priority support
                 </li>
               </ul>
               <a href="#waitlist" className="btn btn-ghost">
@@ -644,8 +665,8 @@ export default function Home() {
             </div>
           </div>
           <p className="price-note">
-            Every owner is identity-verified. Card processing is always passed
-            through at cost.
+            Every owner is identity-verified. Card processing and currency
+            conversion are always passed through at cost.
           </p>
         </div>
       </section>
@@ -810,7 +831,7 @@ export default function Home() {
           </div>
           <div className="foot-bottom">
             <span>© 2026 Familiar Guest</span>
-            <span className="badge-mock">Concept mockup — not a live site</span>
+            <span>Direct booking for the guests you already have.</span>
           </div>
         </div>
       </footer>
