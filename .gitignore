@@ -1,5 +1,6 @@
 # Secrets & tokens — never commit
 github_pat_*.txt
+CUsersbrisbclaude-personal.ps1.txt
 *.pat
 *.pem
 *.key
