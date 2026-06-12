@@ -482,25 +482,28 @@ export default function Home() {
               <div className="ic">
                 <svg viewBox="0 0 24 24" fill="none">
                   <path
-                    d="M4 19V5a2 2 0 012-2h11l3 3v13a2 2 0 01-2 2H6a2 2 0 01-2-2z"
-                    stroke="currentColor"
-                    strokeWidth="1.8"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M8 8h7M8 12h7M8 16h4"
+                    d="M21 11.5a8.5 8.5 0 11-8.5-8.5 8.38 8.38 0 014.74 1.46"
                     stroke="currentColor"
                     strokeWidth="1.8"
                     strokeLinecap="round"
                   />
+                  <path
+                    d="M21 3l-9 9-3-3"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </div>
               <div>
-                <h3>Your guest book</h3>
+                <h3>Direct bookings, full control</h3>
                 <p>
-                  A private record of every guest who&rsquo;s ever stayed —
-                  notes, history, preferences. Yours, never shared with a
-                  platform.
+                  You set the price, own every conversation, and keep your
+                  guest information — no platform algorithm in the middle.
+                  With fees a fraction of Airbnb&rsquo;s, you earn a higher
+                  margin while still passing savings on to your guests. A win
+                  for you, a win for them.
                 </p>
               </div>
             </div>
@@ -563,6 +566,47 @@ export default function Home() {
                 <p>
                   Optional guest screening and damage protection let you open to
                   the public with the confidence of a big platform.
+                </p>
+              </div>
+            </div>
+            <div className="feat">
+              <div className="ic">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M12 2v20M17 5.5c0-1.93-2.24-3.5-5-3.5s-5 1.57-5 3.5 2.24 3.5 5 3.5 5 1.57 5 3.5-2.24 3.5-5 3.5-5-1.57-5-3.5"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3>Rental income &amp; tax accounting</h3>
+                <p>
+                  Income tracking, lodging-tax handling, and clean year-end
+                  documents for your accountant — across every property. The
+                  one thing no other platform offers owners.
+                </p>
+              </div>
+            </div>
+            <div className="feat">
+              <div className="ic">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-11.8 3.8L3 20l1.1-3.3a8.5 8.5 0 113.2-13A8.38 8.38 0 0121 11.5z"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3>Reminders &amp; check-in messages</h3>
+                <p>
+                  Automatic texts, WhatsApp, and email keep guests informed —
+                  including a check-in message with GPS-mapped directions
+                  straight to your door.
                 </p>
               </div>
             </div>
