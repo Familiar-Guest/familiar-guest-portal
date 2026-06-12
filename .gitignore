@@ -1,0 +1,25 @@
+# Secrets & tokens — never commit
+github_pat_*.txt
+*.pat
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Next.js / build output
+.next/
+out/
+dist/
+build/
+
+# Vercel
+.vercel/
+
+# Logs & OS
+*.log
+.DS_Store
+Thumbs.db
