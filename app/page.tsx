@@ -132,16 +132,6 @@ export default function Home() {
               Join the waitlist
             </a>
           </div>
-          <button className="menu-toggle" aria-label="Menu">
-            <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
-              <path
-                d="M4 7h16M4 12h16M4 17h16"
-                stroke="#2A241E"
-                strokeWidth="2"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
         </div>
       </nav>
 
