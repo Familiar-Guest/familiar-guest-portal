@@ -49,16 +49,23 @@ export interface InternalConflict {
  */
 export async function findInternalConflict(
   supabase: SupabaseClient,
-  args: { check_in: string; check_out: string; excludeId?: string }
+  args: {
+    check_in: string;
+    check_out: string;
+    excludeId?: string;
+    propertyId?: string | null;
+  }
 ): Promise<InternalConflict | null> {
-  const { check_in, check_out, excludeId } = args;
+  const { check_in, check_out, excludeId, propertyId } = args;
   // Overlap with exclusive end dates: existing.start < requested.end AND existing.end > requested.start
-  const { data } = await supabase
+  let q = supabase
     .from("bookings")
     .select("id,guest_name,check_in,check_out,status,expires_at")
     .in("status", ["paid", "offer_sent"])
     .lt("check_in", check_out)
     .gt("check_out", check_in);
+  if (propertyId) q = q.eq("property_id", propertyId);
+  const { data } = await q;
 
   const rows = (data ?? []) as Array<
     Pick<

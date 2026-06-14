@@ -5,6 +5,8 @@ export type OfferKind = "offer" | "rebook";
 export interface Booking {
   id: string;
   token: string;
+  owner_id: string | null;
+  property_id: string | null;
   guest_name: string;
   guest_email: string;
   property_name: string;
@@ -22,5 +24,27 @@ export interface Booking {
   confirmation_sent_at: string | null;
   reminder7_sent_at: string | null;
   checkin_sent_at: string | null;
+  created_at: string;
+}
+
+export interface Property {
+  id: string;
+  owner_id: string;
+  name: string;
+  location: string | null;
+  gps_lat: number | null;
+  gps_lng: number | null;
+  currency: string;
+  airbnb_ical_url: string | null;
+  checkin_instructions: string | null;
+  created_at: string;
+}
+
+export interface Message {
+  id: string;
+  booking_id: string;
+  owner_id: string;
+  direction: string; // 'outbound'
+  body: string;
   created_at: string;
 }

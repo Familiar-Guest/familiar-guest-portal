@@ -1,18 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import type { Property } from "@/lib/types";
 
 export type FormMode = "create" | "edit" | "rebook";
 
 export interface OfferInitial {
   id?: string;
-  property_name?: string;
+  property_id?: string;
+  property_name?: string; // for edit display (property is fixed)
   guest_name?: string;
   guest_email?: string;
   check_in?: string;
   check_out?: string;
   amount?: string;
-  currency?: string;
   checkin_instructions?: string;
 }
 
@@ -38,29 +39,33 @@ const TITLES: Record<FormMode, string> = {
 
 export function OfferForm({
   mode,
+  properties,
   initial,
   onDone,
   onCancel,
 }: {
   mode: FormMode;
+  properties: Property[];
   initial?: OfferInitial;
   onDone: () => void;
   onCancel: () => void;
 }) {
   const [form, setForm] = useState({
-    property_name: initial?.property_name ?? "",
+    property_id: initial?.property_id ?? properties[0]?.id ?? "",
     guest_name: initial?.guest_name ?? "",
     guest_email: initial?.guest_email ?? "",
     check_in: initial?.check_in ?? "",
     check_out: initial?.check_out ?? "",
     amount: initial?.amount ?? "",
-    currency: initial?.currency ?? "usd",
     checkin_instructions: initial?.checkin_instructions ?? "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [conflict, setConflict] = useState<Conflict | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+
+  const selectedProperty = properties.find((p) => p.id === form.property_id);
+  const currency = (selectedProperty?.currency ?? "usd").toUpperCase();
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -136,6 +141,8 @@ export function OfferForm({
         }${conflict.guest_name ? ` for ${conflict.guest_name}` : ""} (${conflict.start} → ${conflict.end}).`
     : "";
 
+  const noProperties = properties.length === 0;
+
   return (
     <div className="bk-card">
       <h1>{TITLES[mode]}</h1>
@@ -147,6 +154,12 @@ export function OfferForm({
           : "Set the dates and price for your guest. They'll get an email with a link to pay — no account needed."}
       </p>
 
+      {noProperties && (
+        <div className="bk-error">
+          Add a property first, then you can send offers for it.
+        </div>
+      )}
+
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -154,14 +167,23 @@ export function OfferForm({
         }}
       >
         <div className="bk-field">
-          <label htmlFor="property_name">Property name</label>
-          <input
-            id="property_name"
-            value={form.property_name}
-            onChange={(e) => set("property_name", e.target.value)}
-            placeholder="Casa del Mar"
-            required
-          />
+          <label htmlFor="property">Property</label>
+          {mode === "edit" ? (
+            <input value={initial?.property_name ?? selectedProperty?.name ?? ""} disabled />
+          ) : (
+            <select
+              id="property"
+              value={form.property_id}
+              onChange={(e) => set("property_id", e.target.value)}
+              required
+            >
+              {properties.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
+          )}
         </div>
         <div className="bk-grid2">
           <div className="bk-field">
@@ -206,32 +228,18 @@ export function OfferForm({
             />
           </div>
         </div>
-        <div className="bk-grid2">
-          <div className="bk-field">
-            <label htmlFor="amount">Total price</label>
-            <input
-              id="amount"
-              type="number"
-              min="1"
-              step="0.01"
-              value={form.amount}
-              onChange={(e) => set("amount", e.target.value)}
-              placeholder="1200.00"
-              required
-            />
-          </div>
-          <div className="bk-field">
-            <label htmlFor="currency">Currency</label>
-            <select
-              id="currency"
-              value={form.currency}
-              onChange={(e) => set("currency", e.target.value)}
-            >
-              <option value="usd">USD</option>
-              <option value="cad">CAD</option>
-              <option value="mxn">MXN</option>
-            </select>
-          </div>
+        <div className="bk-field">
+          <label htmlFor="amount">Total price ({currency})</label>
+          <input
+            id="amount"
+            type="number"
+            min="1"
+            step="0.01"
+            value={form.amount}
+            onChange={(e) => set("amount", e.target.value)}
+            placeholder="1200.00"
+            required
+          />
         </div>
         <div className="bk-field">
           <label htmlFor="checkin_instructions">
@@ -263,7 +271,7 @@ export function OfferForm({
         )}
 
         {!conflict && (
-          <button className="bk-btn" type="submit" disabled={loading}>
+          <button className="bk-btn" type="submit" disabled={loading || noProperties}>
             {loading
               ? "Saving…"
               : mode === "edit"
