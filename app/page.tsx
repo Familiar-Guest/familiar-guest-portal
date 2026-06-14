@@ -175,7 +175,7 @@ export default function Home() {
             <p className="sub reveal d3">
               Familiar Guest is the simplest way to rent to the people who
               already love your place. Keep the relationship, skip the
-              15-20% rental platform fees, and let us handle the trust. <strong>Your first booking is free.</strong>
+              15-20% rental platform fees, and let us handle the trust. <strong>Your first month is commission-free.</strong>
             </p>
             <WaitlistForm />
             <p className="micro reveal d5">
@@ -189,7 +189,7 @@ export default function Home() {
                 />
                 <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
               </svg>
-              First booking free · No monthly fee · No card to start
+              First month commission-free · No monthly fee · No card to start
             </p>
           </div>
           <div className="preview reveal d4">
@@ -353,47 +353,145 @@ export default function Home() {
         <div className="wrap">
           <div className="sec-head">
             <p className="eyebrow">Effortless setup</p>
-            <h2>Live in an afternoon, not a weekend.</h2>
+            <h2>Three things to start. We handle the rest.</h2>
             <p>
-              No website to build, no spreadsheets, nothing to write from
-              scratch. Bring the photos you already have and we&rsquo;ll handle
-              the rest.
+              To go live you bring just your listing details, a few facts about
+              you, and a Stripe account to get paid. No website to build, no
+              spreadsheets, nothing to write from scratch.
             </p>
           </div>
-          <div className="steps">
-            <div className="step">
-              <div className="n"></div>
-              <h3>Bring your photos</h3>
-              <p>
-                Connect Google Photos, iCloud, or Drive, or upload from your
-                phone in a tap. The photos you already have are all you need.
-              </p>
+          <div className="bring-grid">
+            {/* 1 — Listing info */}
+            <div className="bring-card">
+              <div className="bring-shot">
+                <div className="mock">
+                  <div className="mock-head">
+                    <span className="mock-dot"></span>
+                    <span className="mock-dot"></span>
+                    <span className="mock-dot"></span>
+                    <span className="mock-title">New listing</span>
+                  </div>
+                  <div className="mock-body">
+                    <div className="mock-thumbs">
+                      <span style={{ background: "linear-gradient(135deg,#2f6f57,#5fa37e)" }}></span>
+                      <span style={{ background: "linear-gradient(135deg,#5fa37e,#cdb893)" }}></span>
+                      <span style={{ background: "linear-gradient(135deg,#cdb893,#c0673e)" }}></span>
+                    </div>
+                    <div className="mock-line">
+                      <span className="mock-lbl">Name</span>
+                      <span className="mock-inp">Sea Glass Cottage</span>
+                    </div>
+                    <div className="mock-line">
+                      <span className="mock-lbl">Location</span>
+                      <span className="mock-inp">Cape San Blas, FL</span>
+                    </div>
+                    <div className="mock-line">
+                      <span className="mock-lbl">Rate</span>
+                      <span className="mock-inp">$1,840 / week</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bring-meta">
+                <span className="bring-n">1</span>
+                <h3>Your listing</h3>
+                <p>
+                  Your place&rsquo;s name, location, the photos you already have,
+                  and your rate. We turn it into a polished booking page.
+                </p>
+              </div>
             </div>
-            <div className="step">
-              <div className="n"></div>
-              <h3>We write your listing</h3>
-              <p>
-                Paste your own description or answer a few quick questions, and
-                we draft a polished listing for you to tweak.
-              </p>
+
+            {/* 2 — Owner info */}
+            <div className="bring-card">
+              <div className="bring-shot">
+                <div className="mock">
+                  <div className="mock-head">
+                    <span className="mock-dot"></span>
+                    <span className="mock-dot"></span>
+                    <span className="mock-dot"></span>
+                    <span className="mock-title">About you</span>
+                  </div>
+                  <div className="mock-body">
+                    <div className="mock-line">
+                      <span className="mock-lbl">Name</span>
+                      <span className="mock-inp">Jane Carter</span>
+                    </div>
+                    <div className="mock-line">
+                      <span className="mock-lbl">Email</span>
+                      <span className="mock-inp">jane@email.com</span>
+                    </div>
+                    <div className="mock-line">
+                      <span className="mock-lbl">Phone</span>
+                      <span className="mock-inp">+1 (•••) •••</span>
+                    </div>
+                    <span className="mock-pill">
+                      <svg viewBox="0 0 24 24" fill="none">
+                        <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+                      </svg>
+                      Identity verified
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="bring-meta">
+                <span className="bring-n">2</span>
+                <h3>A few details about you</h3>
+                <p>
+                  Your name and contact info, then a quick identity check — most
+                  owners clear it in minutes.
+                </p>
+              </div>
             </div>
-            <div className="step">
-              <div className="n"></div>
-              <h3>Sync &amp; verify</h3>
-              <p>
-                Connect your calendar so dates stay current, and clear a quick
-                identity check — most owners do it in minutes.
-              </p>
-            </div>
-            <div className="step">
-              <div className="n"></div>
-              <h3>Share your link</h3>
-              <p>
-                Send guests a beautiful booking page. Payment, agreement, and
-                house guide are all automatic.
-              </p>
+
+            {/* 3 — Stripe */}
+            <div className="bring-card">
+              <div className="bring-shot">
+                <div className="mock">
+                  <div className="mock-head">
+                    <span className="mock-dot"></span>
+                    <span className="mock-dot"></span>
+                    <span className="mock-dot"></span>
+                    <span className="mock-title">Get paid</span>
+                  </div>
+                  <div className="mock-body">
+                    <div className="mock-stripe">
+                      <span className="s-name">stripe</span>
+                      <span className="mock-pill">
+                        <svg viewBox="0 0 24 24" fill="none">
+                          <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                          <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+                        </svg>
+                        Connected
+                      </span>
+                    </div>
+                    <div className="mock-line">
+                      <span className="mock-lbl">Payout</span>
+                      <span className="mock-inp">Bank •••• 4242</span>
+                    </div>
+                    <div className="mock-line">
+                      <span className="mock-lbl">Next deposit</span>
+                      <span className="mock-inp">$1,840.00</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="bring-meta">
+                <span className="bring-n">3</span>
+                <h3>A Stripe account</h3>
+                <p>
+                  Link Stripe to get paid — guest payments land straight in your
+                  bank, with funds held safely until check-in.
+                </p>
+              </div>
             </div>
           </div>
+
+          <p className="bring-after">
+            That&rsquo;s it — share your booking link and the page, payment,
+            rental agreement, and house guide all run themselves.
+          </p>
 
           <div className="setup-panel">
             <div className="setup-half left">
@@ -639,9 +737,9 @@ export default function Home() {
           <div className="launch-offer reveal">
             <span className="lo-badge">Launch offer</span>
             <span className="lo-text">
-              <strong>Your first booking is free</strong> — no monthly fee, no
-              card to start. Founding owners lock <strong>Host at $19/mo for
-              life</strong>.
+              <strong>Your first month is commission-free</strong> — no monthly
+              fee, no card to start. Founding owners lock <strong>Host at $19/mo
+              for life</strong>.
             </span>
           </div>
           <div className="price-grid">
@@ -654,7 +752,7 @@ export default function Home() {
               <p className="pdesc">No monthly fee, no card to start. Cancel anytime.</p>
               <ul>
                 <li>
-                  <Check /> <strong>First booking free</strong>
+                  <Check /> <strong>First month commission-free</strong>
                 </li>
                 <li>
                   <Check /> Then just 5% per paid booking
@@ -736,8 +834,10 @@ export default function Home() {
             </div>
           </div>
           <p className="price-note">
-            Every owner is identity-verified. Card processing and currency
-            conversion are always passed through at cost.
+            All plans are subject to credit-card processing fees on guest
+            payments, deducted from each guest payment at cost. Currency
+            conversion is passed through at cost. Every owner is
+            identity-verified.
           </p>
         </div>
       </section>
@@ -835,8 +935,8 @@ export default function Home() {
             <h2>Keep the guests you&rsquo;ve earned.</h2>
             <p>
               Join the waitlist to host your repeat guests direct when we open —
-              your first booking is free, and founding owners lock Host at
-              $19/mo for life.
+              your first month is commission-free, and founding owners lock Host
+              at $19/mo for life.
             </p>
             <WaitlistForm buttonStyle={{ background: "var(--forest)" }} />
           </div>

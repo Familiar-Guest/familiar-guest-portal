@@ -4,7 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Familiar Guest — Host familiar guests direct",
   description:
-    "Familiar Guest is the simplest way to rent to the people who already love your place. Keep the relationship, skip the 15%, and let us handle the trust. Your first booking is free.",
+    "Familiar Guest is the simplest way to rent to the people who already love your place. Keep the relationship, skip the 15-20% rental platform fees, and let us handle the trust. Your first month is commission-free.",
 };
 
 export default function RootLayout({
