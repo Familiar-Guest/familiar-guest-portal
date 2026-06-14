@@ -1,6 +1,12 @@
-export type BookingStatus = "offer_sent" | "paid" | "cancelled" | "expired";
+export type BookingStatus =
+  | "requested" // guest asked to book; awaiting owner approval
+  | "offer_sent" // approved/owner-sent; pay link active
+  | "paid"
+  | "cancelled"
+  | "declined"
+  | "expired";
 
-export type OfferKind = "offer" | "rebook";
+export type OfferKind = "offer" | "rebook" | "request";
 
 export interface Booking {
   id: string;
@@ -9,6 +15,7 @@ export interface Booking {
   property_id: string | null;
   guest_name: string;
   guest_email: string;
+  guest_user_id: string | null;
   property_name: string;
   check_in: string; // YYYY-MM-DD
   check_out: string; // YYYY-MM-DD
@@ -31,20 +38,26 @@ export interface Property {
   id: string;
   owner_id: string;
   name: string;
+  slug: string | null;
   location: string | null;
+  description: string | null;
+  photos: string[];
   gps_lat: number | null;
   gps_lng: number | null;
   currency: string;
+  nightly_rate_cents: number | null;
+  cleaning_fee_cents: number;
+  min_nights: number;
+  is_listed: boolean;
   airbnb_ical_url: string | null;
   checkin_instructions: string | null;
   created_at: string;
 }
 
-export interface Message {
+export interface Guest {
   id: string;
-  booking_id: string;
-  owner_id: string;
-  direction: string; // 'outbound'
-  body: string;
+  email: string;
+  phone: string | null;
+  full_name: string | null;
   created_at: string;
 }

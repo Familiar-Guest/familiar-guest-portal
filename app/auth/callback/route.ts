@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { ensureOwnerProfile } from "@/lib/auth";
+import { ensureOwnerProfile, ensureGuestProfile, getOwner } from "@/lib/auth";
+import { buildGuestWelcomeEmail, sendEmail } from "@/lib/email";
 
 export const runtime = "nodejs";
 
@@ -22,8 +23,21 @@ export async function GET(request: NextRequest) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      // Only the owner path creates an owner profile; guests stay account-light.
-      if (next.startsWith("/owner")) await ensureOwnerProfile();
+      if (next.startsWith("/owner")) {
+        await ensureOwnerProfile();
+      } else {
+        // Guest path: create the guest profile and welcome them once.
+        const { created } = await ensureGuestProfile();
+        if (created) {
+          const session = await getOwner();
+          if (session) {
+            const { subject, html } = buildGuestWelcomeEmail(
+              session.email.split("@")[0]
+            );
+            await sendEmail({ to: session.email, subject, html });
+          }
+        }
+      }
       return NextResponse.redirect(`${base}${next}`);
     }
   }

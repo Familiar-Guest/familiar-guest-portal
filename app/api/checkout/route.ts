@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getOwner } from "@/lib/auth";
 import { getStripe } from "@/lib/stripe";
 import { siteUrl } from "@/lib/email";
 import { formatDate } from "@/lib/format";
@@ -7,6 +8,15 @@ import { isExpired } from "@/lib/offers";
 import type { Booking } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
+  // A guest account is required to pay (even for owner offers).
+  const guestUser = await getOwner();
+  if (!guestUser) {
+    return NextResponse.json(
+      { error: "Please create an account or sign in to continue." },
+      { status: 401 }
+    );
+  }
+
   let token: unknown;
   try {
     const body = await request.json();
@@ -52,7 +62,7 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const session = await getStripe().checkout.sessions.create({
+    const checkoutSession = await getStripe().checkout.sessions.create({
       mode: "payment",
       customer_email: booking.guest_email,
       line_items: [
@@ -80,10 +90,13 @@ export async function POST(request: NextRequest) {
 
     await supabase
       .from("bookings")
-      .update({ stripe_session_id: session.id })
+      .update({
+        stripe_session_id: checkoutSession.id,
+        guest_user_id: guestUser.id,
+      })
       .eq("id", booking.id);
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: checkoutSession.url });
   } catch (err) {
     console.error("Stripe checkout session failed", err);
     return NextResponse.json(

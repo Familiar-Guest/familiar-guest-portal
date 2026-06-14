@@ -16,10 +16,11 @@ export default async function GuestPage() {
   if (!session) redirect("/guest/login");
 
   const admin = createAdminClient();
+  // Match stays booked under this email OR linked to this account id.
   const { data } = await admin
     .from("bookings")
     .select("*")
-    .eq("guest_email", session.email)
+    .or(`guest_email.eq.${session.email},guest_user_id.eq.${session.id}`)
     .order("check_in", { ascending: true });
 
   return (

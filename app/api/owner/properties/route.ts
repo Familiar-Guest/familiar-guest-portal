@@ -43,9 +43,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error }, { status: 400 });
 
   const supabase = createAdminClient();
+
+  // Ensure the slug is unique within this owner's listings.
+  const { data: existingSlugs } = await supabase
+    .from("properties")
+    .select("slug")
+    .eq("owner_id", owner.id);
+  const taken = new Set(
+    ((existingSlugs ?? []) as { slug: string | null }[]).map((r) => r.slug)
+  );
+  let slug = parsed.value.slug;
+  while (taken.has(slug)) slug = `${parsed.value.slug}-${Math.floor(Math.random() * 9000 + 1000)}`;
+
   const { data, error } = await supabase
     .from("properties")
-    .insert({ owner_id: owner.id, ...parsed.value })
+    .insert({ owner_id: owner.id, ...parsed.value, slug })
     .select()
     .single();
 

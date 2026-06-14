@@ -16,6 +16,20 @@ export function siteUrl(): string {
   );
 }
 
+/** Guest welcome — sent when a guest account is created. Links to their stays. */
+export function buildGuestWelcomeEmail(name: string): {
+  subject: string;
+  html: string;
+} {
+  const greeting = name ? `Hi ${name},` : "Hi there,";
+  const inner =
+    heading("Welcome to Familiar Guest") +
+    p(`${greeting} your guest account is ready.`) +
+    p(`Your stays page keeps every Familiar Guest booking in one place — current and past — with check-in details and payment links.`) +
+    button(`${siteUrl()}/guest`, "Go to your stays");
+  return { subject: "Your Familiar Guest account is ready", html: layout(inner) };
+}
+
 export function bookingUrl(token: string): string {
   return `${siteUrl()}/book/${token}`;
 }
@@ -167,47 +181,18 @@ export function buildReminderEmail(b: Booking): {
   };
 }
 
-/** Owner → guest message (sent from the portal). */
-export function buildMessageEmail(
-  b: Booking,
-  message: string
-): { subject: string; html: string } {
-  const safe = message
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\n/g, "<br>");
-  const box = `<div style="margin:14px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:15px;line-height:1.55;">${safe}</div>`;
+/** Owner notification — a guest requested a stay (awaiting approval). */
+export function buildOwnerRequestEmail(b: Booking): {
+  subject: string;
+  html: string;
+} {
   const inner =
-    heading(`A message about ${b.property_name}`) +
-    p(`Hi ${b.guest_name},`) +
-    box +
-    p(`<span style="font-size:13px;color:#8a7e72;">Reply to this email to reach your host directly.</span>`) +
-    button(bookingUrl(b.token), "View your booking");
+    heading(`New booking request for ${b.property_name}`) +
+    p(`${b.guest_name} requested these dates. Review and approve (or decline) in your portal — approving sends them a payment link.`) +
+    summaryTable(b) +
+    button(`${siteUrl()}/owner`, "Open your portal");
   return {
-    subject: `Message from your host · ${b.property_name}`,
-    html: layout(inner),
-  };
-}
-
-/** Guest → owner message (sent from the guest "My stays" page). */
-export function buildGuestToOwnerEmail(
-  b: Booking,
-  message: string
-): { subject: string; html: string } {
-  const safe = message
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/\n/g, "<br>");
-  const box = `<div style="margin:14px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:15px;line-height:1.55;">${safe}</div>`;
-  const inner =
-    heading(`Message from ${b.guest_name}`) +
-    p(`Your guest ${b.guest_name} sent a message about their stay at ${b.property_name} (${formatDate(b.check_in)} → ${formatDate(b.check_out)}):`) +
-    box +
-    p(`<span style="font-size:13px;color:#8a7e72;">Reply to ${b.guest_email} to respond.</span>`);
-  return {
-    subject: `Message from ${b.guest_name} · ${b.property_name}`,
+    subject: `New request: ${b.property_name} (${formatDate(b.check_in)})`,
     html: layout(inner),
   };
 }

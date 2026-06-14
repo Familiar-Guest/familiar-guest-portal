@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getOwner } from "@/lib/auth";
+import { ensureOwnerHandle } from "@/lib/owner";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { Portal } from "./Portal";
 
@@ -27,9 +28,11 @@ export default async function OwnerPage() {
   const fullName = (data as { full_name: string | null } | null)?.full_name;
   if (fullName) ownerName = fullName.split(" ")[0];
 
+  const handle = await ensureOwnerHandle(owner.id, fullName || owner.email);
+
   return (
     <div className="bk-wrap op-wrap-page">
-      <Portal ownerName={ownerName} />
+      <Portal ownerName={ownerName} handle={handle} />
     </div>
   );
 }

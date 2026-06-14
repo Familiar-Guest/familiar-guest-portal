@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
 import { formatDate, formatMoney } from "@/lib/format";
 import { isExpired } from "@/lib/offers";
 import type { Booking } from "@/lib/types";
 
 function statusLabel(b: Booking): { text: string; cls: string } {
   if (b.status === "paid") return { text: "Confirmed", cls: "op-paid" };
+  if (b.status === "requested") return { text: "Requested — awaiting host", cls: "op-open" };
+  if (b.status === "declined") return { text: "Declined", cls: "op-muted" };
   if (b.status === "cancelled") return { text: "Cancelled", cls: "op-muted" };
   if (b.status === "expired" || isExpired(b)) return { text: "Offer expired", cls: "op-muted" };
   return { text: "Awaiting payment", cls: "op-open" };
@@ -68,33 +69,6 @@ export function GuestStays({
 function StayRow({ booking: b }: { booking: Booking }) {
   const s = statusLabel(b);
   const canPay = b.status === "offer_sent" && !isExpired(b);
-  const [open, setOpen] = useState(false);
-  const [body, setBody] = useState("");
-  const [sending, setSending] = useState(false);
-  const [sent, setSent] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function send(e: React.FormEvent) {
-    e.preventDefault();
-    if (!body.trim()) return;
-    setSending(true);
-    setError(null);
-    const res = await fetch("/api/guest/message", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ booking_id: b.id, body }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      setError(data.error ?? "Could not send your message.");
-      setSending(false);
-      return;
-    }
-    setBody("");
-    setSent(true);
-    setSending(false);
-    setOpen(false);
-  }
 
   return (
     <li className="op-item" style={{ flexDirection: "column", alignItems: "stretch", gap: 10 }}>
@@ -116,41 +90,19 @@ function StayRow({ booking: b }: { booking: Booking }) {
         </div>
       )}
 
-      <div className="op-actions" style={{ justifyContent: "flex-start" }}>
-        {canPay && (
-          <a className="op-link" href={`/book/${b.token}`}>
-            Complete payment →
-          </a>
-        )}
-        {b.status === "paid" && (
-          <a className="op-link" href={`/book/${b.token}`}>
-            View booking
-          </a>
-        )}
-        {b.status !== "cancelled" && (
-          <button className="op-link" onClick={() => setOpen((o) => !o)}>
-            {open ? "Cancel" : "Message host"}
-          </button>
-        )}
-        {sent && <span className="op-hi">Message sent ✓</span>}
-      </div>
-
-      {open && (
-        <form onSubmit={send}>
-          <div className="bk-field">
-            <textarea
-              rows={3}
-              value={body}
-              onChange={(e) => setBody(e.target.value)}
-              placeholder="Write to your host…"
-              required
-            />
-          </div>
-          <button className="bk-btn" type="submit" disabled={sending}>
-            {sending ? "Sending…" : "Send to host"}
-          </button>
-          {error && <div className="bk-error">{error}</div>}
-        </form>
+      {(canPay || b.status === "paid") && (
+        <div className="op-actions" style={{ justifyContent: "flex-start" }}>
+          {canPay && (
+            <a className="op-link" href={`/book/${b.token}`}>
+              Complete payment →
+            </a>
+          )}
+          {b.status === "paid" && (
+            <a className="op-link" href={`/book/${b.token}`}>
+              View booking
+            </a>
+          )}
+        </div>
       )}
     </li>
   );

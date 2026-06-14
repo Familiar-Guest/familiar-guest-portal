@@ -35,7 +35,7 @@ export async function middleware(request: NextRequest) {
 
   const path = request.nextUrl.pathname;
   const ownerAuthPage = path === "/owner/login" || path === "/owner/signup";
-  const guestAuthPage = path === "/guest/login";
+  const guestAuthPage = path === "/guest/login" || path === "/guest/signup";
   const isAuthPage = ownerAuthPage || guestAuthPage;
 
   // Gate the protected areas.

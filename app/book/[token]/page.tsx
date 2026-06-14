@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { getOwner } from "@/lib/auth";
 import { formatDate, formatMoney, nights } from "@/lib/format";
 import { isExpired, expiryDate } from "@/lib/offers";
 import type { Booking } from "@/lib/types";
@@ -29,6 +30,7 @@ export default async function BookingPage({
   const booking = await getBooking(token);
   if (!booking) notFound();
 
+  const session = await getOwner();
   const n = nights(booking.check_in, booking.check_out);
   const isPaid = booking.status === "paid";
   const isCancelled = booking.status === "cancelled";
@@ -72,12 +74,12 @@ export default async function BookingPage({
           </div>
         </div>
 
-        {canPay && (
+        {canPay && session && (
           <>
             <PayButton token={booking.token} />
             <p className="bk-note">
-              Secure payment — no account needed. You won&rsquo;t be charged
-              until you confirm on the next screen.
+              Secure payment. You won&rsquo;t be charged until you confirm on the
+              next screen.
               {booking.expires_at && (
                 <>
                   {" "}
@@ -89,12 +91,28 @@ export default async function BookingPage({
           </>
         )}
 
-        <p className="bk-note" style={{ marginTop: 18, borderTop: "1px solid var(--line)", paddingTop: 16 }}>
-          Want all your bookings in one place?{" "}
-          <a href="/guest/login" style={{ color: "var(--forest)", fontWeight: 600 }}>
-            Sign in with Google or Apple
-          </a>
-        </p>
+        {canPay && !session && (
+          <div className="bk-authgate">
+            <p className="bk-lead" style={{ marginBottom: 14 }}>
+              Create a free guest account (or sign in) to complete your booking.
+              It keeps all your stays in one place.
+            </p>
+            <a
+              className="bk-btn"
+              style={{ display: "block", textAlign: "center", marginBottom: 10 }}
+              href={`/guest/signup?next=/book/${booking.token}`}
+            >
+              Create account &amp; continue
+            </a>
+            <a
+              className="op-link"
+              style={{ display: "block", textAlign: "center" }}
+              href={`/guest/login?next=/book/${booking.token}`}
+            >
+              I already have an account
+            </a>
+          </div>
+        )}
       </div>
     </div>
   );

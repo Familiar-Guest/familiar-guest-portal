@@ -42,3 +42,39 @@ export async function ensureOwnerProfile(): Promise<void> {
       { onConflict: "id", ignoreDuplicates: true }
     );
 }
+
+/**
+ * Ensure the signed-in user has a `guests` profile row. Returns whether it was
+ * just created (so the caller can send the welcome email once).
+ */
+export async function ensureGuestProfile(): Promise<{ created: boolean }> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return { created: false };
+
+  const admin = createAdminClient();
+  const { data: existing } = await admin
+    .from("guests")
+    .select("id")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (existing) return { created: false };
+
+  const meta = (user.user_metadata ?? {}) as Record<string, unknown>;
+  const full_name =
+    (typeof meta.full_name === "string" && meta.full_name) ||
+    (typeof meta.name === "string" && meta.name) ||
+    null;
+  const phone =
+    (typeof meta.phone === "string" && meta.phone) || null;
+
+  await admin.from("guests").insert({
+    id: user.id,
+    email: user.email ?? "",
+    full_name,
+    phone,
+  });
+  return { created: true };
+}

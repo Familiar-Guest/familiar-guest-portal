@@ -28,10 +28,14 @@ export async function PATCH(
   const parsed = parsePropertyInput(body);
   if ("error" in parsed) return bad(parsed.error);
 
+  // Keep the slug stable on edit so shared listing URLs don't break.
+  const { slug: _ignore, ...updates } = parsed.value;
+  void _ignore;
+
   const supabase = createAdminClient();
   const { data, error } = await supabase
     .from("properties")
-    .update(parsed.value)
+    .update(updates)
     .eq("id", id)
     .eq("owner_id", owner.id)
     .select()

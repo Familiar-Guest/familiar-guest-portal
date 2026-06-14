@@ -7,7 +7,6 @@ import type { Booking, Property } from "@/lib/types";
 import { PropertyForm } from "./PropertyForm";
 import { OfferForm, type FormMode, type OfferInitial } from "./OfferForm";
 import { CalendarTab } from "./CalendarTab";
-import { MessagePanel } from "./MessagePanel";
 
 type Tab = "properties" | "calendar" | "bookings" | "offers";
 
@@ -22,6 +21,8 @@ function centsToAmount(cents: number): string {
 
 function statusLabel(b: Booking): { text: string; cls: string } {
   if (b.status === "paid") return { text: "Paid", cls: "op-paid" };
+  if (b.status === "requested") return { text: "Requested", cls: "op-open" };
+  if (b.status === "declined") return { text: "Declined", cls: "op-muted" };
   if (b.status === "cancelled") return { text: "Removed", cls: "op-muted" };
   if (b.status === "expired" || isExpired(b)) return { text: "Expired", cls: "op-muted" };
   const left = b.expires_at ? daysUntil(expiryDate(b.expires_at)) : null;
@@ -30,14 +31,14 @@ function statusLabel(b: Booking): { text: string; cls: string } {
   return { text: `Offer sent${suffix}`, cls: "op-open" };
 }
 
-export function Portal({ ownerName }: { ownerName: string }) {
+export function Portal({ ownerName, handle }: { ownerName: string; handle: string | null }) {
   const [tab, setTab] = useState<Tab>("properties");
   const [properties, setProperties] = useState<Property[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [overlay, setOverlay] = useState<Overlay>({ kind: "none" });
-  const [messaging, setMessaging] = useState<Booking | null>(null);
   const [copied, setCopied] = useState<string | null>(null);
+  const [shareCopied, setShareCopied] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -92,6 +93,34 @@ export function Portal({ ownerName }: { ownerName: string }) {
     load();
   }
 
+  async function decideRequest(b: Booking, action: "approve" | "decline") {
+    if (action === "decline" && !window.confirm(`Decline ${b.guest_name}'s request?`)) return;
+    const res = await fetch(`/api/owner/requests/${b.id}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error ?? "Could not update the request.");
+      return;
+    }
+    load();
+  }
+
+  const shareDisplay = handle ? `famguest.com/h/${handle}` : null;
+  async function copyShare() {
+    if (!handle) return;
+    const url = `${window.location.origin}/h/${handle}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setShareCopied(true);
+      setTimeout(() => setShareCopied(false), 1800);
+    } catch {
+      window.prompt("Your listings page:", url);
+    }
+  }
+
   async function removeProperty(p: Property) {
     if (!window.confirm(`Remove ${p.name}? Existing bookings are kept but lose their property link.`))
       return;
@@ -133,6 +162,7 @@ export function Portal({ ownerName }: { ownerName: string }) {
   const offers = bookings.filter(
     (b) => b.status === "offer_sent" || b.status === "expired"
   );
+  const requests = bookings.filter((b) => b.status === "requested");
 
   return (
     <Shell ownerName={ownerName} onLogout={logout} tab={tab} setTab={setTab}>
@@ -148,6 +178,18 @@ export function Portal({ ownerName }: { ownerName: string }) {
               + Add property
             </button>
           </div>
+          {shareDisplay && (
+            <div className="op-share">
+              <span>Your listings page:</span>
+              <code>{shareDisplay}</code>
+              <button className="op-link" onClick={copyShare}>
+                {shareCopied ? "Copied!" : "Copy link"}
+              </button>
+              <a className="op-link" href={`/h/${handle}`} target="_blank" rel="noreferrer">
+                Preview
+              </a>
+            </div>
+          )}
           {loading && <p className="op-empty">Loading…</p>}
           {!loading && properties.length === 0 && (
             <div className="op-empty">
@@ -163,8 +205,11 @@ export function Portal({ ownerName }: { ownerName: string }) {
                     <div className="op-title">{p.name}</div>
                     <div className="op-meta">
                       {p.location ? `${p.location} · ` : ""}
-                      {p.currency.toUpperCase()} ·{" "}
-                      {p.airbnb_ical_url ? "Airbnb calendar linked" : "no calendar linked"}
+                      {p.nightly_rate_cents
+                        ? `${formatMoney(p.nightly_rate_cents, p.currency)}/night · `
+                        : "no rate · "}
+                      {p.is_listed ? "Published" : "Hidden"} ·{" "}
+                      {p.airbnb_ical_url ? "calendar linked" : "no calendar"}
                     </div>
                   </div>
                   <div className="op-actions">
@@ -217,9 +262,6 @@ export function Portal({ ownerName }: { ownerName: string }) {
                     <div className="op-side">
                       <span className={`op-status ${s.cls}`}>{s.text}</span>
                       <div className="op-actions">
-                        <button className="op-link" onClick={() => setMessaging(b)}>
-                          Message
-                        </button>
                         {b.status === "paid" && (
                           <button
                             className="op-link"
@@ -264,8 +306,37 @@ export function Portal({ ownerName }: { ownerName: string }) {
               + New offer
             </button>
           </div>
+          {requests.length > 0 && (
+            <>
+              <h3 className="op-subhead">Requests to review</h3>
+              <ul className="op-list" style={{ marginBottom: 18 }}>
+                {requests.map((b) => (
+                  <li key={b.id} className="op-item">
+                    <div className="op-main">
+                      <div className="op-title">{b.property_name}</div>
+                      <div className="op-meta">
+                        {b.guest_name} · {formatDate(b.check_in)} → {formatDate(b.check_out)} ·{" "}
+                        {formatMoney(b.amount_cents, b.currency)}
+                      </div>
+                    </div>
+                    <div className="op-side">
+                      <span className="op-status op-open">Requested</span>
+                      <div className="op-actions">
+                        <button className="op-link" onClick={() => decideRequest(b, "approve")}>
+                          Approve &amp; send pay link
+                        </button>
+                        <button className="op-link op-danger" onClick={() => decideRequest(b, "decline")}>
+                          Decline
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
           {loading && <p className="op-empty">Loading…</p>}
-          {!loading && offers.length === 0 && (
+          {!loading && offers.length === 0 && requests.length === 0 && (
             <div className="op-empty">No open offers. Create one with <strong>+ New offer</strong>.</div>
           )}
           {offers.length > 0 && (
@@ -316,9 +387,6 @@ export function Portal({ ownerName }: { ownerName: string }) {
         </div>
       )}
 
-      {messaging && (
-        <MessagePanel booking={messaging} onClose={() => setMessaging(null)} />
-      )}
     </Shell>
   );
 }
