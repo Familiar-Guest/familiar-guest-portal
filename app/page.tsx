@@ -174,8 +174,8 @@ export default function Home() {
             </h1>
             <p className="sub reveal d3">
               Familiar Guest is the simplest way to rent to the people who
-              already love your place. Keep the relationship, skip the 15%, and
-              let us handle the trust. <strong>Your first booking is free.</strong>
+              already love your place. Keep the relationship, skip the
+              15-20% rental platform fees, and let us handle the trust. <strong>Your first booking is free.</strong>
             </p>
             <WaitlistForm />
             <p className="micro reveal d5">
