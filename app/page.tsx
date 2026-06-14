@@ -634,10 +634,11 @@ export default function Home() {
                 </svg>
               </div>
               <div>
-                <h3>One-click rebook</h3>
+                <h3>Stay offers &amp; one-click rebook</h3>
                 <p>
-                  &ldquo;Same week next year?&rdquo; Returning guests confirm in
-                  seconds. Repeat bookings, on autopilot.
+                  Pre-define a stay and send a pay link to any guest who
+                  inquires — or rebook last year&rsquo;s guests in seconds.
+                  Repeat bookings, on autopilot.
                 </p>
               </div>
             </div>
@@ -721,6 +722,67 @@ export default function Home() {
                   straight to your door. Guests arrive informed, you stay
                   hands-off.
                 </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* OFFER SPOTLIGHT */}
+      <section className="block" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <div className="offer-spot">
+            <div>
+              <p className="eyebrow">Send a stay offer</p>
+              <h2>Got an inquiry? Turn it into a booking in one message.</h2>
+              <p className="lead">
+                Someone asks about your place — a text, a DM, an email from a
+                past guest. Pre-define the stay, set your price, and send one
+                link. They just accept and pay. No back-and-forth, no chasing.
+              </p>
+              <ul className="spot-list">
+                <li>
+                  <Check /> You set the dates and price — we send the secure
+                  payment link.
+                </li>
+                <li>
+                  <Check /> The dates are held for 7 days, then released
+                  automatically if unpaid.
+                </li>
+                <li>
+                  <Check /> Your guest just accepts and pays — no account, no
+                  app, works on mobile.
+                </li>
+                <li>
+                  <Check /> The same engine powers one-click rebooking for your
+                  returning guests.
+                </li>
+              </ul>
+            </div>
+            <div className="offer-visual">
+              <div className="mock">
+                <div className="mock-head">
+                  <span className="mock-dot"></span>
+                  <span className="mock-dot"></span>
+                  <span className="mock-dot"></span>
+                  <span className="mock-title">Your booking offer</span>
+                </div>
+                <div className="mock-body">
+                  <span className="mock-pill warn">Offer · expires in 7 days</span>
+                  <div className="mock-line">
+                    <span className="mock-lbl">Property</span>
+                    <span className="mock-inp">Casa del Mar</span>
+                  </div>
+                  <div className="mock-line">
+                    <span className="mock-lbl">Dates</span>
+                    <span className="mock-inp">Mar 3 → Mar 10</span>
+                  </div>
+                  <div className="mock-line">
+                    <span className="mock-lbl">Total</span>
+                    <span className="mock-inp">$2,400</span>
+                  </div>
+                  <div className="mock-cta">Reserve your dates</div>
+                </div>
               </div>
             </div>
           </div>

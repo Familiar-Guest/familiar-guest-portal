@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getStripe } from "@/lib/stripe";
 import { siteUrl } from "@/lib/email";
 import { formatDate } from "@/lib/format";
+import { isExpired } from "@/lib/offers";
 import type { Booking } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
@@ -40,6 +41,12 @@ export async function POST(request: NextRequest) {
   if (booking.status === "cancelled") {
     return NextResponse.json(
       { error: "This booking is no longer available." },
+      { status: 409 }
+    );
+  }
+  if (booking.status === "expired" || isExpired(booking)) {
+    return NextResponse.json(
+      { error: "This offer has expired. Please contact your host." },
       { status: 409 }
     );
   }

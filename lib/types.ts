@@ -1,4 +1,6 @@
-export type BookingStatus = "offer_sent" | "paid" | "cancelled";
+export type BookingStatus = "offer_sent" | "paid" | "cancelled" | "expired";
+
+export type OfferKind = "offer" | "rebook";
 
 export interface Booking {
   id: string;
@@ -12,6 +14,8 @@ export interface Booking {
   amount_cents: number;
   checkin_instructions: string | null;
   status: BookingStatus;
+  kind: OfferKind;
+  expires_at: string | null; // ISO; when an unpaid offer lapses and frees its dates
   stripe_session_id: string | null;
   stripe_payment_intent_id: string | null;
   paid_at: string | null;

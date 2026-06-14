@@ -5,11 +5,13 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { ADMIN_COOKIE, isAdmin } from "@/lib/admin-auth";
 import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
 import { buildOfferEmail, sendEmail, bookingUrl } from "@/lib/email";
-import type { Booking } from "@/lib/types";
+import { findInternalConflict, offerExpiresAt } from "@/lib/offers";
+import type { Booking, OfferKind } from "@/lib/types";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 const CURRENCIES = ["usd", "cad", "mxn"];
+const KINDS: OfferKind[] = ["offer", "rebook"];
 
 export async function POST(request: NextRequest) {
   const cookieStore = await cookies();
@@ -32,6 +34,9 @@ export async function POST(request: NextRequest) {
   const currency = String(body.currency ?? "usd").trim().toLowerCase();
   const checkin_instructions =
     String(body.checkin_instructions ?? "").trim() || null;
+  const kind: OfferKind = KINDS.includes(body.kind as OfferKind)
+    ? (body.kind as OfferKind)
+    : "offer";
   const force = body.force === true;
 
   // Validation
@@ -49,6 +54,27 @@ export async function POST(request: NextRequest) {
     return bad("Enter a price greater than zero.");
   const amount_cents = Math.round(amount * 100);
 
+  const supabase = createAdminClient();
+
+  // Hold the dates: block if they overlap a paid booking or another live offer.
+  if (!force) {
+    const clash = await findInternalConflict(supabase, { check_in, check_out });
+    if (clash) {
+      return NextResponse.json(
+        {
+          conflict: {
+            type: "booking",
+            start: clash.check_in,
+            end: clash.check_out,
+            guest_name: clash.guest_name,
+            status: clash.status,
+          },
+        },
+        { status: 409 }
+      );
+    }
+  }
+
   // Optional Airbnb calendar conflict check (non-blocking; owner can override)
   if (!force && process.env.OWNER_AIRBNB_ICAL_URL) {
     const blocks = await fetchBusyBlocks(process.env.OWNER_AIRBNB_ICAL_URL);
@@ -57,6 +83,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           conflict: {
+            type: "calendar",
             start: conflict.start,
             end: conflict.end,
             summary: conflict.summary,
@@ -68,7 +95,6 @@ export async function POST(request: NextRequest) {
   }
 
   const token = randomBytes(24).toString("hex");
-  const supabase = createAdminClient();
 
   const { data, error } = await supabase
     .from("bookings")
@@ -82,6 +108,8 @@ export async function POST(request: NextRequest) {
       currency,
       amount_cents,
       checkin_instructions,
+      kind,
+      expires_at: offerExpiresAt(),
     })
     .select()
     .single();

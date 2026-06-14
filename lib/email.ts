@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import type { Booking } from "./types";
 import { formatDate, formatMoney, nights } from "./format";
+import { expiryDate } from "./offers";
 
 const FOREST = "#14543F";
 const CLAY = "#C0673E";
@@ -99,16 +100,35 @@ function p(text: string): string {
 
 // ── Templates ───────────────────────────────────────────────────────────
 
-/** 1. Offer — sent when the owner creates the booking. Contains the pay link. */
+/** 1. Offer — sent when the owner creates the booking. Contains the pay link.
+ *  Handles both a fresh offer and a one-click rebook (same pipeline). */
 export function buildOfferEmail(b: Booking): { subject: string; html: string } {
+  const isRebook = b.kind === "rebook";
+  const expiryLine = b.expires_at
+    ? p(
+        `<span style="font-size:13px;color:#8a7e72;">These dates are held for you until <strong>${formatDate(
+          expiryDate(b.expires_at)
+        )}</strong>. After that they may be released.</span>`
+      )
+    : "";
+  const lead = isRebook
+    ? `Hi ${b.guest_name}, great to have you back! Your host has lined up these dates at ${b.property_name}. Review the details below and complete your payment to lock it in.`
+    : `Hi ${b.guest_name}, your host has set aside these dates for you. Review the details below and complete your payment to lock it in.`;
   const inner =
-    heading(`You're invited to book ${b.property_name}`) +
-    p(`Hi ${b.guest_name}, your host has set aside these dates for you. Review the details below and complete your payment to lock it in.`) +
+    heading(
+      isRebook
+        ? `Ready to book ${b.property_name} again?`
+        : `You're invited to book ${b.property_name}`
+    ) +
+    p(lead) +
     summaryTable(b) +
     button(bookingUrl(b.token), "Review & complete payment") +
+    expiryLine +
     p(`<span style="font-size:13px;color:#8a7e72;">Your payment is processed securely. You don't need an account.</span>`);
   return {
-    subject: `Complete your booking for ${b.property_name}`,
+    subject: isRebook
+      ? `Your dates at ${b.property_name} are ready`
+      : `Complete your booking for ${b.property_name}`,
     html: layout(inner),
   };
 }

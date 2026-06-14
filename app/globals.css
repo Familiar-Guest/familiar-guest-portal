@@ -140,6 +140,17 @@ section.block{padding:96px 0}
 .mock-stripe{display:flex;align-items:center;justify-content:space-between;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:var(--paper);margin-bottom:6px}
 .mock-stripe .s-name{font-size:14px;font-weight:700;color:#635bff;letter-spacing:-.01em}
 .mock-stripe .mock-pill{margin-top:0}
+.mock-pill.warn{color:#a9572f;background:#fbf0ea;border-color:var(--clay-soft);margin-top:0;margin-bottom:10px}
+.mock-cta{margin-top:11px;background:var(--clay);color:#fff;text-align:center;font-size:12px;font-weight:600;padding:10px;border-radius:8px}
+/* offer spotlight */
+.offer-spot{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:28px;padding:48px 52px}
+.offer-spot h2{font-size:clamp(28px,3.4vw,40px);margin:14px 0 16px}
+.offer-spot p.lead{font-size:17px;color:var(--ink-soft);margin-bottom:22px}
+.offer-spot .spot-list{list-style:none;display:flex;flex-direction:column;gap:12px}
+.offer-spot .spot-list li{display:flex;gap:11px;align-items:flex-start;font-size:15px;color:var(--ink)}
+.offer-spot .spot-list li svg{width:18px;height:18px;color:var(--forest);flex-shrink:0;margin-top:3px}
+.offer-visual .mock{max-width:340px;margin:0 auto;border-radius:12px}
+.offer-visual .mock-head{border-radius:12px 12px 0 0}
 /* setup panel */
 .setup-panel{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:24px;overflow:hidden;margin-top:34px;background:var(--card)}
 .setup-half{padding:38px}
@@ -225,7 +236,8 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 .badge-mock{background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-weight:600}
 
 @media(max-width:900px){
-  .hero-grid,.trust-wrap{grid-template-columns:1fr;gap:40px}
+  .hero-grid,.trust-wrap,.offer-spot{grid-template-columns:1fr;gap:40px}
+  .offer-spot{padding:36px 26px}
   .steps,.feat-grid,.price-grid,.bring-grid{grid-template-columns:1fr}
   .setup-panel{grid-template-columns:1fr}
   .setup-half.left{border-right:none;border-bottom:1px solid var(--line)}
@@ -289,3 +301,27 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 .bk-grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .bk-ok{background:#eef3ee;border:1px solid #cfe0d4;border-radius:9px;padding:12px 14px;font-size:14px;color:var(--forest);margin-top:14px;word-break:break-all}
 @media(max-width:480px){.bk-grid2{grid-template-columns:1fr}}
+
+/* ── Owner portal ───────────────────────────────────────────────── */
+.op-wrap{background:var(--card);border:1px solid var(--line);border-radius:16px;max-width:760px;width:100%;padding:28px;box-shadow:0 1px 3px rgba(42,36,30,.05)}
+.op-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px}
+.op-head h1{font-family:var(--display);font-size:24px;color:var(--forest);margin:0}
+.op-sub{font-size:14px;color:var(--ink-soft);margin-top:4px;max-width:42em}
+.op-new{width:auto;flex-shrink:0}
+.op-empty{font-size:14px;color:var(--ink-soft);padding:24px 0;text-align:center}
+.op-list{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.op-item{display:flex;justify-content:space-between;gap:14px;padding:15px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.op-main{min-width:0}
+.op-title{font-weight:600;font-size:15px;color:var(--ink);display:flex;align-items:center;gap:8px}
+.op-tag{background:var(--clay-soft);color:#8a4b2c;font-size:10px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:20px}
+.op-meta{font-size:13px;color:var(--ink-soft);margin-top:3px}
+.op-side{display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.op-status{font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.op-status.op-paid{background:#eef3ee;color:var(--forest);border:1px solid #cfe0d4}
+.op-status.op-open{background:#fbf0ea;color:#a9572f;border:1px solid var(--clay-soft)}
+.op-status.op-muted{background:var(--paper-2);color:var(--ink-soft);border:1px solid var(--line)}
+.op-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end}
+.op-link{background:none;border:none;padding:0;font-family:var(--body);font-size:13px;font-weight:600;color:var(--forest);cursor:pointer;display:block}
+.op-link:hover{text-decoration:underline}
+.op-link:disabled{opacity:.5;cursor:default}
+.op-danger{color:var(--clay)}

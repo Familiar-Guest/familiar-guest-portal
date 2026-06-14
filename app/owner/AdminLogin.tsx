@@ -27,8 +27,8 @@ export function AdminLogin() {
 
   return (
     <div className="bk-card" style={{ maxWidth: 400 }}>
-      <h1>Owner access</h1>
-      <p className="bk-lead">Enter your owner password to send a booking offer.</p>
+      <h1>Owner portal</h1>
+      <p className="bk-lead">Enter your owner password to manage your offers.</p>
       <form onSubmit={submit}>
         <div className="bk-field">
           <label htmlFor="pw">Password</label>

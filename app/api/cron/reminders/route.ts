@@ -18,6 +18,19 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = createAdminClient();
+
+  // Housekeeping: lapse any open offers past their hold window so their dates
+  // free up. (Expiry is also enforced live at checkout, but this keeps the
+  // table tidy and the owner portal accurate.)
+  const nowIso = new Date().toISOString();
+  const { data: expiredRows } = await supabase
+    .from("bookings")
+    .update({ status: "expired" })
+    .eq("status", "offer_sent")
+    .lt("expires_at", nowIso)
+    .select("id");
+  const expired = expiredRows?.length ?? 0;
+
   const { data, error } = await supabase
     .from("bookings")
     .select("*")
@@ -73,5 +86,5 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ok: true, reminders, checkins });
+  return NextResponse.json({ ok: true, reminders, checkins, expired });
 }
