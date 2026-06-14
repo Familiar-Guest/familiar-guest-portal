@@ -69,12 +69,12 @@ function WaitlistForm({ buttonStyle }: { buttonStyle?: React.CSSProperties }) {
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
             <path
               d="M9 12l2 2 4-4"
-              stroke="#14543F"
+              stroke="#0F4D45"
               strokeWidth="2.4"
               strokeLinecap="round"
               strokeLinejoin="round"
             />
-            <circle cx="12" cy="12" r="9" stroke="#14543F" strokeWidth="2" />
+            <circle cx="12" cy="12" r="9" stroke="#0F4D45" strokeWidth="2" />
           </svg>{" "}
           You&rsquo;re on the list — we&rsquo;ll be in touch.
         </div>
@@ -115,7 +115,7 @@ function WaitlistForm({ buttonStyle }: { buttonStyle?: React.CSSProperties }) {
         {submitting ? "Joining…" : "Join the waitlist"}
       </button>
       {error && (
-        <div style={{ color: "var(--clay)", fontSize: "13px", marginTop: "8px", width: "100%" }}>
+        <div style={{ color: "var(--coral-ink)", fontSize: "13px", marginTop: "8px", width: "100%" }}>
           {error}
         </div>
       )}

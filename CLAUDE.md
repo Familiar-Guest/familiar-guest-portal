@@ -306,14 +306,18 @@ The following are safety-critical and should be reviewed by an experienced engin
 
 **Doc generation:** styled docs are authored in Markdown with a CSS `<style>` block + YAML front matter, then rendered to PDF via `npx md-to-pdf <file.md>` and to Word via `npx markdown-docx -i <file.md> -o <file.docx>`. All use the brand design tokens below.
 
-### Marketing site design tokens
-- Display font: Fraunces (Google Fonts, serif, warm editorial)
-- Body font: Hanken Grotesk (Google Fonts, clean grotesk)
-- Primary accent: `#14543F` (deep forest green)
-- Secondary accent: `#C0673E` (terracotta clay)
-- Background: `#FBF6EE` (warm cream/paper)
-- Ink: `#2A241E` (warm near-black)
-- Border/line: `#E6DBCB`
+### Marketing site design tokens — "Tidewater" (adopted June 2026, see `docs/tidewater-style-guide.md`)
+- Display font: Fraunces (Google Fonts, serif) — also the wordmark/logo face, weight 600
+- Body/UI font: Inter (Google Fonts, sans)
+- Primary brand: `#0F4D45` (deep ocean teal) — nav, primary buttons, anchors
+- Secondary teal: `#14635A` — labels, icons, secondary badges/buttons
+- Seaglass: `#5FB8A4` — trust/verified badge tints
+- Coral accent: `#D9663F` — reserved for at most ONE primary CTA per screen
+- Background (cream): `#F6F1E8`; secondary surface (sand): `#E4D8C4`
+- Ink/text: `#16302B`; muted text: `#4F605A`
+- Border/line: `#E0D6C5`
+- Radius: 6px (buttons/inputs/badges), 12px (cards) — no fully-rounded pills
+- Flat elevation — hairline borders instead of drop shadows
 
 ---
 
