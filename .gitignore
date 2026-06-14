@@ -16,6 +16,10 @@ node_modules/
 out/
 dist/
 build/
+*.tsbuildinfo
+
+# Office temp lock files
+~$*
 
 # Vercel
 .vercel/
@@ -24,3 +28,5 @@ build/
 *.log
 .DS_Store
 Thumbs.db
+
+.vercel

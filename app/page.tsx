@@ -48,6 +48,8 @@ function HomeMark() {
 
 function WaitlistForm({ buttonStyle }: { buttonStyle?: React.CSSProperties }) {
   const [joined, setJoined] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (joined) {
     return (
@@ -83,15 +85,40 @@ function WaitlistForm({ buttonStyle }: { buttonStyle?: React.CSSProperties }) {
   return (
     <form
       className="waitlist reveal d4"
-      onSubmit={(e) => {
+      onSubmit={async (e) => {
         e.preventDefault();
-        setJoined(true);
+        setError(null);
+        const form = e.currentTarget;
+        const email = (form.elements.namedItem("email") as HTMLInputElement).value;
+        setSubmitting(true);
+        try {
+          const res = await fetch("/api/waitlist", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email }),
+          });
+          if (!res.ok) {
+            const data = await res.json().catch(() => null);
+            setError(data?.error ?? "Something went wrong. Please try again.");
+            return;
+          }
+          setJoined(true);
+        } catch {
+          setError("Something went wrong. Please try again.");
+        } finally {
+          setSubmitting(false);
+        }
       }}
     >
-      <input type="email" placeholder="you@email.com" aria-label="Email" required />
-      <button className="btn btn-primary" type="submit" style={buttonStyle}>
-        Join the waitlist
+      <input type="email" name="email" placeholder="you@email.com" aria-label="Email" required />
+      <button className="btn btn-primary" type="submit" style={buttonStyle} disabled={submitting}>
+        {submitting ? "Joining…" : "Join the waitlist"}
       </button>
+      {error && (
+        <div style={{ color: "var(--clay)", fontSize: "13px", marginTop: "8px", width: "100%" }}>
+          {error}
+        </div>
+      )}
     </form>
   );
 }
@@ -141,14 +168,14 @@ export default function Home() {
           <div>
             <p className="eyebrow reveal d1">For owners, not platforms</p>
             <h1 className="reveal d2">
-              Take your favorite
+              Host familiar
               <br />
               guests <span className="it">direct.</span>
             </h1>
             <p className="sub reveal d3">
               Familiar Guest is the simplest way to rent to the people who
               already love your place. Keep the relationship, skip the 15%, and
-              let us handle the trust.
+              let us handle the trust. <strong>Your first booking is free.</strong>
             </p>
             <WaitlistForm />
             <p className="micro reveal d5">
@@ -162,7 +189,7 @@ export default function Home() {
                 />
                 <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
               </svg>
-              No commitment · Bring your photos in a tap, we write your listing
+              First booking free · No monthly fee · No card to start
             </p>
           </div>
           <div className="preview reveal d4">
@@ -609,28 +636,37 @@ export default function Home() {
         <div className="wrap">
           <div className="sec-head center">
             <p className="eyebrow">Simple pricing</p>
-            <h2>Pay only when it makes sense for you.</h2>
+            <h2>Start free. Pay only when you get paid.</h2>
+          </div>
+          <div className="launch-offer reveal">
+            <span className="lo-badge">Launch offer</span>
+            <span className="lo-text">
+              <strong>Your first booking is free</strong> — no monthly fee, no
+              card to start. Founding owners lock <strong>Host at $19/mo for
+              life</strong>.
+            </span>
           </div>
           <div className="price-grid">
             <div className="plan">
+              <span className="tag tag-soft">Start here</span>
               <h3>Pay-as-you-go</h3>
               <div className="amt">
-                5%<span> + card fees</span>
+                Free<span> to start</span>
               </div>
-              <p className="pdesc">Earn as you book. No monthly fee, cancel anytime.</p>
+              <p className="pdesc">No monthly fee, no card to start. Cancel anytime.</p>
               <ul>
                 <li>
-                  <Check /> 5% per paid booking
+                  <Check /> <strong>First booking free</strong>
                 </li>
                 <li>
-                  <Check /> $5 flat per free booking
+                  <Check /> Then just 5% per paid booking
                 </li>
                 <li>
-                  <Check /> No commitment
+                  <Check /> No commitment, no card to sign up
                 </li>
               </ul>
               <a href="#waitlist" className="btn btn-ghost">
-                Get started
+                Get started free
               </a>
             </div>
             <div className="plan">
@@ -655,7 +691,7 @@ export default function Home() {
               </a>
             </div>
             <div className="plan feature">
-              <span className="tag">Most popular</span>
+              <span className="tag">Most owners land here</span>
               <h3>Host</h3>
               <div className="amt">
                 $29<span>/mo</span>
@@ -670,6 +706,9 @@ export default function Home() {
                 </li>
                 <li>
                   <Check /> Full guest book &amp; messaging
+                </li>
+                <li>
+                  <Check /> <strong>Founding owners: $19/mo for life</strong>
                 </li>
               </ul>
               <a href="#waitlist" className="btn btn-primary">
@@ -797,8 +836,9 @@ export default function Home() {
           <div className="cta">
             <h2>Keep the guests you&rsquo;ve earned.</h2>
             <p>
-              Join the waitlist and be first to take your repeat guests direct
-              when we open.
+              Join the waitlist to host your repeat guests direct when we open —
+              your first booking is free, and founding owners lock Host at
+              $19/mo for life.
             </p>
             <WaitlistForm buttonStyle={{ background: "var(--forest)" }} />
           </div>
@@ -858,8 +898,14 @@ export default function Home() {
               <div className="foot-col">
                 <h4>Company</h4>
                 <a href="#">About</a>
-                <a href="#">Contact</a>
+                <a href="mailto:info@famguest.com">Contact</a>
                 <a href="#">Help</a>
+              </div>
+              <div className="foot-col">
+                <h4>Legal</h4>
+                <a href="/terms">Terms of Service</a>
+                <a href="/privacy">Privacy Policy</a>
+                <a href="/cookies">Cookie Policy</a>
               </div>
             </div>
           </div>

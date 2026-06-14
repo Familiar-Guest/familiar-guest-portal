@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Familiar Guest — Take your favorite guests direct",
+  title: "Familiar Guest — Host familiar guests direct",
   description:
-    "Familiar Guest is the simplest way to rent to the people who already love your place. Keep the relationship, skip the 15%, and let us handle the trust.",
+    "Familiar Guest is the simplest way to rent to the people who already love your place. Keep the relationship, skip the 15%, and let us handle the trust. Your first booking is free.",
 };
 
 export default function RootLayout({

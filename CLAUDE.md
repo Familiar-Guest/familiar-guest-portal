@@ -150,13 +150,20 @@ When owner is uploading, display these prompts:
 - Card on file required from owner ONLY if they enable free bookings
 - Stripe Connect Custom: owners identify as "getting paid by Familiar Guest," not as Stripe accounts
 - Plan prices are in USD (owners are US/Canadian). Offer ~2 months free on annual billing (Starter $150/yr, Host $290/yr, Pro $490/yr).
-- **Launch offer: first month free** on any monthly plan (for testing). Owners remain liable for payment processing/card fees and any add-ons they use (guest screening, damage protection). The free month waives the subscription fee only.
+- **Acquisition hook (LOCKED June 2026): PAYG-first, "first booking free," no card to start.** This is the primary launch offer and the front door for new owners — chosen over the prior "first month free" because for this audience the barrier is *risk and effort, not price.* Specifics:
+  - **Sign up free — no monthly fee, no card required.** Removes commitment/setup risk; nothing to lose by setting up and testing.
+  - **First paid booking: 0% Familiar Guest commission** (owner pays only the pass-through payment processing). The owner experiences the full core value — escrow, payout, Airbnb fee gone, guest relationship kept — at zero FG cost. This is *forgone* revenue (~$50–90 on a typical Baja booking), not a cash outlay, and is a cheaper CAC than the old free month.
+  - **After the first booking:** 5% PAYG, or the owner switches to a flat plan when the math flips (surface the crossover automatically).
+  - **Subscription plans (Starter/Host/Pro) are the "grow into it" upgrade, NOT the entry point.** Lead acquisition with the free PAYG entry; the 2+-unit owner profile funnels naturally into Host (see Crossover logic). This is a Trojan horse for subscription revenue, not a discount that cannibalizes it.
+  - **Founding-owner urgency lever (waitlist):** founding owners **lock Host at $19/mo for life** (vs. $29). Drives sign-ups *now* and appeals to the multi-unit owner who lands on Host anyway. Pairs with the owner-preview invite.
+  - Owners always remain liable for payment processing/card fees and any add-ons (guest screening, damage protection); the offer waives FG commission on the first booking only.
+- **Profit guardrails for the aggressive hook:** keep processing at cost; defend margin via add-on attach (screening/protected booking) and the planned **transparent ~0.75% FX spread** on cross-border payouts (GMV-linked — the lever that guards against OpEx outrunning revenue). Do NOT paywall trust/money-movement features to compensate.
 - Plan tiering detail: Pay-as-you-go = pay per booking. Starter = 1 property. Host = up to 5 properties. Pro = 6–10 properties, consolidated multi-property reports, priority support. **All plans include 5 caretaker seats** — this is a baseline feature, NOT a marketed/highlighted differentiator; keep it out of pricing comparisons and sales copy.
 - **ALL plans (including monthly subscriptions) are subject to payment processing fees** — card + FX, passed through at cost. State this clearly on every pricing surface.
 - **Property cap: 10 per owner for now.** We are deliberately NOT offering tiers above 10 properties — the focus is individual renters, not professional managers/portfolios.
 
 ### Crossover logic
-Owner should switch from Pay-as-you-go to **Starter** when annual booking volume exceeds ~$3,600 (the point where the $180/yr Starter flat fee beats 5% commission), then to **Host** when they add a second property. Given Los Cabos/Baja nightly rates, most active owners cross the first threshold quickly — steering the base toward predictable subscription revenue.
+Owner should switch from Pay-as-you-go to **Starter** when annual booking volume exceeds ~$3,600 (the point where the $180/yr Starter flat fee beats 5% commission), then to **Host** when they add a second property. Given Los Cabos/Baja nightly rates, most active owners cross the first threshold quickly — steering the base toward predictable subscription revenue. **This crossover is what makes the PAYG-first acquisition hook safe:** the 2+-unit profile hits the Host threshold within a season or two, so free PAYG entry funnels into Host rather than parking owners on the lowest-revenue tier. Surface the crossover prompt in-product ("you'd save $X on Host") at the moment it flips.
 
 ---
 
