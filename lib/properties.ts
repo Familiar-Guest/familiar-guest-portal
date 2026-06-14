@@ -1,4 +1,5 @@
 const CURRENCIES = ["usd", "cad", "mxn"];
+const CLEANING_FEE_TYPES = ["standard", "daily", "alt1", "alt2"];
 
 export type PropertyInput = {
   name: string;
@@ -9,6 +10,10 @@ export type PropertyInput = {
   currency: string;
   nightly_rate_cents: number | null;
   cleaning_fee_cents: number;
+  cleaning_fee_type: string;
+  daily_cleaning_fee_cents: number;
+  alt_cleaning_fee_1_cents: number;
+  alt_cleaning_fee_2_cents: number;
   min_nights: number;
   is_listed: boolean;
   airbnb_ical_url: string | null;
@@ -36,11 +41,17 @@ export function parsePropertyInput(
     String(body.checkin_instructions ?? "").trim() || null;
 
   const photos = Array.isArray(body.photos)
-    ? (body.photos as unknown[]).map((p) => String(p)).filter(Boolean).slice(0, 12)
+    ? (body.photos as unknown[]).map((p) => String(p)).filter(Boolean).slice(0, 10)
     : [];
 
   const nightly_rate_cents = centsOrNull(body.nightly_rate);
   const cleaning_fee_cents = centsOrNull(body.cleaning_fee) ?? 0;
+  const daily_cleaning_fee_cents = centsOrNull(body.daily_cleaning_fee) ?? 0;
+  const alt_cleaning_fee_1_cents = centsOrNull(body.alt_cleaning_fee_1) ?? 0;
+  const alt_cleaning_fee_2_cents = centsOrNull(body.alt_cleaning_fee_2) ?? 0;
+  const cleaning_fee_type = CLEANING_FEE_TYPES.includes(String(body.cleaning_fee_type))
+    ? String(body.cleaning_fee_type)
+    : "standard";
   const min_nights = Math.max(1, Math.round(Number(body.min_nights) || 1));
   const is_listed = body.is_listed === true;
 
@@ -64,6 +75,10 @@ export function parsePropertyInput(
       currency,
       nightly_rate_cents,
       cleaning_fee_cents,
+      cleaning_fee_type,
+      daily_cleaning_fee_cents,
+      alt_cleaning_fee_1_cents,
+      alt_cleaning_fee_2_cents,
       min_nights,
       is_listed,
       airbnb_ical_url,

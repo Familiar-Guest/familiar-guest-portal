@@ -34,6 +34,8 @@ export interface Booking {
   created_at: string;
 }
 
+export type CleaningFeeType = "standard" | "daily" | "alt1" | "alt2";
+
 export interface Property {
   id: string;
   owner_id: string;
@@ -46,7 +48,11 @@ export interface Property {
   gps_lng: number | null;
   currency: string;
   nightly_rate_cents: number | null;
-  cleaning_fee_cents: number;
+  cleaning_fee_cents: number; // "Standard Cleaning Fee" amount
+  cleaning_fee_type: CleaningFeeType;
+  daily_cleaning_fee_cents: number;
+  alt_cleaning_fee_1_cents: number;
+  alt_cleaning_fee_2_cents: number;
   min_nights: number;
   is_listed: boolean;
   airbnb_ical_url: string | null;

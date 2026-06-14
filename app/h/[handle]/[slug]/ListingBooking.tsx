@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { formatMoney, nights as nightsBetween } from "@/lib/format";
+import type { CleaningFeeType } from "@/lib/types";
 
 interface Busy {
   start: string;
@@ -18,7 +19,11 @@ export function ListingBooking({
   propertyId,
   currency,
   nightlyRateCents,
+  cleaningFeeType,
   cleaningFeeCents,
+  dailyCleaningFeeCents,
+  altCleaningFee1Cents,
+  altCleaningFee2Cents,
   minNights,
   busy,
   loginNext,
@@ -26,7 +31,11 @@ export function ListingBooking({
   propertyId: string;
   currency: string;
   nightlyRateCents: number;
+  cleaningFeeType: CleaningFeeType;
   cleaningFeeCents: number;
+  dailyCleaningFeeCents: number;
+  altCleaningFee1Cents: number;
+  altCleaningFee2Cents: number;
   minNights: number;
   busy: Busy[];
   loginNext: string;
@@ -44,9 +53,28 @@ export function ListingBooking({
     if (n < minNights) return { error: `${minNights}-night minimum.` };
     if (overlaps(busy, checkIn, checkOut)) return { error: "Some of those nights are unavailable." };
     const nightly = nightlyRateCents * n;
-    const total = nightly + cleaningFeeCents;
-    return { n, nightly, total };
-  }, [checkIn, checkOut, minNights, busy, nightlyRateCents, cleaningFeeCents]);
+    const cleaning =
+      cleaningFeeType === "daily"
+        ? dailyCleaningFeeCents * n
+        : cleaningFeeType === "alt1"
+        ? altCleaningFee1Cents
+        : cleaningFeeType === "alt2"
+        ? altCleaningFee2Cents
+        : cleaningFeeCents;
+    const total = nightly + cleaning;
+    return { n, nightly, cleaning, total };
+  }, [
+    checkIn,
+    checkOut,
+    minNights,
+    busy,
+    nightlyRateCents,
+    cleaningFeeType,
+    cleaningFeeCents,
+    dailyCleaningFeeCents,
+    altCleaningFee1Cents,
+    altCleaningFee2Cents,
+  ]);
 
   const valid = calc && !("error" in calc);
 
@@ -109,10 +137,10 @@ export function ListingBooking({
             <span>{formatMoney(nightlyRateCents, currency)} × {calc.n} nights</span>
             <span>{formatMoney(calc.nightly, currency)}</span>
           </div>
-          {cleaningFeeCents > 0 && (
+          {calc.cleaning > 0 && (
             <div className="lq-row">
               <span>Cleaning fee</span>
-              <span>{formatMoney(cleaningFeeCents, currency)}</span>
+              <span>{formatMoney(calc.cleaning, currency)}</span>
             </div>
           )}
           <div className="lq-row lq-total">

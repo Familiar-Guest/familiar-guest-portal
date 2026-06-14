@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatMoney } from "@/lib/format";
+import { cleaningFeeForStay } from "@/lib/availability";
 import { computeBusyRanges } from "@/lib/availability";
 import type { Property } from "@/lib/types";
 import { ListingBooking } from "./ListingBooking";
@@ -54,7 +55,7 @@ export default async function ListingDetailPage({
 
       {property.photos.length > 0 && (
         <div className="listing-gallery">
-          {property.photos.slice(0, 5).map((src, i) => (
+          {property.photos.slice(0, 10).map((src, i) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img key={src} src={src} alt={`${property.name} ${i + 1}`} className={i === 0 ? "lg-main" : "lg-thumb"} />
           ))}
@@ -70,8 +71,14 @@ export default async function ListingDetailPage({
             {property.nightly_rate_cents != null && (
               <span><strong>{formatMoney(property.nightly_rate_cents, property.currency)}</strong> / night</span>
             )}
-            {property.cleaning_fee_cents > 0 && (
-              <span>{formatMoney(property.cleaning_fee_cents, property.currency)} cleaning</span>
+            {property.cleaning_fee_type === "daily" ? (
+              property.daily_cleaning_fee_cents > 0 && (
+                <span>{formatMoney(property.daily_cleaning_fee_cents, property.currency)}/night cleaning</span>
+              )
+            ) : (
+              cleaningFeeForStay(property, property.min_nights) > 0 && (
+                <span>{formatMoney(cleaningFeeForStay(property, property.min_nights), property.currency)} cleaning</span>
+              )
             )}
             <span>{property.min_nights}-night minimum</span>
           </div>
@@ -81,7 +88,11 @@ export default async function ListingDetailPage({
           propertyId={property.id}
           currency={property.currency}
           nightlyRateCents={property.nightly_rate_cents ?? 0}
+          cleaningFeeType={property.cleaning_fee_type}
           cleaningFeeCents={property.cleaning_fee_cents}
+          dailyCleaningFeeCents={property.daily_cleaning_fee_cents}
+          altCleaningFee1Cents={property.alt_cleaning_fee_1_cents}
+          altCleaningFee2Cents={property.alt_cleaning_fee_2_cents}
           minNights={property.min_nights}
           busy={busy}
           loginNext={`/h/${handle}/${slug}`}

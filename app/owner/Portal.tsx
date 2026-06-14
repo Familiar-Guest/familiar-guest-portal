@@ -7,8 +7,9 @@ import type { Booking, Property } from "@/lib/types";
 import { PropertyForm } from "./PropertyForm";
 import { OfferForm, type FormMode, type OfferInitial } from "./OfferForm";
 import { CalendarTab } from "./CalendarTab";
+import { SettingsTab } from "./SettingsTab";
 
-type Tab = "properties" | "calendar" | "bookings" | "offers";
+type Tab = "properties" | "calendar" | "bookings" | "offers" | "settings";
 
 type Overlay =
   | { kind: "none" }
@@ -31,8 +32,9 @@ function statusLabel(b: Booking): { text: string; cls: string } {
   return { text: `Offer sent${suffix}`, cls: "op-open" };
 }
 
-export function Portal({ ownerName, handle }: { ownerName: string; handle: string | null }) {
+export function Portal({ ownerName, handle: initialHandle }: { ownerName: string; handle: string | null }) {
   const [tab, setTab] = useState<Tab>("properties");
+  const [handle, setHandle] = useState(initialHandle);
   const [properties, setProperties] = useState<Property[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -213,6 +215,12 @@ export function Portal({ ownerName, handle }: { ownerName: string; handle: strin
                     </div>
                   </div>
                   <div className="op-actions">
+                    <button
+                      className="op-link"
+                      onClick={() => setOverlay({ kind: "offer", mode: "create", initial: { property_id: p.id } })}
+                    >
+                      Invite guest
+                    </button>
                     <button className="op-link" onClick={() => setOverlay({ kind: "property", initial: p })}>
                       Edit
                     </button>
@@ -387,6 +395,9 @@ export function Portal({ ownerName, handle }: { ownerName: string; handle: strin
         </div>
       )}
 
+      {/* SETTINGS */}
+      {tab === "settings" && <SettingsTab onHandleChange={setHandle} />}
+
     </Shell>
   );
 }
@@ -435,6 +446,7 @@ function Shell({
     { id: "calendar", label: "Calendar" },
     { id: "bookings", label: "Booking activity" },
     { id: "offers", label: "Offers" },
+    { id: "settings", label: "Settings" },
   ];
   return (
     <div className="op-shell">
