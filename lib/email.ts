@@ -190,6 +190,28 @@ export function buildMessageEmail(
   };
 }
 
+/** Guest → owner message (sent from the guest "My stays" page). */
+export function buildGuestToOwnerEmail(
+  b: Booking,
+  message: string
+): { subject: string; html: string } {
+  const safe = message
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/\n/g, "<br>");
+  const box = `<div style="margin:14px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:15px;line-height:1.55;">${safe}</div>`;
+  const inner =
+    heading(`Message from ${b.guest_name}`) +
+    p(`Your guest ${b.guest_name} sent a message about their stay at ${b.property_name} (${formatDate(b.check_in)} → ${formatDate(b.check_out)}):`) +
+    box +
+    p(`<span style="font-size:13px;color:#8a7e72;">Reply to ${b.guest_email} to respond.</span>`);
+  return {
+    subject: `Message from ${b.guest_name} · ${b.property_name}`,
+    html: layout(inner),
+  };
+}
+
 /** 4. Check-in — 2 days before check-in. Includes any instructions the owner set. */
 export function buildCheckinEmail(b: Booking): {
   subject: string;

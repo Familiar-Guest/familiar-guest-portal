@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { OAuthButtons } from "../OAuthButtons";
 
 export default function SignupPage() {
   const [form, setForm] = useState({
@@ -43,6 +44,7 @@ export default function SignupPage() {
           Set up in minutes — add your property, link your calendar, and start
           taking direct bookings.
         </p>
+        <OAuthButtons />
         <form onSubmit={submit}>
           <div className="bk-field">
             <label htmlFor="full_name">Your name</label>

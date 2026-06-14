@@ -34,25 +34,29 @@ export async function middleware(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  const isAuthPage =
-    path === "/owner/login" || path === "/owner/signup";
+  const ownerAuthPage = path === "/owner/login" || path === "/owner/signup";
+  const guestAuthPage = path === "/guest/login";
+  const isAuthPage = ownerAuthPage || guestAuthPage;
 
-  if (path.startsWith("/owner") && !isAuthPage && !user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/owner/login";
-    return NextResponse.redirect(url);
+  // Gate the protected areas.
+  if (!user && !isAuthPage) {
+    if (path.startsWith("/owner")) return redirectTo(request, "/owner/login");
+    if (path.startsWith("/guest")) return redirectTo(request, "/guest/login");
   }
 
-  // Already signed in but sitting on an auth page → send to the portal.
-  if (isAuthPage && user) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/owner";
-    return NextResponse.redirect(url);
-  }
+  // Signed in but sitting on an auth page → send to the right home.
+  if (user && ownerAuthPage) return redirectTo(request, "/owner");
+  if (user && guestAuthPage) return redirectTo(request, "/guest");
 
   return response;
 }
 
+function redirectTo(request: NextRequest, pathname: string) {
+  const url = request.nextUrl.clone();
+  url.pathname = pathname;
+  return NextResponse.redirect(url);
+}
+
 export const config = {
-  matcher: ["/owner/:path*"],
+  matcher: ["/owner/:path*", "/guest/:path*"],
 };

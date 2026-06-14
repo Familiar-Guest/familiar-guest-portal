@@ -356,3 +356,13 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 .op-msg{background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:10px 12px}
 .op-msg-body{font-size:14px;color:var(--ink);white-space:pre-wrap}
 .op-msg-time{font-size:11px;color:var(--ink-soft);margin-top:5px}
+/* OAuth buttons */
+.oauth{margin-bottom:6px}
+.oauth-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:12px 16px;font-family:var(--body);font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;margin-bottom:10px;transition:border-color .15s,background .15s}
+.oauth-btn:hover{border-color:var(--ink)}
+.oauth-btn:disabled{opacity:.6;cursor:default}
+.oauth-divider{display:flex;align-items:center;text-align:center;color:var(--ink-soft);font-size:12px;margin:14px 0 4px}
+.oauth-divider::before,.oauth-divider::after{content:"";flex:1;border-top:1px solid var(--line)}
+.oauth-divider span{padding:0 12px;text-transform:uppercase;letter-spacing:.08em}
+/* guest stays */
+.guest-info{background:var(--paper-2);border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--ink)}

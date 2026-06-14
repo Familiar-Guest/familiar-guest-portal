@@ -88,6 +88,13 @@ export default async function BookingPage({
             </p>
           </>
         )}
+
+        <p className="bk-note" style={{ marginTop: 18, borderTop: "1px solid var(--line)", paddingTop: 16 }}>
+          Want all your bookings in one place?{" "}
+          <a href="/guest/login" style={{ color: "var(--forest)", fontWeight: 600 }}>
+            Sign in with Google or Apple
+          </a>
+        </p>
       </div>
     </div>
   );

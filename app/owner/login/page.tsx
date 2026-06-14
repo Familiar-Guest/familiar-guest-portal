@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { OAuthButtons } from "../OAuthButtons";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -32,6 +33,7 @@ export default function LoginPage() {
       <div className="bk-card" style={{ maxWidth: 400 }}>
         <h1>Owner sign in</h1>
         <p className="bk-lead">Welcome back. Sign in to manage your properties and bookings.</p>
+        <OAuthButtons />
         <form onSubmit={submit}>
           <div className="bk-field">
             <label htmlFor="email">Email</label>
