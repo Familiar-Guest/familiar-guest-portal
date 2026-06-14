@@ -516,11 +516,9 @@ export default function Home() {
               <div>
                 <h3>Direct bookings, full control</h3>
                 <p>
-                  You set the price, own every conversation, and keep your
-                  guest information — no platform algorithm in the middle.
-                  With fees a fraction of Airbnb&rsquo;s, you earn a higher
-                  margin while still passing savings on to your guests. A win
-                  for you, a win for them.
+                  Your price, your guests, your relationship — no algorithm in
+                  the middle. Fees a fraction of Airbnb&rsquo;s mean more for
+                  you and a better deal for them.
                 </p>
               </div>
             </div>
@@ -540,8 +538,8 @@ export default function Home() {
               <div>
                 <h3>One-click rebook</h3>
                 <p>
-                  &ldquo;Book the same week next year?&rdquo; Your returning
-                  guests confirm in seconds — the heart of a direct business.
+                  &ldquo;Same week next year?&rdquo; Returning guests confirm in
+                  seconds. Repeat bookings, on autopilot.
                 </p>
               </div>
             </div>
@@ -555,8 +553,8 @@ export default function Home() {
               <div>
                 <h3>Payments &amp; escrow</h3>
                 <p>
-                  Collect deposits and balances securely. Funds are held until
-                  check-in, and damage deposits release automatically.
+                  Funds held safely until check-in. Damage deposits release on
+                  their own. Guests pay with confidence.
                 </p>
               </div>
             </div>
@@ -581,8 +579,8 @@ export default function Home() {
               <div>
                 <h3>Built-in safeguards</h3>
                 <p>
-                  Optional guest screening and damage protection let you open to
-                  the public with the confidence of a big platform.
+                  Optional guest screening and damage protection — open to the
+                  public with big-platform peace of mind.
                 </p>
               </div>
             </div>
@@ -601,9 +599,9 @@ export default function Home() {
               <div>
                 <h3>Rental income &amp; tax accounting</h3>
                 <p>
-                  Income tracking, lodging-tax handling, and clean year-end
-                  documents for your accountant — across every property. The
-                  one thing no other platform offers owners.
+                  Income tracked, lodging taxes handled, year-end documents
+                  ready for your accountant — across every property. No other
+                  platform does this.
                 </p>
               </div>
             </div>
@@ -621,9 +619,9 @@ export default function Home() {
               <div>
                 <h3>Reminders &amp; check-in messages</h3>
                 <p>
-                  Automatic texts, WhatsApp, and email keep guests informed —
-                  including a check-in message with GPS-mapped directions
-                  straight to your door.
+                  Automatic text, WhatsApp, and email — including GPS directions
+                  straight to your door. Guests arrive informed, you stay
+                  hands-off.
                 </p>
               </div>
             </div>
