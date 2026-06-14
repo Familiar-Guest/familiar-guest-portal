@@ -307,7 +307,7 @@ The following are safety-critical and should be reviewed by an experienced engin
 **Doc generation:** styled docs are authored in Markdown with a CSS `<style>` block + YAML front matter, then rendered to PDF via `npx md-to-pdf <file.md>` and to Word via `npx markdown-docx -i <file.md> -o <file.docx>`. All use the brand design tokens below.
 
 ### Marketing site design tokens — "Tidewater" (adopted June 2026, see `docs/tidewater-style-guide.md`)
-- Display font: Fraunces (Google Fonts, serif) — also the wordmark/logo face, weight 600
+- Display font: **Georgia** (system serif, `Georgia,'Times New Roman',serif`) — also the wordmark/logo face, weight 600. (Switched away from Fraunces June 2026: its variable letterforms had distracting overshoot on f/d glyphs that no `opsz` setting fixed; Georgia is a clean, ubiquitous, screen-optimized serif. Do NOT re-introduce Fraunces.)
 - Body/UI font: Inter (Google Fonts, sans)
 - Primary brand: `#0F4D45` (deep ocean teal) — nav, primary buttons, anchors
 - Secondary teal: `#14635A` — labels, icons, secondary badges/buttons
