@@ -300,6 +300,7 @@ The following are safety-critical and should be reviewed by an experienced engin
 | Compliance & Tax Addendum | Cross-border tax/compliance (US+MX, non-US renters, e-sign/verification differences) | docs/business/compliance-and-tax-addendum.md |
 | Setup To-Do Checklist | Phased setup, YOU/CLAUDE/BOTH/COUNSEL tagging | docs/planning/setup-todo-checklist.md |
 | Feature Catalog | Master list of all features grouped by type (CORE vs NEW) | docs/planning/feature-catalog.md |
+| Product Roadmap | **Phase 2 and later** features (post-launch). Accounting file export = Phase 2; QuickBooks Online sync = Phase 3 | docs/planning/roadmap.md |
 | Owner Preview Invite | Founding-owner test invitation | docs/business/owner-preview-invite.md |
 
 **Doc generation:** styled docs are authored in Markdown with a CSS `<style>` block + YAML front matter, then rendered to PDF via `npx md-to-pdf <file.md>` and to Word via `npx markdown-docx -i <file.md> -o <file.docx>`. All use the brand design tokens below.
