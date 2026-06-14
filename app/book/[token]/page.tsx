@@ -76,7 +76,7 @@ export default async function BookingPage({
 
         {canPay && session && (
           <>
-            <PayButton token={booking.token} />
+            <PayButton token={booking.token} defaultPhone={session.phone} />
             <p className="bk-note">
               Secure payment. You won&rsquo;t be charged until you confirm on the
               next screen.

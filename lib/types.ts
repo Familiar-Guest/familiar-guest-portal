@@ -22,6 +22,8 @@ export interface Booking {
   currency: string;
   amount_cents: number;
   checkin_instructions: string | null;
+  guest_phone: string | null;
+  confirmation_method: "email" | "sms";
   status: BookingStatus;
   kind: OfferKind;
   expires_at: string | null; // ISO; when an unpaid offer lapses and frees its dates

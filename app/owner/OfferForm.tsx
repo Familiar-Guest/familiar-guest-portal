@@ -50,25 +50,49 @@ export function OfferForm({
   onDone: () => void;
   onCancel: () => void;
 }) {
+  const initialPropertyId = initial?.property_id ?? properties[0]?.id ?? "";
   const [form, setForm] = useState({
-    property_id: initial?.property_id ?? properties[0]?.id ?? "",
+    property_id: initialPropertyId,
     guest_name: initial?.guest_name ?? "",
     guest_email: initial?.guest_email ?? "",
     check_in: initial?.check_in ?? "",
     check_out: initial?.check_out ?? "",
     amount: initial?.amount ?? "",
-    checkin_instructions: initial?.checkin_instructions ?? "",
+    checkin_instructions:
+      initial?.checkin_instructions ??
+      properties.find((p) => p.id === initialPropertyId)?.checkin_instructions ??
+      "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [conflict, setConflict] = useState<Conflict | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+  // Once the owner edits the check-in instructions, stop overwriting them
+  // when the selected property changes.
+  const [instructionsTouched, setInstructionsTouched] = useState(
+    Boolean(initial?.checkin_instructions)
+  );
 
   const selectedProperty = properties.find((p) => p.id === form.property_id);
   const currency = (selectedProperty?.currency ?? "usd").toUpperCase();
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
+  }
+
+  function setProperty(id: string) {
+    setForm((f) => ({
+      ...f,
+      property_id: id,
+      checkin_instructions: instructionsTouched
+        ? f.checkin_instructions
+        : properties.find((p) => p.id === id)?.checkin_instructions ?? "",
+    }));
+  }
+
+  function setInstructions(value: string) {
+    setInstructionsTouched(true);
+    set("checkin_instructions", value);
   }
 
   async function submit(force: boolean) {
@@ -176,7 +200,7 @@ export function OfferForm({
             <select
               id="property"
               value={form.property_id}
-              onChange={(e) => set("property_id", e.target.value)}
+              onChange={(e) => setProperty(e.target.value)}
               required
             >
               {properties.map((p) => (
@@ -246,13 +270,16 @@ export function OfferForm({
         <div className="bk-field">
           <label htmlFor="checkin_instructions">
             Check-in instructions{" "}
-            <span style={{ fontWeight: 400 }}>(optional — sent 2 days before)</span>
+            <span style={{ fontWeight: 400 }}>
+              (sent 2 days before — pre-filled from the property's default,
+              edit as needed for this guest)
+            </span>
           </label>
           <textarea
             id="checkin_instructions"
             rows={4}
             value={form.checkin_instructions}
-            onChange={(e) => set("checkin_instructions", e.target.value)}
+            onChange={(e) => setInstructions(e.target.value)}
             placeholder="Door code, parking, WiFi, directions…"
           />
         </div>
