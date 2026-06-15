@@ -89,11 +89,24 @@ function summaryTable(b: Booking): string {
   const n = nights(b.check_in, b.check_out);
   const row = (label: string, value: string) =>
     `<tr><td style="padding:7px 0;color:#8a7e72;font-size:14px;">${label}</td><td style="padding:7px 0;text-align:right;font-size:14px;color:${INK};font-weight:600;">${value}</td></tr>`;
+  const priceRows =
+    b.nightly_rate_cents != null
+      ? row(
+          `${formatMoney(b.nightly_rate_cents, b.currency)} × ${n} ${
+            n === 1 ? "night" : "nights"
+          }`,
+          formatMoney(b.nightly_rate_cents * n, b.currency)
+        ) +
+        (b.cleaning_fee_cents > 0
+          ? row("Cleaning fee", formatMoney(b.cleaning_fee_cents, b.currency))
+          : "")
+      : "";
   return `<table width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0;border-top:1px solid ${LINE};border-bottom:1px solid ${LINE};">
     ${row("Property", b.property_name)}
     ${row("Check-in", formatDate(b.check_in))}
     ${row("Check-out", formatDate(b.check_out))}
     ${row("Nights", String(n))}
+    ${priceRows}
     ${row("Total", formatMoney(b.amount_cents, b.currency))}
   </table>`;
 }

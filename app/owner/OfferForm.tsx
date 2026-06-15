@@ -2,6 +2,14 @@
 
 import { useState } from "react";
 import type { Property } from "@/lib/types";
+import { formatMoney, nights } from "@/lib/format";
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Cents → a plain editable amount string ("250.00" → "250"). Empty when unset/zero. */
+function centsToStr(cents: number | null | undefined): string {
+  return cents != null && cents > 0 ? String(cents / 100) : "";
+}
 
 export type FormMode = "create" | "edit" | "rebook";
 
@@ -13,7 +21,8 @@ export interface OfferInitial {
   guest_email?: string;
   check_in?: string;
   check_out?: string;
-  amount?: string;
+  nightly_rate?: string;
+  cleaning_fee?: string;
   checkin_instructions?: string;
 }
 
@@ -51,26 +60,33 @@ export function OfferForm({
   onCancel: () => void;
 }) {
   const initialPropertyId = initial?.property_id ?? properties[0]?.id ?? "";
+  const initialProperty = properties.find((p) => p.id === initialPropertyId);
   const [form, setForm] = useState({
     property_id: initialPropertyId,
     guest_name: initial?.guest_name ?? "",
     guest_email: initial?.guest_email ?? "",
     check_in: initial?.check_in ?? "",
     check_out: initial?.check_out ?? "",
-    amount: initial?.amount ?? "",
+    nightly_rate:
+      initial?.nightly_rate ?? centsToStr(initialProperty?.nightly_rate_cents),
+    cleaning_fee:
+      initial?.cleaning_fee ?? centsToStr(initialProperty?.cleaning_fee_cents),
     checkin_instructions:
       initial?.checkin_instructions ??
-      properties.find((p) => p.id === initialPropertyId)?.checkin_instructions ??
+      initialProperty?.checkin_instructions ??
       "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [conflict, setConflict] = useState<Conflict | null>(null);
   const [result, setResult] = useState<Result | null>(null);
-  // Once the owner edits the check-in instructions, stop overwriting them
-  // when the selected property changes.
+  // Once the owner edits a field, stop overwriting it when the selected
+  // property changes (the property's defaults seed the field, then back off).
   const [instructionsTouched, setInstructionsTouched] = useState(
     Boolean(initial?.checkin_instructions)
+  );
+  const [pricingTouched, setPricingTouched] = useState(
+    Boolean(initial?.nightly_rate || initial?.cleaning_fee)
   );
 
   const selectedProperty = properties.find((p) => p.id === form.property_id);
@@ -81,12 +97,19 @@ export function OfferForm({
   }
 
   function setProperty(id: string) {
+    const p = properties.find((x) => x.id === id);
     setForm((f) => ({
       ...f,
       property_id: id,
       checkin_instructions: instructionsTouched
         ? f.checkin_instructions
-        : properties.find((p) => p.id === id)?.checkin_instructions ?? "",
+        : p?.checkin_instructions ?? "",
+      nightly_rate: pricingTouched
+        ? f.nightly_rate
+        : centsToStr(p?.nightly_rate_cents),
+      cleaning_fee: pricingTouched
+        ? f.cleaning_fee
+        : centsToStr(p?.cleaning_fee_cents),
     }));
   }
 
@@ -94,6 +117,23 @@ export function OfferForm({
     setInstructionsTouched(true);
     set("checkin_instructions", value);
   }
+
+  function setPricing(key: "nightly_rate" | "cleaning_fee", value: string) {
+    setPricingTouched(true);
+    set(key, value);
+  }
+
+  // Live total preview: nightly rate × nights + cleaning fee.
+  const stayNights =
+    DATE_RE.test(form.check_in) &&
+    DATE_RE.test(form.check_out) &&
+    form.check_out > form.check_in
+      ? nights(form.check_in, form.check_out)
+      : 0;
+  const nightlyCents = Math.round((Number(form.nightly_rate) || 0) * 100);
+  const cleaningCents = Math.round((Number(form.cleaning_fee) || 0) * 100);
+  const totalCents =
+    stayNights > 0 ? nightlyCents * stayNights + cleaningCents : 0;
 
   async function submit(force: boolean) {
     setLoading(true);
@@ -105,7 +145,8 @@ export function OfferForm({
     const method = isEdit ? "PATCH" : "POST";
     const payload = {
       ...form,
-      amount: Number(form.amount),
+      nightly_rate: Number(form.nightly_rate),
+      cleaning_fee: Number(form.cleaning_fee) || 0,
       kind: mode === "rebook" ? "rebook" : "offer",
       force,
     };
@@ -254,19 +295,62 @@ export function OfferForm({
             />
           </div>
         </div>
-        <div className="bk-field">
-          <label htmlFor="amount">Total price ({currency})</label>
-          <input
-            id="amount"
-            type="number"
-            min="1"
-            step="0.01"
-            value={form.amount}
-            onChange={(e) => set("amount", e.target.value)}
-            placeholder="1200.00"
-            required
-          />
+        <div className="bk-grid2">
+          <div className="bk-field">
+            <label htmlFor="nightly_rate">Nightly rate ({currency})</label>
+            <input
+              id="nightly_rate"
+              type="number"
+              min="1"
+              step="0.01"
+              value={form.nightly_rate}
+              onChange={(e) => setPricing("nightly_rate", e.target.value)}
+              placeholder="250.00"
+              required
+            />
+          </div>
+          <div className="bk-field">
+            <label htmlFor="cleaning_fee">
+              Cleaning fee ({currency}){" "}
+              <span style={{ fontWeight: 400 }}>(from property default)</span>
+            </label>
+            <input
+              id="cleaning_fee"
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.cleaning_fee}
+              onChange={(e) => setPricing("cleaning_fee", e.target.value)}
+              placeholder="0.00"
+            />
+          </div>
         </div>
+
+        {stayNights > 0 && nightlyCents > 0 && (
+          <div className="bk-summary" style={{ margin: "0 0 18px" }}>
+            <div className="bk-row">
+              <span className="bk-label">
+                {formatMoney(nightlyCents, currency)} × {stayNights}{" "}
+                {stayNights === 1 ? "night" : "nights"}
+              </span>
+              <span className="bk-val">
+                {formatMoney(nightlyCents * stayNights, currency)}
+              </span>
+            </div>
+            {cleaningCents > 0 && (
+              <div className="bk-row">
+                <span className="bk-label">Cleaning fee</span>
+                <span className="bk-val">
+                  {formatMoney(cleaningCents, currency)}
+                </span>
+              </div>
+            )}
+            <div className="bk-row bk-total">
+              <span className="bk-label">Guest pays</span>
+              <span className="bk-val">{formatMoney(totalCents, currency)}</span>
+            </div>
+          </div>
+        )}
         <div className="bk-field">
           <label htmlFor="checkin_instructions">
             Check-in instructions{" "}

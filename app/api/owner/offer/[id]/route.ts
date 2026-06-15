@@ -4,6 +4,7 @@ import { getOwner } from "@/lib/auth";
 import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
 import { buildOfferEmail, sendEmail, bookingUrl } from "@/lib/email";
 import { findInternalConflict, offerExpiresAt } from "@/lib/offers";
+import { nights } from "@/lib/format";
 import type { Booking, Property } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -57,10 +58,19 @@ export async function PATCH(
     return bad("Enter valid check-in and check-out dates.");
   if (check_out <= check_in) return bad("Check-out must be after check-in.");
 
-  const amount = Number(body.amount);
-  if (!Number.isFinite(amount) || amount <= 0)
-    return bad("Enter a price greater than zero.");
-  const amount_cents = Math.round(amount * 100);
+  const nightly_rate = Number(body.nightly_rate);
+  if (!Number.isFinite(nightly_rate) || nightly_rate <= 0)
+    return bad("Enter a nightly rate greater than zero.");
+  const nightly_rate_cents = Math.round(nightly_rate * 100);
+
+  const cleaning_raw = Number(body.cleaning_fee);
+  const cleaning_fee_cents =
+    Number.isFinite(cleaning_raw) && cleaning_raw >= 0
+      ? Math.round(cleaning_raw * 100)
+      : current.cleaning_fee_cents ?? 0;
+
+  const amount_cents =
+    nightly_rate_cents * nights(check_in, check_out) + cleaning_fee_cents;
 
   if (!force) {
     const clash = await findInternalConflict(supabase, {
@@ -111,6 +121,8 @@ export async function PATCH(
       check_in,
       check_out,
       amount_cents,
+      nightly_rate_cents,
+      cleaning_fee_cents,
       checkin_instructions,
       status: "offer_sent",
       expires_at: offerExpiresAt(),

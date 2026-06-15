@@ -86,6 +86,8 @@ export async function POST(request: NextRequest) {
       check_out,
       currency: property.currency,
       amount_cents: q.amount_cents,
+      nightly_rate_cents: property.nightly_rate_cents,
+      cleaning_fee_cents: q.cleaning_cents,
       checkin_instructions: property.checkin_instructions,
       kind: "request",
       status: "requested",

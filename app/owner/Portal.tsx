@@ -411,7 +411,8 @@ function editInitial(b: Booking): OfferInitial {
     guest_email: b.guest_email,
     check_in: b.check_in,
     check_out: b.check_out,
-    amount: centsToAmount(b.amount_cents),
+    nightly_rate: b.nightly_rate_cents != null ? centsToAmount(b.nightly_rate_cents) : "",
+    cleaning_fee: b.cleaning_fee_cents ? centsToAmount(b.cleaning_fee_cents) : "",
     checkin_instructions: b.checkin_instructions ?? "",
   };
 }
@@ -421,7 +422,8 @@ function rebookInitial(b: Booking): OfferInitial {
     property_id: b.property_id ?? undefined,
     guest_name: b.guest_name,
     guest_email: b.guest_email,
-    amount: centsToAmount(b.amount_cents),
+    nightly_rate: b.nightly_rate_cents != null ? centsToAmount(b.nightly_rate_cents) : "",
+    cleaning_fee: b.cleaning_fee_cents ? centsToAmount(b.cleaning_fee_cents) : "",
     checkin_instructions: b.checkin_instructions ?? "",
   };
 }

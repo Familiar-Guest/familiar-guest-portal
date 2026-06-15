@@ -389,6 +389,7 @@ Pricing note: **$15 Starter is the thinnest-margin plan** — protect its margin
 - **Webhooks:** all Stripe webhooks must be verified with the webhook signing secret before processing. Log every webhook event. Handle idempotency.
 - **Errors:** never expose raw Stripe or Supabase errors to the guest-facing booking page. Map to friendly messages.
 - **Accessibility:** booking page and owner onboarding must be keyboard-navigable and screen-reader compatible. Guests booking include older adults and non-technical users.
+- **Email domain DNS (Resend on famguest.com):** a `_dmarc.famguest.com` TXT record (`v=DMARC1; p=none`) is REQUIRED alongside SPF/DKIM for reliable delivery — without it, Resend showed the domain as verified but mail to Gmail addresses was filtered/undelivered. This was NOT flagged as a requirement by Resend's domain-verification UI or by Vercel's DNS docs; added manually June 2026 via `vercel dns add famguest.com _dmarc TXT "v=DMARC1; p=none"`. If setting up email on a new domain, add DMARC proactively even if the provider's checklist doesn't ask for it.
 
 ---
 

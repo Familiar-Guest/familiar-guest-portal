@@ -20,7 +20,9 @@ export interface Booking {
   check_in: string; // YYYY-MM-DD
   check_out: string; // YYYY-MM-DD
   currency: string;
-  amount_cents: number;
+  amount_cents: number; // authoritative total = nightly_rate_cents × nights + cleaning_fee_cents
+  nightly_rate_cents: number | null; // per-night rate shown to the guest
+  cleaning_fee_cents: number; // total cleaning fee for the stay
   checkin_instructions: string | null;
   guest_phone: string | null;
   confirmation_method: "email" | "sms";
