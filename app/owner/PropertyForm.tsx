@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { Property } from "@/lib/types";
+import { RichTextEditor } from "./RichTextEditor";
 
 export function PropertyForm({
   initial,
@@ -28,6 +29,7 @@ export function PropertyForm({
     gps_lng: initial?.gps_lng != null ? String(initial.gps_lng) : "",
     airbnb_ical_url: initial?.airbnb_ical_url ?? "",
     checkin_instructions: initial?.checkin_instructions ?? "",
+    welcome_message_html: (initial as (Property & { welcome_message_html?: string }) | null | undefined)?.welcome_message_html ?? "",
     is_listed: initial?.is_listed ?? false,
   });
   const [photos, setPhotos] = useState<string[]>(initial?.photos ?? []);
@@ -237,8 +239,25 @@ export function PropertyForm({
         </div>
 
         <div className="bk-field">
-          <label htmlFor="ci">Default check-in instructions <span style={{ fontWeight: 400 }}>(optional)</span></label>
-          <textarea id="ci" rows={3} value={form.checkin_instructions} onChange={(e) => set("checkin_instructions", e.target.value)} placeholder="Door code, parking, WiFi, directions…" />
+          <label htmlFor="ci">Default check-in instructions <span style={{ fontWeight: 400 }}>(optional — sent 2 days before check-in)</span></label>
+          <RichTextEditor
+            id="ci"
+            value={form.checkin_instructions}
+            onChange={(html) => set("checkin_instructions", html)}
+            placeholder="Door code, parking, WiFi, directions…"
+            minHeight={100}
+          />
+        </div>
+
+        <div className="bk-field">
+          <label htmlFor="welcome">Welcome message <span style={{ fontWeight: 400 }}>(optional — included in the guest invitation email)</span></label>
+          <RichTextEditor
+            id="welcome"
+            value={form.welcome_message_html}
+            onChange={(html) => set("welcome_message_html", html)}
+            placeholder="A personal note to your guests — e.g. 'We're so happy to have you at Casa del Mar. Help yourself to the welcome basket!'"
+            minHeight={100}
+          />
         </div>
 
         <label className="ph-publish">

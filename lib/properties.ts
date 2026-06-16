@@ -18,6 +18,7 @@ export type PropertyInput = {
   is_listed: boolean;
   airbnb_ical_url: string | null;
   checkin_instructions: string | null;
+  welcome_message_html: string | null;
   gps_lat: number | null;
   gps_lng: number | null;
 };
@@ -39,6 +40,8 @@ export function parsePropertyInput(
     return { error: "The calendar link must start with http:// or https://" };
   const checkin_instructions =
     String(body.checkin_instructions ?? "").trim() || null;
+  const welcome_message_html =
+    String(body.welcome_message_html ?? "").trim() || null;
 
   const photos = Array.isArray(body.photos)
     ? (body.photos as unknown[]).map((p) => String(p)).filter(Boolean).slice(0, 10)
@@ -83,6 +86,7 @@ export function parsePropertyInput(
       is_listed,
       airbnb_ical_url,
       checkin_instructions,
+      welcome_message_html,
       gps_lat,
       gps_lng,
     },

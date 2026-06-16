@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { RichTextEditor } from "./RichTextEditor";
 
 export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: string | null) => void }) {
   const [publicName, setPublicName] = useState("");
   const [defaultName, setDefaultName] = useState("");
   const [handle, setHandle] = useState<string | null>(null);
+  const [welcomeHtml, setWelcomeHtml] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -20,6 +22,7 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
         setPublicName(data.public_name ?? "");
         setDefaultName(data.default_public_name ?? "");
         setHandle(data.handle ?? null);
+        setWelcomeHtml(data.welcome_message_html ?? "");
       }
       setLoading(false);
     })();
@@ -33,7 +36,7 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
     const res = await fetch("/api/owner/settings", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ public_name: publicName }),
+      body: JSON.stringify({ public_name: publicName, welcome_message_html: welcomeHtml }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -79,6 +82,20 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
             <code>famguest.com/h/{handle}</code>
           </div>
         )}
+
+        <div className="bk-field" style={{ marginTop: 24 }}>
+          <label htmlFor="welcome_msg">Default welcome message</label>
+          <p className="bk-note" style={{ textAlign: "left", marginBottom: 8 }}>
+            Included in the invitation email sent to guests. You can also edit it per-invite when sending a stay offer.
+          </p>
+          <RichTextEditor
+            id="welcome_msg"
+            value={welcomeHtml}
+            onChange={setWelcomeHtml}
+            placeholder="A personal note to your guests — e.g. 'We're so happy to have you! Help yourself to the welcome basket in the kitchen.'"
+            minHeight={100}
+          />
+        </div>
 
         <button className="bk-btn" type="submit" disabled={saving}>
           {saving ? "Saving…" : "Save"}

@@ -46,6 +46,12 @@ export async function POST(request: NextRequest) {
     String(body.checkin_instructions ?? "").trim() ||
     property.checkin_instructions ||
     null;
+  const bodyWelcome = String(body.welcome_message_html ?? "").trim();
+  let welcome_message_html: string | null = bodyWelcome || (property as Property & { welcome_message_html?: string }).welcome_message_html || null;
+  if (!welcome_message_html) {
+    const { data: ownerRow } = await supabase.from("owners").select("welcome_message_html").eq("id", owner.id).single();
+    welcome_message_html = (ownerRow as { welcome_message_html?: string } | null)?.welcome_message_html ?? null;
+  }
   const kind: OfferKind = KINDS.includes(body.kind as OfferKind)
     ? (body.kind as OfferKind)
     : "offer";
@@ -119,7 +125,7 @@ export async function POST(request: NextRequest) {
     return bad("Could not create the offer. Please try again.", 500);
   }
 
-  const booking = data as Booking;
+  const booking: Booking = { ...(data as Booking), welcome_message_html };
   const { subject, html } = buildOfferEmail(booking);
   const sent = await sendEmail({
     to: booking.guest_email,

@@ -24,6 +24,7 @@ export interface Booking {
   nightly_rate_cents: number | null; // per-night rate shown to the guest
   cleaning_fee_cents: number; // total cleaning fee for the stay
   checkin_instructions: string | null;
+  welcome_message_html: string | null;
   guest_phone: string | null;
   confirmation_method: "email" | "sms";
   status: BookingStatus;
@@ -61,6 +62,7 @@ export interface Property {
   is_listed: boolean;
   airbnb_ical_url: string | null;
   checkin_instructions: string | null;
+  welcome_message_html: string | null;
   created_at: string;
 }
 

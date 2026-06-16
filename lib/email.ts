@@ -141,6 +141,9 @@ export function buildOfferEmail(b: Booking): { subject: string; html: string } {
   const lead = isRebook
     ? `Hi ${b.guest_name}, great to have you back! Your host has lined up these dates at ${b.property_name}. Review the details below and complete your payment to lock it in.`
     : `Hi ${b.guest_name}, your host has set aside these dates for you. Review the details below and complete your payment to lock it in.`;
+  const welcomeBlock = b.welcome_message_html
+    ? instructionsBlock(b.welcome_message_html)
+    : "";
   const inner =
     heading(
       isRebook
@@ -148,6 +151,7 @@ export function buildOfferEmail(b: Booking): { subject: string; html: string } {
         : `You're invited to book ${b.property_name}`
     ) +
     p(lead) +
+    welcomeBlock +
     summaryTable(b) +
     button(bookingUrl(b.token), "Review & complete payment") +
     expiryLine +
@@ -210,13 +214,22 @@ export function buildOwnerRequestEmail(b: Booking): {
   };
 }
 
+/** Render owner-supplied instructions as HTML (rich) or plain text block. */
+function instructionsBlock(raw: string): string {
+  const isHtml = /^<[a-z]/i.test(raw.trim());
+  if (isHtml) {
+    return `<div style="margin:18px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:14px;line-height:1.55;">${raw}</div>`;
+  }
+  return `<div style="margin:18px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:14px;line-height:1.55;white-space:pre-wrap;">${raw}</div>`;
+}
+
 /** 4. Check-in — 2 days before check-in. Includes any instructions the owner set. */
 export function buildCheckinEmail(b: Booking): {
   subject: string;
   html: string;
 } {
   const instructions = b.checkin_instructions
-    ? `<div style="margin:18px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:14px;line-height:1.55;white-space:pre-wrap;">${b.checkin_instructions}</div>`
+    ? instructionsBlock(b.checkin_instructions)
     : p(`Your host will share check-in details shortly.`);
   const inner =
     heading("Check-in details for your stay") +
