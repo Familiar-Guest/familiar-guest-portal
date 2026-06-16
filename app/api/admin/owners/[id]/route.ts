@@ -35,6 +35,41 @@ export async function GET(
   return NextResponse.json({ ok: true, owner, properties: properties ?? [] });
 }
 
+/** Remove an owner: deletes their auth login and profile row. */
+export async function DELETE(
+  _request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const admin = await getAdmin();
+  if (!admin) return NextResponse.json({ error: "Not authorized." }, { status: 401 });
+
+  const { id } = await params;
+
+  // Guard: the site admin cannot delete their own account here.
+  if (id === admin.id) {
+    return NextResponse.json(
+      { error: "You can't remove your own admin account." },
+      { status: 400 }
+    );
+  }
+
+  const supabase = createAdminClient();
+
+  // Remove dependent rows first so foreign keys don't block the delete.
+  await supabase.from("bookings").delete().eq("owner_id", id);
+  await supabase.from("properties").delete().eq("owner_id", id);
+  await supabase.from("owners").delete().eq("id", id);
+
+  // Remove the auth login. Ignore "not found" — the profile is already gone.
+  const { error: authErr } = await supabase.auth.admin.deleteUser(id);
+  if (authErr && !/not found/i.test(authErr.message)) {
+    console.error("admin owner delete (auth) failed", authErr);
+    return NextResponse.json({ error: "Could not fully remove the account." }, { status: 500 });
+  }
+
+  return NextResponse.json({ ok: true });
+}
+
 /** Update admin-editable fields on an owner profile. */
 export async function PATCH(
   request: NextRequest,

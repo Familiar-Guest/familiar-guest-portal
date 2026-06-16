@@ -44,10 +44,12 @@ function OwnerDetailPanel({
   owner: initial,
   onClose,
   onUpdated,
+  onDeleted,
 }: {
   owner: OwnerDetail;
   onClose: () => void;
   onUpdated: (o: OwnerRow) => void;
+  onDeleted: (id: string) => void;
 }) {
   const [commission, setCommission] = useState(initial.commission_rate != null ? String(initial.commission_rate) : "");
   const [subscription, setSubscription] = useState(initial.subscription_amount != null ? String(initial.subscription_amount) : "");
@@ -55,6 +57,24 @@ function OwnerDetailPanel({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
+  async function remove() {
+    const label = initial.full_name || initial.email;
+    if (!confirm(`Remove ${label}? This permanently deletes their login, properties, and bookings. This cannot be undone.`)) {
+      return;
+    }
+    setDeleting(true);
+    setError(null);
+    const res = await fetch(`/api/admin/owners/${initial.id}`, { method: "DELETE" });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      setError(data.error ?? "Could not remove this owner.");
+      setDeleting(false);
+      return;
+    }
+    onDeleted(initial.id);
+  }
 
   async function save(e: React.FormEvent) {
     e.preventDefault();
@@ -187,6 +207,22 @@ function OwnerDetailPanel({
           {saved && <span style={{ marginLeft: 12, color: "#14635A", fontSize: 13 }}>Saved.</span>}
           {error && <p style={{ color: "#D9663F", fontSize: 13, marginTop: 8 }}>{error}</p>}
         </form>
+
+        {/* Danger zone */}
+        <div style={{ marginTop: 32, paddingTop: 20, borderTop: "1px solid #E0D6C5" }}>
+          <p style={{ fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.06em", color: "#4F605A", marginBottom: 10 }}>Danger zone</p>
+          <button
+            type="button"
+            onClick={remove}
+            disabled={deleting}
+            style={{ background: "#fff", color: "#D9663F", border: "1px solid #D9663F", borderRadius: 6, padding: "9px 18px", fontWeight: 600, fontSize: 14, cursor: "pointer" }}
+          >
+            {deleting ? "Removing…" : "Remove this owner"}
+          </button>
+          <p style={{ fontSize: 12, color: "#4F605A", marginTop: 8 }}>
+            Permanently deletes the login, properties, and bookings. Cannot be undone.
+          </p>
+        </div>
       </div>
     </div>
   );
@@ -203,8 +239,8 @@ export default function AdminPortal() {
     (async () => {
       const res = await fetch("/api/admin/owners");
       if (res.status === 401) {
-        setError("Not authorized. You must be logged in as the site admin.");
-        setLoading(false);
+        // Not signed in as the site admin — send them to log in, then back here.
+        window.location.href = "/owner/login?next=/admin";
         return;
       }
       const data = await res.json().catch(() => ({}));
@@ -226,6 +262,11 @@ export default function AdminPortal() {
   function handleUpdated(updated: OwnerRow) {
     setOwners((prev) => prev.map((o) => o.id === updated.id ? { ...o, ...updated } : o));
     setSelected((prev) => prev ? { ...prev, ...updated } : prev);
+  }
+
+  function handleDeleted(id: string) {
+    setOwners((prev) => prev.filter((o) => o.id !== id));
+    setSelected(null);
   }
 
   return (
@@ -296,6 +337,7 @@ export default function AdminPortal() {
           owner={selected}
           onClose={() => setSelected(null)}
           onUpdated={handleUpdated}
+          onDeleted={handleDeleted}
         />
       )}
     </div>

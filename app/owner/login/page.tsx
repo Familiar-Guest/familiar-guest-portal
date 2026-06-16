@@ -19,7 +19,9 @@ export default function LoginPage() {
       body: JSON.stringify({ email, password }),
     });
     if (res.ok) {
-      window.location.href = "/owner";
+      const params = new URLSearchParams(window.location.search);
+      const next = params.get("next");
+      window.location.href = next && next.startsWith("/") && !next.startsWith("//") ? next : "/owner";
     } else {
       const data = await res.json().catch(() => ({}));
       setError(data.error ?? "Incorrect email or password.");
