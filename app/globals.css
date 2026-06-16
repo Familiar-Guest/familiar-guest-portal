@@ -370,24 +370,31 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 .oauth-divider span{padding:0 12px;text-transform:uppercase;letter-spacing:.08em}
 /* guest stays */
 .guest-info{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 14px;font-size:14px;color:var(--ink)}
-/* gantt calendar */
-.gantt-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius-sm)}
-.gantt{display:flex;flex-direction:column;min-width:fit-content}
-.gantt-header{display:flex;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--card);z-index:1}
-.gantt-row{display:flex;border-bottom:1px solid var(--line)}
-.gantt-row:last-child{border-bottom:none}
-.gantt-label{width:150px;flex-shrink:0;padding:10px 12px;font-size:13px;font-weight:600;color:var(--ink);background:var(--card);position:sticky;left:0;z-index:1;border-right:1px solid var(--line);display:flex;align-items:center}
-.gantt-header .gantt-label{font-weight:700;background:var(--paper-2)}
-.gantt-track{position:relative;flex:1;min-width:calc(var(--gantt-days) * 16px);height:44px}
-.gantt-header .gantt-track{height:30px;display:flex}
-.gantt-month{flex-shrink:0;border-left:1px solid var(--line);font-size:11px;font-weight:600;color:var(--ink-soft);padding:6px 0 0 6px;white-space:nowrap;overflow:hidden}
-.gantt-month:first-child{border-left:none}
-.gantt-bar{position:absolute;top:8px;height:28px;border-radius:var(--radius-sm);font-size:11px;font-weight:600;color:#fff;
-  padding:0 8px;display:flex;align-items:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.gantt-bar.cal-booked{background:var(--forest)}
-.gantt-bar.cal-offer{background:var(--clay)}
-.gantt-bar.cal-airbnb{background:#b08968}
-@media(max-width:700px){.gantt-label{width:110px;font-size:12px}}
+/* ── Month Calendar ── */
+.mc-wrap{border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;background:var(--card)}
+.mc-nav{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--line)}
+.mc-nav-title{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.01em}
+.mc-nav-btn{background:none;border:none;cursor:pointer;font-size:22px;line-height:1;color:var(--ink-soft);padding:0 4px;border-radius:4px;display:flex;align-items:center}
+.mc-nav-btn:hover{background:var(--paper-2);color:var(--forest)}
+.mc-dow-row{display:grid;grid-template-columns:repeat(7,1fr);background:var(--paper-2);border-bottom:1px solid var(--line)}
+.mc-dow{font-size:11px;font-weight:600;color:var(--ink-soft);text-align:center;padding:5px 0;text-transform:uppercase;letter-spacing:.05em}
+.mc-week{border-bottom:1px solid var(--line)}
+.mc-week:last-child{border-bottom:none}
+.mc-day-nums{display:grid;grid-template-columns:repeat(7,1fr)}
+.mc-cell{min-height:30px;padding:5px 6px 0;border-right:1px solid var(--line);display:flex;justify-content:flex-end}
+.mc-cell:last-child{border-right:none}
+.mc-day-num{font-size:12px;font-weight:500;color:var(--ink);width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0}
+.mc-out .mc-day-num{color:var(--ink-soft);opacity:.38}
+.mc-today .mc-day-num{background:var(--forest);color:#fff;font-weight:700}
+.mc-bar-layer{position:relative;height:52px;overflow:hidden}
+.mc-bar{position:absolute;height:20px;border-radius:5px;font-size:11px;font-weight:600;color:#fff;display:flex;align-items:center;padding:0 8px;white-space:nowrap;overflow:hidden;box-sizing:border-box;cursor:default}
+.mc-bar.mc-cl{border-top-left-radius:0;border-bottom-left-radius:0;padding-left:5px}
+.mc-bar.mc-cr{border-top-right-radius:0;border-bottom-right-radius:0;padding-right:5px}
+.mc-bar.mc-bar-booked{background:var(--forest)}
+.mc-bar.mc-bar-offer{background:var(--clay)}
+.mc-bar.mc-bar-airbnb{background:#b08968}
+.mc-bar-name{overflow:hidden;text-overflow:ellipsis}
+@media(max-width:600px){.mc-dow{font-size:10px}.mc-bar{font-size:10px;padding:0 4px}}
 
 /* cleaning fee options */
 .cf-options{display:flex;flex-direction:column;gap:8px}

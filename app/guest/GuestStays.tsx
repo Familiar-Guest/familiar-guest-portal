@@ -4,7 +4,7 @@ import { useState } from "react";
 import { formatDate, formatMoney } from "@/lib/format";
 import { isExpired } from "@/lib/offers";
 import type { Booking } from "@/lib/types";
-import { Gantt, type GanttRow } from "@/app/owner/Gantt";
+import { MonthCalendar, type CalendarBar } from "@/app/owner/MonthCalendar";
 
 function statusLabel(b: Booking): { text: string; cls: string } {
   if (b.status === "paid") return { text: "Confirmed", cls: "op-paid" };
@@ -41,21 +41,12 @@ export function GuestStays({
       !(b.status !== "paid" && b.status !== "requested" && isExpired(b))
   );
 
-  const properties = Array.from(new Set(upcoming.map((b) => b.property_name)));
-  const ganttRows: GanttRow[] = properties.map((name) => ({
-    id: name,
-    label: name,
-    bars: upcoming
-      .filter((b) => b.property_name === name)
-      .map((b) => {
-        const s = statusLabel(b);
-        return {
-          start: b.check_in,
-          end: b.check_out,
-          label: s.text,
-          cls: b.status === "paid" ? "cal-booked" : "cal-offer",
-        };
-      }),
+  const calBars: CalendarBar[] = upcoming.map(b => ({
+    start: b.check_in,
+    end: b.check_out,
+    shortLabel: b.property_name,
+    fullLabel: `${b.property_name} · ${formatDate(b.check_in)} – ${formatDate(b.check_out)}`,
+    type: b.status === "paid" ? "booked" : "offer",
   }));
 
   return (
@@ -97,12 +88,12 @@ export function GuestStays({
 
         {bookings.length > 0 && view === "calendar" && (
           <>
-            {ganttRows.length > 0 ? (
+            {calBars.length > 0 ? (
               <>
-                <Gantt rows={ganttRows} />
+                <MonthCalendar bars={calBars} />
                 <p className="bk-note" style={{ textAlign: "left", marginTop: 10 }}>
                   <span className="cal-dot cal-booked" /> Confirmed &nbsp;
-                  <span className="cal-dot cal-offer" /> Pending
+                  <span className="cal-dot cal-offer"  /> Pending
                 </p>
               </>
             ) : (
