@@ -95,6 +95,26 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
     load();
   }
 
+  // Cancel/remove a booking from the calendar. Paid bookings notify the guest.
+  async function cancelBooking(b: Booking) {
+    const isPaid = b.status === "paid";
+    const msg = isPaid
+      ? `Cancel the booking for ${b.guest_name}? They'll get a cancellation email and the dates will free up.`
+      : `Remove the offer for ${b.guest_name}? This frees the dates and disables its link.`;
+    if (!window.confirm(msg)) return;
+    const res = await fetch(`/api/owner/offer/${b.id}`, { method: "DELETE" });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error ?? "Could not cancel the booking.");
+      return;
+    }
+    load();
+  }
+
+  function editBooking(b: Booking) {
+    setOverlay({ kind: "offer", mode: "edit", initial: editInitial(b) });
+  }
+
   async function decideRequest(b: Booking, action: "approve" | "decline") {
     if (action === "decline" && !window.confirm(`Decline ${b.guest_name}'s request?`)) return;
     const res = await fetch(`/api/owner/requests/${b.id}`, {
@@ -236,7 +256,14 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
       )}
 
       {/* CALENDAR */}
-      {tab === "calendar" && <CalendarTab properties={properties} />}
+      {tab === "calendar" && (
+        <CalendarTab
+          properties={properties}
+          bookings={bookings}
+          onEdit={editBooking}
+          onCancel={cancelBooking}
+        />
+      )}
 
       {/* BOOKINGS (activity) */}
       {tab === "bookings" && (
@@ -414,6 +441,8 @@ function editInitial(b: Booking): OfferInitial {
     nightly_rate: b.nightly_rate_cents != null ? centsToAmount(b.nightly_rate_cents) : "",
     cleaning_fee: b.cleaning_fee_cents ? centsToAmount(b.cleaning_fee_cents) : "",
     checkin_instructions: b.checkin_instructions ?? "",
+    welcome_message_html: b.welcome_message_html ?? undefined,
+    paid: b.status === "paid",
   };
 }
 

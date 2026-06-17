@@ -15,10 +15,18 @@ export async function GET() {
   const admin = createAdminClient();
   const { data } = await admin
     .from("owners")
-    .select("full_name, public_name, handle, welcome_message_html")
+    .select("full_name, public_name, handle, welcome_message_html, contact_email, contact_phone, contact_whatsapp")
     .eq("id", owner.id)
     .single();
-  const row = data as { full_name: string | null; public_name: string | null; handle: string | null; welcome_message_html: string | null } | null;
+  const row = data as {
+    full_name: string | null;
+    public_name: string | null;
+    handle: string | null;
+    welcome_message_html: string | null;
+    contact_email: string | null;
+    contact_phone: string | null;
+    contact_whatsapp: string | null;
+  } | null;
   if (!row) return NextResponse.json({ error: "Owner not found." }, { status: 404 });
 
   return NextResponse.json({
@@ -27,6 +35,9 @@ export async function GET() {
     public_name: row.public_name,
     handle: row.handle,
     welcome_message_html: row.welcome_message_html,
+    contact_email: row.contact_email ?? owner.email,
+    contact_phone: row.contact_phone,
+    contact_whatsapp: row.contact_whatsapp,
     default_public_name: row.full_name ? slugify(row.full_name).split("-").join(" ") : "",
   });
 }
@@ -48,12 +59,31 @@ export async function PATCH(request: NextRequest) {
     ? (String(body.welcome_message_html ?? "").trim() || null)
     : undefined;
 
+  // Contact info shared with guests. Email is required if any contact field is sent.
+  const contactKeys = ["contact_email", "contact_phone", "contact_whatsapp"];
+  const hasContact = contactKeys.some((k) => k in body);
+  const contact_email = "contact_email" in body ? String(body.contact_email ?? "").trim() : undefined;
+  const contact_phone = "contact_phone" in body ? (String(body.contact_phone ?? "").trim() || null) : undefined;
+  const contact_whatsapp = "contact_whatsapp" in body ? (String(body.contact_whatsapp ?? "").trim() || null) : undefined;
+
+  if (contact_email !== undefined) {
+    const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!EMAIL_RE.test(contact_email)) {
+      return NextResponse.json({ error: "Enter a valid contact email." }, { status: 400 });
+    }
+  }
+
   const result = await setOwnerPublicName(owner.id, public_name);
   if ("error" in result) return NextResponse.json({ error: result.error }, { status: 500 });
 
-  if (welcome_message_html !== undefined) {
+  const updates: Record<string, unknown> = {};
+  if (welcome_message_html !== undefined) updates.welcome_message_html = welcome_message_html;
+  if (contact_email !== undefined) updates.contact_email = contact_email;
+  if (contact_phone !== undefined) updates.contact_phone = contact_phone;
+  if (contact_whatsapp !== undefined) updates.contact_whatsapp = contact_whatsapp;
+  if (Object.keys(updates).length > 0 || hasContact) {
     const admin = createAdminClient();
-    await admin.from("owners").update({ welcome_message_html }).eq("id", owner.id);
+    await admin.from("owners").update(updates).eq("id", owner.id);
   }
 
   return NextResponse.json({ ok: true, public_name, handle: result.handle });

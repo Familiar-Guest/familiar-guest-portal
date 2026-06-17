@@ -1,6 +1,30 @@
 import { createAdminClient } from "./supabase/admin";
 import { slugify } from "./properties";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import type { OwnerContact } from "./welcome";
+
+/** Fetch the owner's guest-facing contact info (falls back to account email). */
+export async function getOwnerContact(
+  admin: SupabaseClient,
+  ownerId: string
+): Promise<OwnerContact> {
+  const { data } = await admin
+    .from("owners")
+    .select("email, contact_email, contact_phone, contact_whatsapp")
+    .eq("id", ownerId)
+    .single();
+  const row = data as {
+    email: string;
+    contact_email: string | null;
+    contact_phone: string | null;
+    contact_whatsapp: string | null;
+  } | null;
+  return {
+    email: row?.contact_email ?? row?.email ?? null,
+    phone: row?.contact_phone ?? null,
+    whatsapp: row?.contact_whatsapp ?? null,
+  };
+}
 
 /** Find a handle based on `base`, appending a random suffix if taken by another owner. */
 async function findUniqueHandle(

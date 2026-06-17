@@ -20,6 +20,11 @@ build/
 
 # Office temp lock files
 ~$*
+~WRL*.tmp
+
+# Working planning/update docs dropped at repo root (kept locally, not in repo)
+/*.docx
+/*.pdf
 
 # Vercel
 .vercel/

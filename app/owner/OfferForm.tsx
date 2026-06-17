@@ -26,6 +26,7 @@ export interface OfferInitial {
   cleaning_fee?: string;
   checkin_instructions?: string;
   welcome_message_html?: string;
+  paid?: boolean; // editing an already-paid booking
 }
 
 interface Conflict {
@@ -97,6 +98,7 @@ export function OfferForm({
 
   const selectedProperty = properties.find((p) => p.id === form.property_id);
   const currency = (selectedProperty?.currency ?? "usd").toUpperCase();
+  const isPaidEdit = mode === "edit" && Boolean(initial?.paid);
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -184,20 +186,28 @@ export function OfferForm({
   if (result) {
     return (
       <div className="bk-card">
-        <span className="bk-badge">✓ {mode === "edit" ? "Offer updated" : "Offer sent"}</span>
+        <span className="bk-badge">
+          ✓ {isPaidEdit ? "Booking updated" : mode === "edit" ? "Offer updated" : "Offer sent"}
+        </span>
         <h1>
-          {mode === "edit" ? "Updated offer for " : "Offer sent to "}
+          {isPaidEdit ? "Updated booking for " : mode === "edit" ? "Updated offer for " : "Offer sent to "}
           {form.guest_name}
         </h1>
         <p className="bk-lead">
-          {result.email_sent
+          {isPaidEdit
+            ? result.email_sent
+              ? `We emailed ${form.guest_email} the updated booking details.`
+              : `The booking was updated, but the change email could not be sent — let your guest know directly.`
+            : result.email_sent
             ? `An email with the payment link was sent to ${form.guest_email}.`
             : `The offer was saved, but the email could not be sent. Share the payment link below directly.`}
         </p>
-        <div className="bk-field">
-          <label>Payment link</label>
-          <div className="bk-ok">{result.booking_url}</div>
-        </div>
+        {!isPaidEdit && (
+          <div className="bk-field">
+            <label>Payment link</label>
+            <div className="bk-ok">{result.booking_url}</div>
+          </div>
+        )}
         <button className="bk-btn" onClick={onDone}>
           Back to portal
         </button>
@@ -219,9 +229,11 @@ export function OfferForm({
 
   return (
     <div className="bk-card">
-      <h1>{TITLES[mode]}</h1>
+      <h1>{isPaidEdit ? "Edit booking" : TITLES[mode]}</h1>
       <p className="bk-lead">
-        {mode === "rebook"
+        {isPaidEdit
+          ? "Update this confirmed booking. Saving emails the guest the new details, including the old and new dates. No new payment is collected."
+          : mode === "rebook"
           ? "Pick the new dates and price — guest details are pre-filled. They'll get an email with a link to pay."
           : mode === "edit"
           ? "Update the details. Saving re-sends the offer email and resets the 7-day hold."
@@ -412,6 +424,8 @@ export function OfferForm({
           <button className="bk-btn" type="submit" disabled={loading || noProperties}>
             {loading
               ? "Saving…"
+              : isPaidEdit
+              ? "Save & notify guest"
               : mode === "edit"
               ? "Save & re-send email"
               : "Create offer & send email"}

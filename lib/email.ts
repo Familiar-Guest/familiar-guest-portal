@@ -2,6 +2,7 @@ import { Resend } from "resend";
 import type { Booking } from "./types";
 import { formatDate, formatMoney, nights } from "./format";
 import { expiryDate } from "./offers";
+import { fillWelcomePlaceholders, hasContact, type OwnerContact } from "./welcome";
 
 const FOREST = "#14543F";
 const CLAY = "#C0673E";
@@ -127,9 +128,42 @@ function p(text: string): string {
 
 // ── Templates ───────────────────────────────────────────────────────────
 
+/** Owner contact details, rendered at the bottom of the welcome message. */
+function contactBlock(c: OwnerContact): string {
+  const rows: string[] = [];
+  if (c.email) rows.push(`<div>Email: <a href="mailto:${c.email}" style="color:${FOREST};text-decoration:none;">${c.email}</a></div>`);
+  if (c.phone) rows.push(`<div>Phone: ${c.phone}</div>`);
+  if (c.whatsapp) rows.push(`<div>WhatsApp: ${c.whatsapp}</div>`);
+  if (rows.length === 0) return "";
+  return `<div style="margin-top:12px;padding-top:12px;border-top:1px solid ${LINE};font-size:13px;color:${INK};">
+    <strong style="display:block;margin-bottom:4px;">Contact</strong>${rows.join("")}</div>`;
+}
+
+/** The welcome message with placeholders filled and the owner's contact at the bottom. */
+function welcomeSection(b: Booking, contact?: OwnerContact | null): string {
+  const raw = b.welcome_message_html ?? "";
+  const showContact = hasContact(contact);
+  if (!raw && !showContact) return "";
+  const filled = raw
+    ? fillWelcomePlaceholders(raw, {
+        propertyName: b.property_name,
+        checkIn: formatDate(b.check_in),
+        checkOut: formatDate(b.check_out),
+      })
+    : "";
+  const isHtml = /^<[a-z]/i.test(filled.trim());
+  const body = isHtml
+    ? filled
+    : filled
+    ? `<div style="white-space:pre-wrap;">${filled}</div>`
+    : "";
+  const contactHtml = showContact ? contactBlock(contact!) : "";
+  return `<div style="margin:18px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:14px;line-height:1.55;">${body}${contactHtml}</div>`;
+}
+
 /** 1. Offer — sent when the owner creates the booking. Contains the pay link.
  *  Handles both a fresh offer and a one-click rebook (same pipeline). */
-export function buildOfferEmail(b: Booking): { subject: string; html: string } {
+export function buildOfferEmail(b: Booking, contact?: OwnerContact | null): { subject: string; html: string } {
   const isRebook = b.kind === "rebook";
   const expiryLine = b.expires_at
     ? p(
@@ -141,9 +175,7 @@ export function buildOfferEmail(b: Booking): { subject: string; html: string } {
   const lead = isRebook
     ? `Hi ${b.guest_name}, great to have you back! Your host has lined up these dates at ${b.property_name}. Review the details below and complete your payment to lock it in.`
     : `Hi ${b.guest_name}, your host has set aside these dates for you. Review the details below and complete your payment to lock it in.`;
-  const welcomeBlock = b.welcome_message_html
-    ? instructionsBlock(b.welcome_message_html)
-    : "";
+  const welcomeBlock = welcomeSection(b, contact);
   const inner =
     heading(
       isRebook
@@ -239,6 +271,47 @@ export function buildCheckinEmail(b: Booking): {
     button(bookingUrl(b.token), "View your booking");
   return {
     subject: `Check-in details for ${b.property_name}`,
+    html: layout(inner),
+  };
+}
+
+/** 5. Change — sent when an owner changes the dates of an existing booking. */
+export function buildChangeEmail(
+  b: Booking,
+  oldCheckIn: string,
+  oldCheckOut: string
+): { subject: string; html: string } {
+  const datesChanged = oldCheckIn !== b.check_in || oldCheckOut !== b.check_out;
+  const changeNote = datesChanged
+    ? `<table width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0;border:1px solid ${LINE};border-radius:10px;background:${PAPER};">
+        <tr><td style="padding:14px 16px;font-size:14px;color:${INK};">
+          <div style="color:#8a7e72;text-decoration:line-through;">${formatDate(oldCheckIn)} → ${formatDate(oldCheckOut)}</div>
+          <div style="font-weight:600;margin-top:4px;">${formatDate(b.check_in)} → ${formatDate(b.check_out)}</div>
+        </td></tr>
+      </table>`
+    : "";
+  const inner =
+    heading("Your booking has been updated") +
+    p(`Hi ${b.guest_name}, your host has updated your booking at ${b.property_name}.${datesChanged ? " Here are the new dates:" : ""}`) +
+    changeNote +
+    summaryTable(b) +
+    p(`If anything doesn't look right, just reply to this email.`) +
+    button(bookingUrl(b.token), "View your booking");
+  return {
+    subject: `Updated: your stay at ${b.property_name}`,
+    html: layout(inner),
+  };
+}
+
+/** 6. Cancellation — sent when an owner removes an active booking. */
+export function buildCancellationEmail(b: Booking): { subject: string; html: string } {
+  const inner =
+    heading("Your booking has been cancelled") +
+    p(`Hi ${b.guest_name}, your host has cancelled your booking at ${b.property_name}. The details below are no longer reserved.`) +
+    summaryTable(b) +
+    p(`If you have questions or this was unexpected, please reply to this email to reach your host.`);
+  return {
+    subject: `Cancelled: your stay at ${b.property_name}`,
     html: layout(inner),
   };
 }

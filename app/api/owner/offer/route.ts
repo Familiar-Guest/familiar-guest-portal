@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getOwner } from "@/lib/auth";
 import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
 import { buildOfferEmail, sendEmail, bookingUrl } from "@/lib/email";
+import { getOwnerContact } from "@/lib/owner";
 import { findInternalConflict, offerExpiresAt } from "@/lib/offers";
 import { nights } from "@/lib/format";
 import type { Booking, OfferKind, Property } from "@/lib/types";
@@ -126,7 +127,8 @@ export async function POST(request: NextRequest) {
   }
 
   const booking: Booking = { ...(data as Booking), welcome_message_html };
-  const { subject, html } = buildOfferEmail(booking);
+  const contact = await getOwnerContact(supabase, owner.id);
+  const { subject, html } = buildOfferEmail(booking, contact);
   const sent = await sendEmail({
     to: booking.guest_email,
     subject,

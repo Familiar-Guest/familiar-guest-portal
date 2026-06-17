@@ -1,8 +1,9 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { formatDate } from "@/lib/format";
-import type { Property } from "@/lib/types";
+import { formatDate, formatMoney } from "@/lib/format";
+import { isActiveOffer } from "@/lib/offers";
+import type { Booking, Property } from "@/lib/types";
 import { MonthCalendar, type CalendarBar } from "./MonthCalendar";
 
 interface BusyRange {
@@ -37,7 +38,17 @@ function toCalendarBars(ranges: BusyRange[]): CalendarBar[] {
 
 type View = "calendar" | "list";
 
-export function CalendarTab({ properties }: { properties: Property[] }) {
+export function CalendarTab({
+  properties,
+  bookings,
+  onEdit,
+  onCancel,
+}: {
+  properties: Property[];
+  bookings: Booking[];
+  onEdit: (b: Booking) => void;
+  onCancel: (b: Booking) => void;
+}) {
   const [view, setView]           = useState<View>("calendar");
   const [propertyId, setPropertyId] = useState(properties[0]?.id ?? "");
   const [ranges, setRanges]       = useState<BusyRange[]>([]);
@@ -77,6 +88,17 @@ export function CalendarTab({ properties }: { properties: Property[] }) {
   const todayIso = new Date().toISOString().slice(0, 10);
   const upcoming = ranges.filter(r => r.end >= todayIso);
   const calBars  = toCalendarBars(ranges);
+
+  // Editable bookings for the selected property: confirmed stays + live offers,
+  // still in the future. Airbnb-synced dates aren't editable here.
+  const editableBookings = bookings
+    .filter(
+      b =>
+        b.property_id === propertyId &&
+        b.check_out >= todayIso &&
+        (b.status === "paid" || isActiveOffer(b))
+    )
+    .sort((a, b) => (a.check_in < b.check_in ? -1 : 1));
 
   return (
     <div>
@@ -159,6 +181,49 @@ export function CalendarTab({ properties }: { properties: Property[] }) {
             </ul>
           )}
         </>
+      )}
+
+      {/* Editable bookings for this property */}
+      {!loading && (
+        <div style={{ marginTop: 26 }}>
+          <h3 className="op-subhead">Bookings on this property</h3>
+          {editableBookings.length === 0 ? (
+            <div className="op-empty">No upcoming bookings to manage for this property.</div>
+          ) : (
+            <ul className="op-list">
+              {editableBookings.map(b => {
+                const paid = b.status === "paid";
+                return (
+                  <li key={b.id} className="op-item">
+                    <div className="op-main">
+                      <div className="op-title">
+                        <span className={`cal-dot cal-${paid ? "booked" : "offer"}`} />
+                        {b.guest_name}
+                      </div>
+                      <div className="op-meta">
+                        {formatDate(b.check_in)} → {formatDate(b.check_out)} ·{" "}
+                        {formatMoney(b.amount_cents, b.currency)}
+                      </div>
+                    </div>
+                    <div className="op-side">
+                      <span className={`op-status ${paid ? "op-paid" : "op-open"}`}>
+                        {paid ? "Booked" : "Offer sent"}
+                      </span>
+                      <div className="op-actions">
+                        <button className="op-link" onClick={() => onEdit(b)}>
+                          Edit
+                        </button>
+                        <button className="op-link op-danger" onClick={() => onCancel(b)}>
+                          {paid ? "Cancel" : "Remove"}
+                        </button>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </div>
       )}
     </div>
   );

@@ -8,6 +8,9 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
   const [defaultName, setDefaultName] = useState("");
   const [handle, setHandle] = useState<string | null>(null);
   const [welcomeHtml, setWelcomeHtml] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactPhone, setContactPhone] = useState("");
+  const [contactWhatsapp, setContactWhatsapp] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,6 +26,9 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
         setDefaultName(data.default_public_name ?? "");
         setHandle(data.handle ?? null);
         setWelcomeHtml(data.welcome_message_html ?? "");
+        setContactEmail(data.contact_email ?? "");
+        setContactPhone(data.contact_phone ?? "");
+        setContactWhatsapp(data.contact_whatsapp ?? "");
       }
       setLoading(false);
     })();
@@ -36,7 +42,13 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
     const res = await fetch("/api/owner/settings", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ public_name: publicName, welcome_message_html: welcomeHtml }),
+      body: JSON.stringify({
+        public_name: publicName,
+        welcome_message_html: welcomeHtml,
+        contact_email: contactEmail,
+        contact_phone: contactPhone,
+        contact_whatsapp: contactWhatsapp,
+      }),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -83,10 +95,50 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
           </div>
         )}
 
+        <div style={{ marginTop: 28, paddingTop: 24, borderTop: "1px solid var(--line, #E0D6C5)" }}>
+          <h3 className="op-subhead" style={{ marginTop: 0 }}>Guest contact info</h3>
+          <p className="bk-note" style={{ textAlign: "left", marginBottom: 14 }}>
+            How guests can reach you. This is added to the bottom of your welcome message. Email is required; phone and WhatsApp are optional.
+          </p>
+          <div className="bk-field">
+            <label htmlFor="contact_email">Contact email</label>
+            <input
+              id="contact_email"
+              type="email"
+              value={contactEmail}
+              onChange={(e) => setContactEmail(e.target.value)}
+              placeholder="you@example.com"
+              required
+            />
+          </div>
+          <div className="bk-grid2">
+            <div className="bk-field">
+              <label htmlFor="contact_phone">Phone <span style={{ fontWeight: 400 }}>(optional)</span></label>
+              <input
+                id="contact_phone"
+                type="tel"
+                value={contactPhone}
+                onChange={(e) => setContactPhone(e.target.value)}
+                placeholder="+1 555 123 4567"
+              />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="contact_whatsapp">WhatsApp <span style={{ fontWeight: 400 }}>(optional)</span></label>
+              <input
+                id="contact_whatsapp"
+                type="tel"
+                value={contactWhatsapp}
+                onChange={(e) => setContactWhatsapp(e.target.value)}
+                placeholder="+52 612 123 4567"
+              />
+            </div>
+          </div>
+        </div>
+
         <div className="bk-field" style={{ marginTop: 24 }}>
           <label htmlFor="welcome_msg">Default welcome message</label>
           <p className="bk-note" style={{ textAlign: "left", marginBottom: 8 }}>
-            Included in the invitation email sent to guests. You can also edit it per-invite when sending a stay offer.
+            Included in the invitation email sent to guests. You can also edit it per-invite when sending a stay offer. Your contact info above is added automatically at the bottom.
           </p>
           <RichTextEditor
             id="welcome_msg"

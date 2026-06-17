@@ -15,6 +15,8 @@ const TOOLBAR_BTNS = [
   { cmd: "italic",      icon: "<em>I</em>",           title: "Italic" },
   { cmd: "insertUnorderedList", icon: "• List",       title: "Bullet list" },
   { cmd: "insertOrderedList",   icon: "1. List",      title: "Numbered list" },
+  { cmd: "outdent",     icon: "⇤",                    title: "Decrease indent" },
+  { cmd: "indent",      icon: "⇥",                    title: "Increase indent" },
 ];
 
 export function RichTextEditor({ value, onChange, placeholder, minHeight = 120, id }: RichTextEditorProps) {

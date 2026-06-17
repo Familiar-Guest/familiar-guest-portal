@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { Property } from "@/lib/types";
+import { DEFAULT_WELCOME_TEMPLATE } from "@/lib/welcome";
 import { RichTextEditor } from "./RichTextEditor";
 
 export function PropertyForm({
@@ -29,7 +30,11 @@ export function PropertyForm({
     gps_lng: initial?.gps_lng != null ? String(initial.gps_lng) : "",
     airbnb_ical_url: initial?.airbnb_ical_url ?? "",
     checkin_instructions: initial?.checkin_instructions ?? "",
-    welcome_message_html: (initial as (Property & { welcome_message_html?: string }) | null | undefined)?.welcome_message_html ?? "",
+    // New properties seed the welcome message with the default template; existing
+    // ones keep whatever the owner has saved.
+    welcome_message_html: initial
+      ? ((initial as Property & { welcome_message_html?: string }).welcome_message_html ?? "")
+      : DEFAULT_WELCOME_TEMPLATE,
     is_listed: initial?.is_listed ?? false,
   });
   const [photos, setPhotos] = useState<string[]>(initial?.photos ?? []);
@@ -250,7 +255,10 @@ export function PropertyForm({
         </div>
 
         <div className="bk-field">
-          <label htmlFor="welcome">Welcome message <span style={{ fontWeight: 400 }}>(optional — included in the guest invitation email)</span></label>
+          <label htmlFor="welcome">Welcome message <span style={{ fontWeight: 400 }}>(included in the guest invitation email)</span></label>
+          <p className="bk-note" style={{ textAlign: "left", marginBottom: 8 }}>
+            <strong>[property name]</strong>, <strong>[start date]</strong>, and <strong>[end date]</strong> are filled in automatically for each booking. Your contact info (set in Settings) is added at the bottom.
+          </p>
           <RichTextEditor
             id="welcome"
             value={form.welcome_message_html}
