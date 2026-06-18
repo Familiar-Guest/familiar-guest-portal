@@ -21,23 +21,33 @@ function Check() {
 function HomeMark() {
   return (
     <svg viewBox="0 0 60 100" fill="none" aria-hidden="true">
-      {/* Key ring at top */}
-      <circle cx="30" cy="9" r="5.5" stroke="#0F4D45" strokeWidth="3.5" />
-      {/* Connector from ring to bow */}
-      <line x1="30" y1="14.5" x2="30" y2="23" stroke="#0F4D45" strokeWidth="3.5" strokeLinecap="square" />
-      {/* Bow circle */}
-      <circle cx="30" cy="44" r="21" stroke="#0F4D45" strokeWidth="3.5" />
-      {/* Heart — solid coral, centered in the bow (bow cy=44, heart center=44) */}
+      {/*
+        Drawing order matters: shaft + bits go first (behind the head circle).
+        The head circle (white fill) then covers the shaft inside the ring,
+        making it look like one unified key shape rather than a circle + line.
+      */}
+
+      {/* Shaft — drawn behind head so it appears to emerge from the bottom */}
+      <line x1="28" y1="40" x2="28" y2="95" stroke="#0F4D45" strokeWidth="7" strokeLinecap="square" />
+      {/* Upper bit (longer) */}
+      <line x1="31.5" y1="69" x2="46" y2="69" stroke="#0F4D45" strokeWidth="7" strokeLinecap="square" />
+      {/* Lower bit (shorter) */}
+      <line x1="31.5" y1="82" x2="39" y2="82" stroke="#0F4D45" strokeWidth="7" strokeLinecap="square" />
+
+      {/* Head circle — white fill covers shaft/bits inside, giving hollow interior */}
+      <circle cx="28" cy="40" r="18" stroke="#0F4D45" strokeWidth="3.5" fill="white" />
+
+      {/* Heart — large, fills most of the head interior */}
       <path
-        d="M30 59 C30 59 14 50 14 41 C14 34 19 29 25 30.5 C27.5 31.5 29 34 30 36 C31 34 32.5 31.5 35 30.5 C41 29 46 34 46 41 C46 50 30 59 30 59 Z"
+        d="M28 52 C28 52 11 43 11 34 C11 27 16 22 22 23.5 C24.5 24.5 27 27.5 28 30 C29 27.5 31.5 24.5 34 23.5 C40 22 45 27 45 34 C45 43 28 52 28 52 Z"
         fill="#D9663F"
       />
-      {/* Shaft */}
-      <line x1="30" y1="65" x2="30" y2="91" stroke="#0F4D45" strokeWidth="5.5" strokeLinecap="square" />
-      {/* Upper bit */}
-      <line x1="30" y1="74" x2="41" y2="74" stroke="#0F4D45" strokeWidth="5.5" strokeLinecap="square" />
-      {/* Lower bit */}
-      <line x1="30" y1="84" x2="36" y2="84" stroke="#0F4D45" strokeWidth="5.5" strokeLinecap="square" />
+
+      {/* Ring — small angled ellipse at top */}
+      <ellipse cx="30" cy="8" rx="4.5" ry="6" transform="rotate(-12 30 8)" stroke="#0F4D45" strokeWidth="3.5" />
+
+      {/* Hook/curl — sweeps outward to the right then curves back to meet the head */}
+      <path d="M 33.5 13 C 42 21, 46 30, 42 26" stroke="#0F4D45" strokeWidth="3.5" strokeLinecap="round" />
     </svg>
   );
 }
