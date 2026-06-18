@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { Property } from "@/lib/types";
+import { RichTextEditor } from "./RichTextEditor";
 
 export function PropertyForm({
   initial,
@@ -18,12 +19,24 @@ export function PropertyForm({
     description: initial?.description ?? "",
     currency: initial?.currency ?? "usd",
     nightly_rate: initial?.nightly_rate_cents != null ? (initial.nightly_rate_cents / 100).toString() : "",
-    cleaning_fee: initial?.cleaning_fee_cents ? (initial.cleaning_fee_cents / 100).toString() : "",
+    cleaning_fee_type: initial?.cleaning_fee_type ?? "standard",
+    cleaning_fee: initial ? (initial.cleaning_fee_cents / 100).toString() : "75",
+    daily_cleaning_fee: initial?.daily_cleaning_fee_cents ? (initial.daily_cleaning_fee_cents / 100).toString() : "0",
+    alt_cleaning_fee_1: initial?.alt_cleaning_fee_1_cents ? (initial.alt_cleaning_fee_1_cents / 100).toString() : "0",
+    alt_cleaning_fee_2: initial?.alt_cleaning_fee_2_cents ? (initial.alt_cleaning_fee_2_cents / 100).toString() : "0",
     min_nights: initial?.min_nights ? String(initial.min_nights) : "1",
     gps_lat: initial?.gps_lat != null ? String(initial.gps_lat) : "",
     gps_lng: initial?.gps_lng != null ? String(initial.gps_lng) : "",
     airbnb_ical_url: initial?.airbnb_ical_url ?? "",
     checkin_instructions: initial?.checkin_instructions ?? "",
+    // Structured check-in + address fields that populate the guest emails.
+    address: initial?.address ?? "",
+    check_in_time: initial?.check_in_time ?? "3:00 PM",
+    check_out_time: initial?.check_out_time ?? "11:00 AM",
+    entry_instructions: initial?.entry_instructions ?? "",
+    wifi: initial?.wifi ?? "",
+    parking: initial?.parking ?? "",
+    house_rules: initial?.house_rules ?? "",
     is_listed: initial?.is_listed ?? false,
   });
   const [photos, setPhotos] = useState<string[]>(initial?.photos ?? []);
@@ -36,11 +49,18 @@ export function PropertyForm({
     setForm((f) => ({ ...f, [key]: value }));
   }
 
+  const MAX_PHOTOS = 10;
+
   async function onFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
     setUploading(true);
     setError(null);
-    for (const file of Array.from(files).slice(0, 12)) {
+    const room = Math.max(0, MAX_PHOTOS - photos.length);
+    const toUpload = Array.from(files).slice(0, room);
+    if (files.length > toUpload.length) {
+      setError(`Up to ${MAX_PHOTOS} photos per property — some files were skipped.`);
+    }
+    for (const file of toUpload) {
       const fd = new FormData();
       fd.append("file", file);
       const res = await fetch("/api/owner/photo", { method: "POST", body: fd });
@@ -53,6 +73,17 @@ export function PropertyForm({
     }
     setUploading(false);
     if (fileRef.current) fileRef.current.value = "";
+  }
+
+  function makeCover(src: string) {
+    setPhotos((p) => {
+      const i = p.indexOf(src);
+      if (i <= 0) return p;
+      const next = [...p];
+      next.splice(i, 1);
+      next.unshift(src);
+      return next;
+    });
   }
 
   async function submit(e: React.FormEvent) {
@@ -90,20 +121,28 @@ export function PropertyForm({
 
         {/* Photos */}
         <div className="bk-field">
-          <label>Photos <span style={{ fontWeight: 400 }}>(first is the cover)</span></label>
+          <label>Photos <span style={{ fontWeight: 400 }}>(first is the cover — up to {MAX_PHOTOS})</span></label>
           {photos.length > 0 && (
             <div className="ph-grid">
               {photos.map((src, i) => (
                 <div key={src} className="ph-thumb">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={src} alt={`Photo ${i + 1}`} />
-                  {i === 0 && <span className="ph-cover">Cover</span>}
+                  {i === 0 ? (
+                    <span className="ph-cover">Cover</span>
+                  ) : (
+                    <button type="button" className="ph-cover ph-cover-btn" onClick={() => makeCover(src)}>
+                      Make cover
+                    </button>
+                  )}
                   <button type="button" className="ph-x" onClick={() => setPhotos((p) => p.filter((u) => u !== src))} aria-label="Remove">×</button>
                 </div>
               ))}
             </div>
           )}
-          <input ref={fileRef} type="file" accept="image/*" multiple onChange={(e) => onFiles(e.target.files)} disabled={uploading} />
+          {photos.length < MAX_PHOTOS && (
+            <input ref={fileRef} type="file" accept="image/*" multiple onChange={(e) => onFiles(e.target.files)} disabled={uploading} />
+          )}
           {uploading && <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>Uploading…</p>}
         </div>
 
@@ -127,15 +166,64 @@ export function PropertyForm({
           </div>
         </div>
 
-        <div className="bk-grid2">
-          <div className="bk-field">
-            <label htmlFor="rate">Nightly rate</label>
-            <input id="rate" type="number" min="0" step="0.01" value={form.nightly_rate} onChange={(e) => set("nightly_rate", e.target.value)} placeholder="240.00" />
+        <div className="bk-field">
+          <label htmlFor="address">Street address <span style={{ fontWeight: 400 }}>(shown to guests in their booking &amp; check-in emails)</span></label>
+          <input id="address" value={form.address} onChange={(e) => set("address", e.target.value)} placeholder="Calle Pescadores 12, Todos Santos, BCS 23300" />
+          <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>Add latitude/longitude below for an exact &ldquo;Get directions&rdquo; map pin.</p>
+        </div>
+
+        <div className="bk-field">
+          <label htmlFor="rate">Nightly rate</label>
+          <input id="rate" type="number" min="0" step="0.01" value={form.nightly_rate} onChange={(e) => set("nightly_rate", e.target.value)} placeholder="240.00" />
+        </div>
+
+        <div className="bk-field">
+          <label>Cleaning fee</label>
+          <div className="cf-options">
+            <label className="cf-option">
+              <input
+                type="radio"
+                name="cleaning_fee_type"
+                checked={form.cleaning_fee_type === "standard"}
+                onChange={() => set("cleaning_fee_type", "standard")}
+              />
+              <span>Standard cleaning fee</span>
+              <input type="number" min="0" step="0.01" value={form.cleaning_fee} onChange={(e) => set("cleaning_fee", e.target.value)} placeholder="75.00" />
+            </label>
+            <label className="cf-option">
+              <input
+                type="radio"
+                name="cleaning_fee_type"
+                checked={form.cleaning_fee_type === "daily"}
+                onChange={() => set("cleaning_fee_type", "daily")}
+              />
+              <span>Daily cleaning fee rate</span>
+              <input type="number" min="0" step="0.01" value={form.daily_cleaning_fee} onChange={(e) => set("daily_cleaning_fee", e.target.value)} placeholder="0.00" />
+            </label>
+            <label className="cf-option">
+              <input
+                type="radio"
+                name="cleaning_fee_type"
+                checked={form.cleaning_fee_type === "alt1"}
+                onChange={() => set("cleaning_fee_type", "alt1")}
+              />
+              <span>Alternate cleaning fee 1</span>
+              <input type="number" min="0" step="0.01" value={form.alt_cleaning_fee_1} onChange={(e) => set("alt_cleaning_fee_1", e.target.value)} placeholder="0.00" />
+            </label>
+            <label className="cf-option">
+              <input
+                type="radio"
+                name="cleaning_fee_type"
+                checked={form.cleaning_fee_type === "alt2"}
+                onChange={() => set("cleaning_fee_type", "alt2")}
+              />
+              <span>Alternate cleaning fee 2</span>
+              <input type="number" min="0" step="0.01" value={form.alt_cleaning_fee_2} onChange={(e) => set("alt_cleaning_fee_2", e.target.value)} placeholder="0.00" />
+            </label>
           </div>
-          <div className="bk-field">
-            <label htmlFor="clean">Cleaning fee</label>
-            <input id="clean" type="number" min="0" step="0.01" value={form.cleaning_fee} onChange={(e) => set("cleaning_fee", e.target.value)} placeholder="90.00" />
-          </div>
+          <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>
+            Choose which fee applies to this property. The daily rate is multiplied by the length of stay; the others are a flat amount per booking.
+          </p>
         </div>
 
         <div className="bk-grid2">
@@ -163,9 +251,54 @@ export function PropertyForm({
           </div>
         </div>
 
-        <div className="bk-field">
-          <label htmlFor="ci">Default check-in instructions <span style={{ fontWeight: 400 }}>(optional)</span></label>
-          <textarea id="ci" rows={3} value={form.checkin_instructions} onChange={(e) => set("checkin_instructions", e.target.value)} placeholder="Door code, parking, WiFi, directions…" />
+        <div style={{ marginTop: 28, paddingTop: 24, borderTop: "1px solid var(--line, #E0D6C5)" }}>
+          <h3 className="op-subhead" style={{ marginTop: 0 }}>Check-in details</h3>
+          <p className="bk-note" style={{ textAlign: "left", marginBottom: 14 }}>
+            These fields build the check-in email sent to your guest two days before arrival. Leave any blank to omit it.
+          </p>
+
+          <div className="bk-grid2">
+            <div className="bk-field">
+              <label htmlFor="cit">Check-in time</label>
+              <input id="cit" value={form.check_in_time} onChange={(e) => set("check_in_time", e.target.value)} placeholder="3:00 PM" />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="cot">Check-out time</label>
+              <input id="cot" value={form.check_out_time} onChange={(e) => set("check_out_time", e.target.value)} placeholder="11:00 AM" />
+            </div>
+          </div>
+
+          <div className="bk-field">
+            <label htmlFor="entry">Entry instructions</label>
+            <textarea id="entry" rows={2} value={form.entry_instructions} onChange={(e) => set("entry_instructions", e.target.value)} placeholder="Lockbox code 4471, to the right of the front door." />
+          </div>
+
+          <div className="bk-field">
+            <label htmlFor="wifi">Wifi</label>
+            <textarea id="wifi" rows={2} value={form.wifi} onChange={(e) => set("wifi", e.target.value)} placeholder={"Network: CasaDelMar\nPassword: sandpiper22"} />
+          </div>
+
+          <div className="bk-grid2">
+            <div className="bk-field">
+              <label htmlFor="parking">Parking</label>
+              <textarea id="parking" rows={2} value={form.parking} onChange={(e) => set("parking", e.target.value)} placeholder="One spot in the driveway; street parking is fine too." />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="house_rules">House rules</label>
+              <textarea id="house_rules" rows={2} value={form.house_rules} onChange={(e) => set("house_rules", e.target.value)} placeholder="No smoking. Quiet hours after 10pm." />
+            </div>
+          </div>
+
+          <div className="bk-field">
+            <label htmlFor="ci">Additional check-in notes <span style={{ fontWeight: 400 }}>(optional)</span></label>
+            <RichTextEditor
+              id="ci"
+              value={form.checkin_instructions}
+              onChange={(html) => set("checkin_instructions", html)}
+              placeholder="Anything else your guest should know before arrival…"
+              minHeight={90}
+            />
+          </div>
         </div>
 
         <label className="ph-publish">

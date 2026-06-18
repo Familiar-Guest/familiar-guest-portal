@@ -2,8 +2,16 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getOwner } from "@/lib/auth";
 import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
-import { buildOfferEmail, sendEmail, bookingUrl } from "@/lib/email";
-import { findInternalConflict, offerExpiresAt } from "@/lib/offers";
+import {
+  buildOfferEmail,
+  buildChangeEmail,
+  buildCancellationEmail,
+  sendEmail,
+  bookingUrl,
+} from "@/lib/email";
+import { getOwnerContact } from "@/lib/owner";
+import { findInternalConflict, offerExpiresAt, isActiveOffer } from "@/lib/offers";
+import { nights } from "@/lib/format";
 import type { Booking, Property } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -39,9 +47,13 @@ export async function PATCH(
     .eq("owner_id", owner.id)
     .single();
   const current = existing as Booking | null;
-  if (!current) return bad("Offer not found.", 404);
-  if (current.status === "paid")
-    return bad("This booking is already paid and can't be edited.", 409);
+  if (!current) return bad("Booking not found.", 404);
+  if (current.status === "cancelled" || current.status === "declined")
+    return bad("This booking is cancelled and can't be edited.", 409);
+
+  const isPaid = current.status === "paid";
+  const oldCheckIn = current.check_in;
+  const oldCheckOut = current.check_out;
 
   const guest_name = String(body.guest_name ?? "").trim();
   const guest_email = String(body.guest_email ?? "").trim().toLowerCase();
@@ -57,10 +69,19 @@ export async function PATCH(
     return bad("Enter valid check-in and check-out dates.");
   if (check_out <= check_in) return bad("Check-out must be after check-in.");
 
-  const amount = Number(body.amount);
-  if (!Number.isFinite(amount) || amount <= 0)
-    return bad("Enter a price greater than zero.");
-  const amount_cents = Math.round(amount * 100);
+  const nightly_rate = Number(body.nightly_rate);
+  if (!Number.isFinite(nightly_rate) || nightly_rate <= 0)
+    return bad("Enter a nightly rate greater than zero.");
+  const nightly_rate_cents = Math.round(nightly_rate * 100);
+
+  const cleaning_raw = Number(body.cleaning_fee);
+  const cleaning_fee_cents =
+    Number.isFinite(cleaning_raw) && cleaning_raw >= 0
+      ? Math.round(cleaning_raw * 100)
+      : current.cleaning_fee_cents ?? 0;
+
+  const amount_cents =
+    nightly_rate_cents * nights(check_in, check_out) + cleaning_fee_cents;
 
   if (!force) {
     const clash = await findInternalConflict(supabase, {
@@ -103,18 +124,26 @@ export async function PATCH(
     }
   }
 
+  // Paid bookings keep their paid status and date hold; only unpaid offers get
+  // their status reset and the 7-day hold re-issued.
+  const updates: Record<string, unknown> = {
+    guest_name,
+    guest_email,
+    check_in,
+    check_out,
+    amount_cents,
+    nightly_rate_cents,
+    cleaning_fee_cents,
+    checkin_instructions,
+  };
+  if (!isPaid) {
+    updates.status = "offer_sent";
+    updates.expires_at = offerExpiresAt();
+  }
+
   const { data, error } = await supabase
     .from("bookings")
-    .update({
-      guest_name,
-      guest_email,
-      check_in,
-      check_out,
-      amount_cents,
-      checkin_instructions,
-      status: "offer_sent",
-      expires_at: offerExpiresAt(),
-    })
+    .update(updates)
     .eq("id", id)
     .eq("owner_id", owner.id)
     .select()
@@ -122,11 +151,17 @@ export async function PATCH(
 
   if (error || !data) {
     console.error("offer update failed", error);
-    return bad("Could not update the offer. Please try again.", 500);
+    return bad("Could not update the booking. Please try again.", 500);
   }
 
   const booking = data as Booking;
-  const { subject, html } = buildOfferEmail(booking);
+  const contact = await getOwnerContact(supabase, owner.id);
+
+  // A paid booking that's edited gets a change notice (it already paid — no pay
+  // link). An unpaid offer re-sends the offer email with the live pay link.
+  const { subject, html } = isPaid
+    ? buildChangeEmail(booking, oldCheckIn, oldCheckOut)
+    : buildOfferEmail(booking, contact);
   const sent = await sendEmail({
     to: booking.guest_email,
     subject,
@@ -138,10 +173,15 @@ export async function PATCH(
     ok: true,
     booking_url: bookingUrl(booking.token),
     email_sent: sent,
+    paid: isPaid,
   });
 }
 
-/** Remove an offer. Paid bookings can't be removed. */
+/**
+ * Remove a booking. An active booking (paid, or a live offer) emails the guest
+ * a cancellation. Paid bookings are kept as "cancelled" to preserve the payment
+ * record; unpaid offers are deleted outright so their dates free up.
+ */
 export async function DELETE(
   _request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -153,22 +193,49 @@ export async function DELETE(
   const supabase = createAdminClient();
   const { data: existing } = await supabase
     .from("bookings")
-    .select("status")
+    .select("*")
     .eq("id", id)
     .eq("owner_id", owner.id)
     .single();
-  if (!existing) return bad("Offer not found.", 404);
-  if ((existing as { status: string }).status === "paid")
-    return bad("This booking is paid and can't be removed.", 409);
+  const booking = existing as Booking | null;
+  if (!booking) return bad("Booking not found.", 404);
 
-  const { error } = await supabase
-    .from("bookings")
-    .delete()
-    .eq("id", id)
-    .eq("owner_id", owner.id);
-  if (error) {
-    console.error("offer delete failed", error);
-    return bad("Could not remove the offer. Please try again.", 500);
+  const isPaid = booking.status === "paid";
+  const wasActive = isPaid || isActiveOffer(booking);
+
+  // Notify the guest before we remove their reservation.
+  if (wasActive) {
+    const { subject, html } = buildCancellationEmail(booking);
+    await sendEmail({
+      to: booking.guest_email,
+      subject,
+      html,
+      fromName: booking.property_name,
+    });
   }
-  return NextResponse.json({ ok: true });
+
+  if (isPaid) {
+    // Keep the row (payment history) but free the dates by marking cancelled.
+    const { error } = await supabase
+      .from("bookings")
+      .update({ status: "cancelled" })
+      .eq("id", id)
+      .eq("owner_id", owner.id);
+    if (error) {
+      console.error("booking cancel failed", error);
+      return bad("Could not cancel the booking. Please try again.", 500);
+    }
+  } else {
+    const { error } = await supabase
+      .from("bookings")
+      .delete()
+      .eq("id", id)
+      .eq("owner_id", owner.id);
+    if (error) {
+      console.error("offer delete failed", error);
+      return bad("Could not remove the booking. Please try again.", 500);
+    }
+  }
+
+  return NextResponse.json({ ok: true, cancelled: isPaid, emailed: wasActive });
 }

@@ -20,6 +20,19 @@ export function nights(checkIn: string, checkOut: string): number {
   return Math.round((b - a) / 86_400_000);
 }
 
+/** Add `n` days to a YYYY-MM-DD date, returning a YYYY-MM-DD string. */
+export function addDays(d: string, n: number): string {
+  const [y, m, day] = d.split("-").map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, day + n));
+  return dt.toISOString().slice(0, 10);
+}
+
+/** Short month name + year for a YYYY-MM-DD date, e.g. "Jun 2026". */
+export function monthLabel(d: string): string {
+  const [y, m] = d.split("-").map(Number);
+  return `${MONTHS[m - 1]} ${y}`;
+}
+
 /** Cents → localized currency string, e.g. 120000 → "$1,200.00". */
 export function formatMoney(cents: number, currency: string): string {
   return new Intl.NumberFormat("en-US", {

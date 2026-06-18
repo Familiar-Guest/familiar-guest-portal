@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { OAuthButtons } from "../OAuthButtons";
+import { PasswordField } from "../../PasswordField";
 
 export default function SignupPage() {
   const [form, setForm] = useState({
@@ -79,18 +80,14 @@ export default function SignupPage() {
               autoComplete="tel"
             />
           </div>
-          <div className="bk-field">
-            <label htmlFor="pw">Password</label>
-            <input
-              id="pw"
-              type="password"
-              value={form.password}
-              onChange={(e) => set("password", e.target.value)}
-              autoComplete="new-password"
-              minLength={8}
-              required
-            />
-          </div>
+          <PasswordField
+            id="pw"
+            value={form.password}
+            onChange={(v) => set("password", v)}
+            autoComplete="new-password"
+            minLength={8}
+            required
+          />
           <button className="bk-btn" type="submit" disabled={loading}>
             {loading ? "Creating account…" : "Create account"}
           </button>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { OAuthButtons } from "../../owner/OAuthButtons";
+import { PasswordField } from "../../PasswordField";
 
 function nextParam(): string {
   if (typeof window === "undefined") return "/guest";
@@ -62,10 +63,7 @@ export default function GuestSignupPage() {
             </label>
             <input id="phone" type="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} autoComplete="tel" />
           </div>
-          <div className="bk-field">
-            <label htmlFor="pw">Password</label>
-            <input id="pw" type="password" value={form.password} onChange={(e) => set("password", e.target.value)} autoComplete="new-password" minLength={8} required />
-          </div>
+          <PasswordField id="pw" value={form.password} onChange={(v) => set("password", v)} autoComplete="new-password" minLength={8} required />
           <button className="bk-btn" type="submit" disabled={loading}>
             {loading ? "Creating account…" : "Create account"}
           </button>

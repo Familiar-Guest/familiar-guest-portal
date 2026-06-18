@@ -59,13 +59,27 @@ export interface Quote {
   amount_cents: number;
 }
 
+/** The cleaning fee for a stay of `n` nights, based on the property's chosen fee type. */
+export function cleaningFeeForStay(property: Property, n: number): number {
+  switch (property.cleaning_fee_type) {
+    case "daily":
+      return (property.daily_cleaning_fee_cents ?? 0) * n;
+    case "alt1":
+      return property.alt_cleaning_fee_1_cents ?? 0;
+    case "alt2":
+      return property.alt_cleaning_fee_2_cents ?? 0;
+    default:
+      return property.cleaning_fee_cents ?? 0;
+  }
+}
+
 /** Price a stay from a property's nightly rate + cleaning fee. */
 export function quote(property: Property, checkIn: string, checkOut: string): Quote | null {
   if (property.nightly_rate_cents == null || property.nightly_rate_cents <= 0) return null;
   const n = nights(checkIn, checkOut);
   if (n <= 0) return null;
   const nightly_cents = property.nightly_rate_cents * n;
-  const cleaning_cents = property.cleaning_fee_cents ?? 0;
+  const cleaning_cents = cleaningFeeForStay(property, n);
   return {
     nights: n,
     nightly_cents,

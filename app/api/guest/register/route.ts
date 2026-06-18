@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { buildGuestWelcomeEmail, sendEmail } from "@/lib/email";
+import { sendEmail } from "@/lib/email";
+import { buildGuestRegistrationEmail } from "@/lib/emails/guestRegistrationEmail";
+import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 
 export const runtime = "nodejs";
 
@@ -46,8 +48,13 @@ export async function POST(request: NextRequest) {
     phone,
   });
 
-  // Welcome email with a link to their stays page.
-  const { subject, html } = buildGuestWelcomeEmail(full_name.split(" ")[0]);
+  // Permanent, no-login portal token, then the registration email linking to it.
+  const token = await ensureGuestPortal(email, admin);
+  const { subject, html } = buildGuestRegistrationEmail({
+    guestName: full_name.split(" ")[0] || full_name,
+    guestEmail: email,
+    portalUrl: guestPortalUrl(token),
+  });
   await sendEmail({ to: email, subject, html });
 
   // Sign them in (sets session cookies).

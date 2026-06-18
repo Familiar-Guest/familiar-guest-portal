@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { OAuthButtons } from "../OAuthButtons";
+import { PasswordField } from "../../PasswordField";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -19,7 +20,9 @@ export default function LoginPage() {
       body: JSON.stringify({ email, password }),
     });
     if (res.ok) {
-      window.location.href = "/owner";
+      const params = new URLSearchParams(window.location.search);
+      const next = params.get("next");
+      window.location.href = next && next.startsWith("/") && !next.startsWith("//") ? next : "/owner";
     } else {
       const data = await res.json().catch(() => ({}));
       setError(data.error ?? "Incorrect email or password.");
@@ -46,17 +49,13 @@ export default function LoginPage() {
               required
             />
           </div>
-          <div className="bk-field">
-            <label htmlFor="pw">Password</label>
-            <input
-              id="pw"
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-              required
-            />
-          </div>
+          <PasswordField
+            id="pw"
+            value={password}
+            onChange={setPassword}
+            autoComplete="current-password"
+            required
+          />
           <button className="bk-btn" type="submit" disabled={loading}>
             {loading ? "Signing in…" : "Sign in"}
           </button>

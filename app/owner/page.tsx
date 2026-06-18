@@ -19,16 +19,19 @@ export default async function OwnerPage() {
   const admin = createAdminClient();
   const { data } = await admin
     .from("owners")
-    .select("full_name")
+    .select("full_name, public_name")
     .eq("id", owner.id)
     .single();
   if (!data) redirect("/guest");
 
   let ownerName = owner.email.split("@")[0];
-  const fullName = (data as { full_name: string | null } | null)?.full_name;
+  const { full_name: fullName, public_name: publicName } = data as {
+    full_name: string | null;
+    public_name: string | null;
+  };
   if (fullName) ownerName = fullName.split(" ")[0];
 
-  const handle = await ensureOwnerHandle(owner.id, fullName || owner.email);
+  const handle = await ensureOwnerHandle(owner.id, publicName || fullName || owner.email);
 
   return (
     <div className="bk-wrap op-wrap-page">

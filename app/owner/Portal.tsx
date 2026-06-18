@@ -7,8 +7,10 @@ import type { Booking, Property } from "@/lib/types";
 import { PropertyForm } from "./PropertyForm";
 import { OfferForm, type FormMode, type OfferInitial } from "./OfferForm";
 import { CalendarTab } from "./CalendarTab";
+import { SettingsTab } from "./SettingsTab";
+import { MessagesTab, type StartBooking } from "./MessagesTab";
 
-type Tab = "properties" | "calendar" | "bookings" | "offers";
+type Tab = "properties" | "calendar" | "bookings" | "offers" | "messages" | "settings";
 
 type Overlay =
   | { kind: "none" }
@@ -31,14 +33,21 @@ function statusLabel(b: Booking): { text: string; cls: string } {
   return { text: `Offer sent${suffix}`, cls: "op-open" };
 }
 
-export function Portal({ ownerName, handle }: { ownerName: string; handle: string | null }) {
+export function Portal({ ownerName, handle: initialHandle }: { ownerName: string; handle: string | null }) {
   const [tab, setTab] = useState<Tab>("properties");
+  const [handle, setHandle] = useState(initialHandle);
   const [properties, setProperties] = useState<Property[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [overlay, setOverlay] = useState<Overlay>({ kind: "none" });
   const [copied, setCopied] = useState<string | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
+  const [messageBooking, setMessageBooking] = useState<StartBooking | null>(null);
+
+  function openMessages(b: Booking) {
+    setMessageBooking({ id: b.id, guest_name: b.guest_name, property_name: b.property_name });
+    setTab("messages");
+  }
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -91,6 +100,26 @@ export function Portal({ ownerName, handle }: { ownerName: string; handle: strin
       return;
     }
     load();
+  }
+
+  // Cancel/remove a booking from the calendar. Paid bookings notify the guest.
+  async function cancelBooking(b: Booking) {
+    const isPaid = b.status === "paid";
+    const msg = isPaid
+      ? `Cancel the booking for ${b.guest_name}? They'll get a cancellation email and the dates will free up.`
+      : `Remove the offer for ${b.guest_name}? This frees the dates and disables its link.`;
+    if (!window.confirm(msg)) return;
+    const res = await fetch(`/api/owner/offer/${b.id}`, { method: "DELETE" });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error ?? "Could not cancel the booking.");
+      return;
+    }
+    load();
+  }
+
+  function editBooking(b: Booking) {
+    setOverlay({ kind: "offer", mode: "edit", initial: editInitial(b) });
   }
 
   async function decideRequest(b: Booking, action: "approve" | "decline") {
@@ -213,6 +242,12 @@ export function Portal({ ownerName, handle }: { ownerName: string; handle: strin
                     </div>
                   </div>
                   <div className="op-actions">
+                    <button
+                      className="op-link"
+                      onClick={() => setOverlay({ kind: "offer", mode: "create", initial: { property_id: p.id } })}
+                    >
+                      Invite guest
+                    </button>
                     <button className="op-link" onClick={() => setOverlay({ kind: "property", initial: p })}>
                       Edit
                     </button>
@@ -228,7 +263,14 @@ export function Portal({ ownerName, handle }: { ownerName: string; handle: strin
       )}
 
       {/* CALENDAR */}
-      {tab === "calendar" && <CalendarTab properties={properties} />}
+      {tab === "calendar" && (
+        <CalendarTab
+          properties={properties}
+          bookings={bookings}
+          onEdit={editBooking}
+          onCancel={cancelBooking}
+        />
+      )}
 
       {/* BOOKINGS (activity) */}
       {tab === "bookings" && (
@@ -281,6 +323,9 @@ export function Portal({ ownerName, handle }: { ownerName: string; handle: strin
                             {copied === b.token ? "Copied!" : "Copy link"}
                           </button>
                         )}
+                        <button className="op-link" onClick={() => openMessages(b)}>
+                          Message
+                        </button>
                       </div>
                     </div>
                   </li>
@@ -387,6 +432,17 @@ export function Portal({ ownerName, handle }: { ownerName: string; handle: strin
         </div>
       )}
 
+      {/* MESSAGES */}
+      {tab === "messages" && (
+        <MessagesTab
+          startBooking={messageBooking}
+          onConsumeStart={() => setMessageBooking(null)}
+        />
+      )}
+
+      {/* SETTINGS */}
+      {tab === "settings" && <SettingsTab onHandleChange={setHandle} />}
+
     </Shell>
   );
 }
@@ -400,8 +456,10 @@ function editInitial(b: Booking): OfferInitial {
     guest_email: b.guest_email,
     check_in: b.check_in,
     check_out: b.check_out,
-    amount: centsToAmount(b.amount_cents),
+    nightly_rate: b.nightly_rate_cents != null ? centsToAmount(b.nightly_rate_cents) : "",
+    cleaning_fee: b.cleaning_fee_cents ? centsToAmount(b.cleaning_fee_cents) : "",
     checkin_instructions: b.checkin_instructions ?? "",
+    paid: b.status === "paid",
   };
 }
 
@@ -410,7 +468,8 @@ function rebookInitial(b: Booking): OfferInitial {
     property_id: b.property_id ?? undefined,
     guest_name: b.guest_name,
     guest_email: b.guest_email,
-    amount: centsToAmount(b.amount_cents),
+    nightly_rate: b.nightly_rate_cents != null ? centsToAmount(b.nightly_rate_cents) : "",
+    cleaning_fee: b.cleaning_fee_cents ? centsToAmount(b.cleaning_fee_cents) : "",
     checkin_instructions: b.checkin_instructions ?? "",
   };
 }
@@ -435,6 +494,8 @@ function Shell({
     { id: "calendar", label: "Calendar" },
     { id: "bookings", label: "Booking activity" },
     { id: "offers", label: "Offers" },
+    { id: "messages", label: "Messages" },
+    { id: "settings", label: "Settings" },
   ];
   return (
     <div className="op-shell">

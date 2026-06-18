@@ -2,6 +2,15 @@
 
 import { useState } from "react";
 import type { Property } from "@/lib/types";
+import { formatMoney, nights } from "@/lib/format";
+import { RichTextEditor } from "./RichTextEditor";
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+/** Cents → a plain editable amount string ("250.00" → "250"). Empty when unset/zero. */
+function centsToStr(cents: number | null | undefined): string {
+  return cents != null && cents > 0 ? String(cents / 100) : "";
+}
 
 export type FormMode = "create" | "edit" | "rebook";
 
@@ -13,8 +22,10 @@ export interface OfferInitial {
   guest_email?: string;
   check_in?: string;
   check_out?: string;
-  amount?: string;
+  nightly_rate?: string;
+  cleaning_fee?: string;
   checkin_instructions?: string;
+  paid?: boolean; // editing an already-paid booking
 }
 
 interface Conflict {
@@ -50,26 +61,82 @@ export function OfferForm({
   onDone: () => void;
   onCancel: () => void;
 }) {
+  const initialPropertyId = initial?.property_id ?? properties[0]?.id ?? "";
+  const initialProperty = properties.find((p) => p.id === initialPropertyId);
   const [form, setForm] = useState({
-    property_id: initial?.property_id ?? properties[0]?.id ?? "",
+    property_id: initialPropertyId,
     guest_name: initial?.guest_name ?? "",
     guest_email: initial?.guest_email ?? "",
     check_in: initial?.check_in ?? "",
     check_out: initial?.check_out ?? "",
-    amount: initial?.amount ?? "",
-    checkin_instructions: initial?.checkin_instructions ?? "",
+    nightly_rate:
+      initial?.nightly_rate ?? centsToStr(initialProperty?.nightly_rate_cents),
+    cleaning_fee:
+      initial?.cleaning_fee ?? centsToStr(initialProperty?.cleaning_fee_cents),
+    checkin_instructions:
+      initial?.checkin_instructions ??
+      initialProperty?.checkin_instructions ??
+      "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [conflict, setConflict] = useState<Conflict | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+  // Once the owner edits a field, stop overwriting it when the selected
+  // property changes (the property's defaults seed the field, then back off).
+  const [instructionsTouched, setInstructionsTouched] = useState(
+    Boolean(initial?.checkin_instructions)
+  );
+  const [pricingTouched, setPricingTouched] = useState(
+    Boolean(initial?.nightly_rate || initial?.cleaning_fee)
+  );
 
   const selectedProperty = properties.find((p) => p.id === form.property_id);
   const currency = (selectedProperty?.currency ?? "usd").toUpperCase();
+  const isPaidEdit = mode === "edit" && Boolean(initial?.paid);
 
   function set<K extends keyof typeof form>(key: K, value: string) {
     setForm((f) => ({ ...f, [key]: value }));
   }
+
+  function setProperty(id: string) {
+    const p = properties.find((x) => x.id === id);
+    setForm((f) => ({
+      ...f,
+      property_id: id,
+      checkin_instructions: instructionsTouched
+        ? f.checkin_instructions
+        : p?.checkin_instructions ?? "",
+      nightly_rate: pricingTouched
+        ? f.nightly_rate
+        : centsToStr(p?.nightly_rate_cents),
+      cleaning_fee: pricingTouched
+        ? f.cleaning_fee
+        : centsToStr(p?.cleaning_fee_cents),
+    }));
+  }
+
+  function setInstructions(value: string) {
+    setInstructionsTouched(true);
+    set("checkin_instructions", value);
+  }
+
+  function setPricing(key: "nightly_rate" | "cleaning_fee", value: string) {
+    setPricingTouched(true);
+    set(key, value);
+  }
+
+  // Live total preview: nightly rate × nights + cleaning fee.
+  const stayNights =
+    DATE_RE.test(form.check_in) &&
+    DATE_RE.test(form.check_out) &&
+    form.check_out > form.check_in
+      ? nights(form.check_in, form.check_out)
+      : 0;
+  const nightlyCents = Math.round((Number(form.nightly_rate) || 0) * 100);
+  const cleaningCents = Math.round((Number(form.cleaning_fee) || 0) * 100);
+  const totalCents =
+    stayNights > 0 ? nightlyCents * stayNights + cleaningCents : 0;
 
   async function submit(force: boolean) {
     setLoading(true);
@@ -81,7 +148,8 @@ export function OfferForm({
     const method = isEdit ? "PATCH" : "POST";
     const payload = {
       ...form,
-      amount: Number(form.amount),
+      nightly_rate: Number(form.nightly_rate),
+      cleaning_fee: Number(form.cleaning_fee) || 0,
       kind: mode === "rebook" ? "rebook" : "offer",
       force,
     };
@@ -110,20 +178,28 @@ export function OfferForm({
   if (result) {
     return (
       <div className="bk-card">
-        <span className="bk-badge">✓ {mode === "edit" ? "Offer updated" : "Offer sent"}</span>
+        <span className="bk-badge">
+          ✓ {isPaidEdit ? "Booking updated" : mode === "edit" ? "Offer updated" : "Offer sent"}
+        </span>
         <h1>
-          {mode === "edit" ? "Updated offer for " : "Offer sent to "}
+          {isPaidEdit ? "Updated booking for " : mode === "edit" ? "Updated offer for " : "Offer sent to "}
           {form.guest_name}
         </h1>
         <p className="bk-lead">
-          {result.email_sent
+          {isPaidEdit
+            ? result.email_sent
+              ? `We emailed ${form.guest_email} the updated booking details.`
+              : `The booking was updated, but the change email could not be sent — let your guest know directly.`
+            : result.email_sent
             ? `An email with the payment link was sent to ${form.guest_email}.`
             : `The offer was saved, but the email could not be sent. Share the payment link below directly.`}
         </p>
-        <div className="bk-field">
-          <label>Payment link</label>
-          <div className="bk-ok">{result.booking_url}</div>
-        </div>
+        {!isPaidEdit && (
+          <div className="bk-field">
+            <label>Payment link</label>
+            <div className="bk-ok">{result.booking_url}</div>
+          </div>
+        )}
         <button className="bk-btn" onClick={onDone}>
           Back to portal
         </button>
@@ -145,13 +221,17 @@ export function OfferForm({
 
   return (
     <div className="bk-card">
-      <h1>{TITLES[mode]}</h1>
+      <h1>{isPaidEdit ? "Edit booking" : TITLES[mode]}</h1>
       <p className="bk-lead">
-        {mode === "rebook"
+        {isPaidEdit
+          ? "Update this confirmed booking. Saving emails the guest the new details, including the old and new dates. No new payment is collected."
+          : mode === "rebook"
           ? "Pick the new dates and price — guest details are pre-filled. They'll get an email with a link to pay."
           : mode === "edit"
           ? "Update the details. Saving re-sends the offer email and resets the 7-day hold."
           : "Set the dates and price for your guest. They'll get an email with a link to pay — no account needed."}
+        {mode === "create" &&
+          " As soon as you send this, we'll block these dates on this property so no one else can book them."}
       </p>
 
       {noProperties && (
@@ -174,7 +254,7 @@ export function OfferForm({
             <select
               id="property"
               value={form.property_id}
-              onChange={(e) => set("property_id", e.target.value)}
+              onChange={(e) => setProperty(e.target.value)}
               required
             >
               {properties.map((p) => (
@@ -228,30 +308,76 @@ export function OfferForm({
             />
           </div>
         </div>
-        <div className="bk-field">
-          <label htmlFor="amount">Total price ({currency})</label>
-          <input
-            id="amount"
-            type="number"
-            min="1"
-            step="0.01"
-            value={form.amount}
-            onChange={(e) => set("amount", e.target.value)}
-            placeholder="1200.00"
-            required
-          />
+        <div className="bk-grid2">
+          <div className="bk-field">
+            <label htmlFor="nightly_rate">Nightly rate ({currency})</label>
+            <input
+              id="nightly_rate"
+              type="number"
+              min="1"
+              step="0.01"
+              value={form.nightly_rate}
+              onChange={(e) => setPricing("nightly_rate", e.target.value)}
+              placeholder="250.00"
+              required
+            />
+          </div>
+          <div className="bk-field">
+            <label htmlFor="cleaning_fee">
+              Cleaning fee ({currency}){" "}
+              <span style={{ fontWeight: 400 }}>(from property default)</span>
+            </label>
+            <input
+              id="cleaning_fee"
+              type="number"
+              min="0"
+              step="0.01"
+              value={form.cleaning_fee}
+              onChange={(e) => setPricing("cleaning_fee", e.target.value)}
+              placeholder="0.00"
+            />
+          </div>
         </div>
+
+        {stayNights > 0 && nightlyCents > 0 && (
+          <div className="bk-summary" style={{ margin: "0 0 18px" }}>
+            <div className="bk-row">
+              <span className="bk-label">
+                {formatMoney(nightlyCents, currency)} × {stayNights}{" "}
+                {stayNights === 1 ? "night" : "nights"}
+              </span>
+              <span className="bk-val">
+                {formatMoney(nightlyCents * stayNights, currency)}
+              </span>
+            </div>
+            {cleaningCents > 0 && (
+              <div className="bk-row">
+                <span className="bk-label">Cleaning fee</span>
+                <span className="bk-val">
+                  {formatMoney(cleaningCents, currency)}
+                </span>
+              </div>
+            )}
+            <div className="bk-row bk-total">
+              <span className="bk-label">Guest pays</span>
+              <span className="bk-val">{formatMoney(totalCents, currency)}</span>
+            </div>
+          </div>
+        )}
         <div className="bk-field">
           <label htmlFor="checkin_instructions">
-            Check-in instructions{" "}
-            <span style={{ fontWeight: 400 }}>(optional — sent 2 days before)</span>
+            Check-in notes{" "}
+            <span style={{ fontWeight: 400 }}>
+              (optional, for this guest — added to the check-in email alongside the
+              property&apos;s check-in details)
+            </span>
           </label>
-          <textarea
+          <RichTextEditor
             id="checkin_instructions"
-            rows={4}
             value={form.checkin_instructions}
-            onChange={(e) => set("checkin_instructions", e.target.value)}
+            onChange={(html) => setInstructions(html)}
             placeholder="Door code, parking, WiFi, directions…"
+            minHeight={100}
           />
         </div>
 
@@ -274,6 +400,8 @@ export function OfferForm({
           <button className="bk-btn" type="submit" disabled={loading || noProperties}>
             {loading
               ? "Saving…"
+              : isPaidEdit
+              ? "Save & notify guest"
               : mode === "edit"
               ? "Save & re-send email"
               : "Create offer & send email"}

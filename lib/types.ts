@@ -20,8 +20,13 @@ export interface Booking {
   check_in: string; // YYYY-MM-DD
   check_out: string; // YYYY-MM-DD
   currency: string;
-  amount_cents: number;
+  amount_cents: number; // authoritative total = nightly_rate_cents × nights + cleaning_fee_cents
+  nightly_rate_cents: number | null; // per-night rate shown to the guest
+  cleaning_fee_cents: number; // total cleaning fee for the stay
   checkin_instructions: string | null;
+  welcome_message_html: string | null;
+  guest_phone: string | null;
+  confirmation_method: "email" | "sms";
   status: BookingStatus;
   kind: OfferKind;
   expires_at: string | null; // ISO; when an unpaid offer lapses and frees its dates
@@ -33,6 +38,8 @@ export interface Booking {
   checkin_sent_at: string | null;
   created_at: string;
 }
+
+export type CleaningFeeType = "standard" | "daily" | "alt1" | "alt2";
 
 export interface Property {
   id: string;
@@ -46,11 +53,24 @@ export interface Property {
   gps_lng: number | null;
   currency: string;
   nightly_rate_cents: number | null;
-  cleaning_fee_cents: number;
+  cleaning_fee_cents: number; // "Standard Cleaning Fee" amount
+  cleaning_fee_type: CleaningFeeType;
+  daily_cleaning_fee_cents: number;
+  alt_cleaning_fee_1_cents: number;
+  alt_cleaning_fee_2_cents: number;
   min_nights: number;
   is_listed: boolean;
   airbnb_ical_url: string | null;
   checkin_instructions: string | null;
+  welcome_message_html: string | null;
+  // Structured check-in + address fields that populate the guest emails.
+  address: string | null;
+  check_in_time: string;
+  check_out_time: string;
+  entry_instructions: string | null;
+  wifi: string | null;
+  parking: string | null;
+  house_rules: string | null;
   created_at: string;
 }
 
@@ -59,5 +79,19 @@ export interface Guest {
   email: string;
   phone: string | null;
   full_name: string | null;
+  created_at: string;
+}
+
+export type MessageSender = "owner" | "guest";
+
+export interface Message {
+  id: string;
+  booking_id: string;
+  owner_id: string;
+  sender: MessageSender;
+  direction: string; // 'outbound' (owner->guest) | 'inbound' (guest->owner)
+  subject: string | null;
+  body: string;
+  read_at: string | null;
   created_at: string;
 }

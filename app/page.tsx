@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 /* Reused checkmark used in the suggested-shots and pricing lists */
 function Check() {
@@ -46,80 +46,16 @@ function HomeMark() {
   );
 }
 
-function WaitlistForm({ buttonStyle }: { buttonStyle?: React.CSSProperties }) {
-  const [joined, setJoined] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  if (joined) {
-    return (
-      <div className="waitlist">
-        <div
-          style={{
-            padding: "11px 20px",
-            fontWeight: 600,
-            color: "var(--forest)",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            justifyContent: "center",
-            width: "100%",
-          }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path
-              d="M9 12l2 2 4-4"
-              stroke="#0F4D45"
-              strokeWidth="2.4"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <circle cx="12" cy="12" r="9" stroke="#0F4D45" strokeWidth="2" />
-          </svg>{" "}
-          You&rsquo;re on the list — we&rsquo;ll be in touch.
-        </div>
-      </div>
-    );
-  }
-
+function SignupCTA({ buttonStyle, label = "Get started free" }: { buttonStyle?: React.CSSProperties; label?: string }) {
   return (
-    <form
-      className="waitlist reveal d4"
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setError(null);
-        const form = e.currentTarget;
-        const email = (form.elements.namedItem("email") as HTMLInputElement).value;
-        setSubmitting(true);
-        try {
-          const res = await fetch("/api/waitlist", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email }),
-          });
-          if (!res.ok) {
-            const data = await res.json().catch(() => null);
-            setError(data?.error ?? "Something went wrong. Please try again.");
-            return;
-          }
-          setJoined(true);
-        } catch {
-          setError("Something went wrong. Please try again.");
-        } finally {
-          setSubmitting(false);
-        }
-      }}
-    >
-      <input type="email" name="email" placeholder="you@email.com" aria-label="Email" required />
-      <button className="btn btn-primary" type="submit" style={buttonStyle} disabled={submitting}>
-        {submitting ? "Joining…" : "Join the waitlist"}
-      </button>
-      {error && (
-        <div style={{ color: "var(--coral-ink)", fontSize: "13px", marginTop: "8px", width: "100%" }}>
-          {error}
-        </div>
-      )}
-    </form>
+    <div className="waitlist reveal d4">
+      <a className="btn btn-primary" href="/owner/signup" style={buttonStyle}>
+        {label}
+      </a>
+      <a className="btn btn-ghost" href="/owner/login" style={{ marginLeft: 8 }}>
+        Sign in
+      </a>
+    </div>
   );
 }
 
@@ -155,8 +91,8 @@ export default function Home() {
             <a className="txt" href="#trust">
               Trust &amp; safety
             </a>
-            <a className="btn btn-primary" href="#waitlist">
-              Join the waitlist
+            <a className="btn btn-primary" href="/owner/signup">
+              Get started free
             </a>
           </div>
         </div>
@@ -175,9 +111,9 @@ export default function Home() {
             <p className="sub reveal d3">
               Familiar Guest is the simplest way to rent to the people who
               already love your place. Keep the relationship, skip the
-              15-20% rental platform fees, and let us handle the trust. <strong>Your first month is commission-free.</strong>
+              15-20% rental platform fees, and let us manage your bookings. <strong>Your first month is commission-free.</strong>
             </p>
-            <WaitlistForm />
+            <SignupCTA />
             <p className="micro reveal d5">
               <svg viewBox="0 0 24 24" fill="none">
                 <path
@@ -339,7 +275,7 @@ export default function Home() {
           <div className="shift">
             <h2>You found these guests. Why keep paying to rebook them?</h2>
             <p>
-              Your repeat families already know your place. When they book again
+              Your repeat guests already know your place. When they book again
               through a big platform, you lose a cut of every stay — and you
               never really own the relationship. Familiar Guest hands it back to
               you, with the safety guests expect built right in.
@@ -823,7 +759,7 @@ export default function Home() {
                   <Check /> No commitment, no card to sign up
                 </li>
               </ul>
-              <a href="#waitlist" className="btn btn-ghost">
+              <a href="/owner/signup" className="btn btn-ghost">
                 Get started free
               </a>
             </div>
@@ -844,7 +780,7 @@ export default function Home() {
                   <Check /> No per-booking commission
                 </li>
               </ul>
-              <a href="#waitlist" className="btn btn-ghost">
+              <a href="/owner/signup" className="btn btn-ghost">
                 Get started
               </a>
             </div>
@@ -869,7 +805,7 @@ export default function Home() {
                   <Check /> <strong>Founding owners: $19/mo for life</strong>
                 </li>
               </ul>
-              <a href="#waitlist" className="btn btn-primary">
+              <a href="/owner/signup" className="btn btn-primary">
                 Get started
               </a>
             </div>
@@ -890,7 +826,7 @@ export default function Home() {
                   <Check /> Consolidated reports + priority support
                 </li>
               </ul>
-              <a href="#waitlist" className="btn btn-ghost">
+              <a href="/owner/signup" className="btn btn-ghost">
                 Get started
               </a>
             </div>
@@ -991,16 +927,15 @@ export default function Home() {
       </section>
 
       {/* CTA */}
-      <section className="block" id="waitlist" style={{ paddingTop: 0 }}>
+      <section className="block" id="signup" style={{ paddingTop: 0 }}>
         <div className="wrap">
           <div className="cta">
             <h2>Keep the guests you&rsquo;ve earned.</h2>
             <p>
-              Join the waitlist to host your repeat guests direct when we open —
-              your first month is commission-free, and founding owners lock Host
-              at $19/mo for life.
+              Sign up free and host your repeat guests direct — your first month
+              is commission-free, and founding owners lock Host at $19/mo for life.
             </p>
-            <WaitlistForm buttonStyle={{ background: "var(--forest)" }} />
+            <SignupCTA buttonStyle={{ background: "var(--forest)" }} label="Create your free account" />
           </div>
         </div>
       </section>

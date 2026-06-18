@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { formatDate, formatMoney } from "@/lib/format";
 import { isExpired } from "@/lib/offers";
 import type { Booking } from "@/lib/types";
+import { MonthCalendar, type CalendarBar } from "@/app/owner/MonthCalendar";
 
 function statusLabel(b: Booking): { text: string; cls: string } {
   if (b.status === "paid") return { text: "Confirmed", cls: "op-paid" };
@@ -13,6 +15,8 @@ function statusLabel(b: Booking): { text: string; cls: string } {
   return { text: "Awaiting payment", cls: "op-open" };
 }
 
+type View = "calendar" | "list";
+
 export function GuestStays({
   email,
   bookings,
@@ -20,10 +24,30 @@ export function GuestStays({
   email: string;
   bookings: Booking[];
 }) {
+  const [view, setView] = useState<View>("calendar");
+
   async function logout() {
     await fetch("/api/owner/logout", { method: "POST" });
     window.location.href = "/guest/login";
   }
+
+  const todayIso = new Date().toISOString().slice(0, 10);
+
+  const upcoming = bookings.filter(
+    (b) =>
+      b.check_out >= todayIso &&
+      b.status !== "declined" &&
+      b.status !== "cancelled" &&
+      !(b.status !== "paid" && b.status !== "requested" && isExpired(b))
+  );
+
+  const calBars: CalendarBar[] = upcoming.map(b => ({
+    start: b.check_in,
+    end: b.check_out,
+    shortLabel: b.property_name,
+    fullLabel: `${b.property_name} · ${formatDate(b.check_in)} – ${formatDate(b.check_out)}`,
+    type: b.status === "paid" ? "booked" : "offer",
+  }));
 
   return (
     <div className="op-shell">
@@ -45,6 +69,14 @@ export function GuestStays({
             <h2 className="op-h2">Your stays</h2>
             <p className="op-sub">Bookings linked to {email}.</p>
           </div>
+          <div className="op-tabs" style={{ margin: 0, padding: 4 }}>
+            <button className={`op-tab ${view === "calendar" ? "op-tab-on" : ""}`} onClick={() => setView("calendar")}>
+              Calendar
+            </button>
+            <button className={`op-tab ${view === "list" ? "op-tab-on" : ""}`} onClick={() => setView("list")}>
+              List
+            </button>
+          </div>
         </div>
 
         {bookings.length === 0 && (
@@ -54,7 +86,23 @@ export function GuestStays({
           </div>
         )}
 
-        {bookings.length > 0 && (
+        {bookings.length > 0 && view === "calendar" && (
+          <>
+            {calBars.length > 0 ? (
+              <>
+                <MonthCalendar bars={calBars} />
+                <p className="bk-note" style={{ textAlign: "left", marginTop: 10 }}>
+                  <span className="cal-dot cal-booked" /> Confirmed &nbsp;
+                  <span className="cal-dot cal-offer"  /> Pending
+                </p>
+              </>
+            ) : (
+              <div className="op-empty">No upcoming stays.</div>
+            )}
+          </>
+        )}
+
+        {bookings.length > 0 && view === "list" && (
           <ul className="op-list">
             {bookings.map((b) => (
               <StayRow key={b.id} booking={b} />

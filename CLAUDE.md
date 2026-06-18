@@ -307,7 +307,7 @@ The following are safety-critical and should be reviewed by an experienced engin
 **Doc generation:** styled docs are authored in Markdown with a CSS `<style>` block + YAML front matter, then rendered to PDF via `npx md-to-pdf <file.md>` and to Word via `npx markdown-docx -i <file.md> -o <file.docx>`. All use the brand design tokens below.
 
 ### Marketing site design tokens — "Tidewater" (adopted June 2026, see `docs/tidewater-style-guide.md`)
-- Display font: Fraunces (Google Fonts, serif) — also the wordmark/logo face, weight 600
+- Display font: **Georgia** (system serif, `Georgia,'Times New Roman',serif`) — also the wordmark/logo face, weight 600. (Switched away from Fraunces June 2026: its variable letterforms had distracting overshoot on f/d glyphs that no `opsz` setting fixed; Georgia is a clean, ubiquitous, screen-optimized serif. Do NOT re-introduce Fraunces.)
 - Body/UI font: Inter (Google Fonts, sans)
 - Primary brand: `#0F4D45` (deep ocean teal) — nav, primary buttons, anchors
 - Secondary teal: `#14635A` — labels, icons, secondary badges/buttons
@@ -389,6 +389,7 @@ Pricing note: **$15 Starter is the thinnest-margin plan** — protect its margin
 - **Webhooks:** all Stripe webhooks must be verified with the webhook signing secret before processing. Log every webhook event. Handle idempotency.
 - **Errors:** never expose raw Stripe or Supabase errors to the guest-facing booking page. Map to friendly messages.
 - **Accessibility:** booking page and owner onboarding must be keyboard-navigable and screen-reader compatible. Guests booking include older adults and non-technical users.
+- **Email domain DNS (Resend on famguest.com):** a `_dmarc.famguest.com` TXT record (`v=DMARC1; p=none`) is REQUIRED alongside SPF/DKIM for reliable delivery — without it, Resend showed the domain as verified but mail to Gmail addresses was filtered/undelivered. This was NOT flagged as a requirement by Resend's domain-verification UI or by Vercel's DNS docs; added manually June 2026 via `vercel dns add famguest.com _dmarc TXT "v=DMARC1; p=none"`. If setting up email on a new domain, add DMARC proactively even if the provider's checklist doesn't ask for it.
 
 ---
 

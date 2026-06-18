@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import {
   buildReminderEmail,
-  buildCheckinEmail,
+  buildCheckinForBooking,
   sendEmail,
 } from "@/lib/email";
 import { daysUntil } from "@/lib/format";
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
 
     // Check-in email: fire once at 0–2 days before check-in.
     if (b.checkin_sent_at === null && days <= 2) {
-      const { subject, html } = buildCheckinEmail(b);
+      const { subject, html } = await buildCheckinForBooking(b);
       const sent = await sendEmail({
         to: b.guest_email,
         subject,

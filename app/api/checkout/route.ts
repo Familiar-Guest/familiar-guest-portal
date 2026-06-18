@@ -18,9 +18,13 @@ export async function POST(request: NextRequest) {
   }
 
   let token: unknown;
+  let guestPhone: unknown;
+  let confirmationMethod: unknown;
   try {
     const body = await request.json();
     token = body?.token;
+    guestPhone = body?.guest_phone;
+    confirmationMethod = body?.confirmation_method;
   } catch {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
@@ -28,6 +32,11 @@ export async function POST(request: NextRequest) {
   if (typeof token !== "string" || !token) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
+
+  const phone =
+    typeof guestPhone === "string" && guestPhone.trim() ? guestPhone.trim() : null;
+  // Text confirmation requires a phone number — fall back to email otherwise.
+  const method = confirmationMethod === "sms" && phone ? "sms" : "email";
 
   const supabase = createAdminClient();
   const { data, error } = await supabase
@@ -64,6 +73,9 @@ export async function POST(request: NextRequest) {
   try {
     const checkoutSession = await getStripe().checkout.sessions.create({
       mode: "payment",
+      // Card only — excludes Stripe Link, which can prompt the guest for a
+      // phone number and send it an SMS code unrelated to our confirmation flow.
+      payment_method_types: ["card"],
       customer_email: booking.guest_email,
       line_items: [
         {
@@ -93,6 +105,8 @@ export async function POST(request: NextRequest) {
       .update({
         stripe_session_id: checkoutSession.id,
         guest_user_id: guestUser.id,
+        guest_phone: phone,
+        confirmation_method: method,
       })
       .eq("id", booking.id);
 
