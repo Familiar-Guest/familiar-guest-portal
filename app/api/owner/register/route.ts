@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
+import { sendEmail, siteUrl } from "@/lib/email";
+import { buildOwnerRegistrationEmail } from "@/lib/emails/ownerRegistrationEmail";
 
 export const runtime = "nodejs";
 
@@ -52,6 +54,16 @@ export async function POST(request: NextRequest) {
   if (profileErr) {
     console.error("owner profile insert failed", profileErr);
     // Account exists in auth; surface a soft error but let them log in.
+  }
+
+  // Registration confirmation email (Tidewater template). Best-effort.
+  {
+    const { subject, html } = buildOwnerRegistrationEmail({
+      ownerName: full_name.split(" ")[0] || full_name,
+      ownerEmail: email,
+      portalUrl: `${siteUrl()}/owner`,
+    });
+    await sendEmail({ to: email, subject, html });
   }
 
   // Sign them in (sets the session cookies).

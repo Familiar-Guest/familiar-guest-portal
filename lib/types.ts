@@ -63,6 +63,14 @@ export interface Property {
   airbnb_ical_url: string | null;
   checkin_instructions: string | null;
   welcome_message_html: string | null;
+  // Structured check-in + address fields that populate the guest emails.
+  address: string | null;
+  check_in_time: string;
+  check_out_time: string;
+  entry_instructions: string | null;
+  wifi: string | null;
+  parking: string | null;
+  house_rules: string | null;
   created_at: string;
 }
 
@@ -71,5 +79,19 @@ export interface Guest {
   email: string;
   phone: string | null;
   full_name: string | null;
+  created_at: string;
+}
+
+export type MessageSender = "owner" | "guest";
+
+export interface Message {
+  id: string;
+  booking_id: string;
+  owner_id: string;
+  sender: MessageSender;
+  direction: string; // 'outbound' (owner->guest) | 'inbound' (guest->owner)
+  subject: string | null;
+  body: string;
+  read_at: string | null;
   created_at: string;
 }

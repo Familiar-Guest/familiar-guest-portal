@@ -464,3 +464,18 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
   .listing-gallery{grid-template-columns:1fr 1fr;grid-auto-rows:120px}
   .listing-gallery .lg-main{grid-column:1 / span 2}
 }
+
+/* ── Messaging (owner inbox + guest portal threads) ───────────────────────── */
+.msg-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin:10px 0 0}
+.msg-row{border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;background:var(--card);max-width:88%}
+.msg-mine{align-self:flex-end;background:var(--clay-soft);border-color:var(--seaglass)}
+.msg-theirs{align-self:flex-start}
+.msg-head{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--ink-soft);margin-bottom:4px}
+.msg-from{font-weight:600;color:var(--ink)}
+.msg-subject{font-weight:600;font-size:13px;color:var(--ink);margin-bottom:2px}
+.msg-body{font-size:14px;color:var(--ink);white-space:pre-wrap;line-height:1.5}
+.msg-thread-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin:0}
+.msg-thread{display:flex;justify-content:space-between;gap:14px;align-items:center;width:100%;text-align:left;border:1px solid var(--line);border-radius:var(--radius-sm);background:var(--card);padding:12px 14px;cursor:pointer}
+.msg-thread:hover{border-color:var(--ink-faint)}
+.msg-thread .mt-snippet{font-size:13px;color:var(--ink-soft);margin-top:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:46ch}
+.msg-unread{background:var(--forest);color:#fff;border-radius:999px;font-size:11px;font-weight:600;padding:2px 8px;min-width:20px;text-align:center}

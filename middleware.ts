@@ -37,9 +37,12 @@ export async function middleware(request: NextRequest) {
   const ownerAuthPage = path === "/owner/login" || path === "/owner/signup";
   const guestAuthPage = path === "/guest/login" || path === "/guest/signup";
   const isAuthPage = ownerAuthPage || guestAuthPage;
+  // The permanent guest portal /guest/<token> is public (the token is the
+  // credential) — it must not be gated behind login.
+  const guestTokenPage = /^\/guest\/[0-9a-f]{40,}$/i.test(path);
 
   // Gate the protected areas.
-  if (!user && !isAuthPage) {
+  if (!user && !isAuthPage && !guestTokenPage) {
     if (path.startsWith("/owner")) return redirectTo(request, "/owner/login");
     if (path.startsWith("/guest")) return redirectTo(request, "/guest/login");
   }

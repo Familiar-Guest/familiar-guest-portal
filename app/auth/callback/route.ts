@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { ensureOwnerProfile, ensureGuestProfile, getOwner } from "@/lib/auth";
-import { buildGuestWelcomeEmail, sendEmail } from "@/lib/email";
+import { sendEmail } from "@/lib/email";
+import { buildGuestRegistrationEmail } from "@/lib/emails/guestRegistrationEmail";
+import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 
 export const runtime = "nodejs";
 
@@ -31,9 +33,12 @@ export async function GET(request: NextRequest) {
         if (created) {
           const session = await getOwner();
           if (session) {
-            const { subject, html } = buildGuestWelcomeEmail(
-              session.email.split("@")[0]
-            );
+            const token = await ensureGuestPortal(session.email);
+            const { subject, html } = buildGuestRegistrationEmail({
+              guestName: session.email.split("@")[0],
+              guestEmail: session.email,
+              portalUrl: guestPortalUrl(token),
+            });
             await sendEmail({ to: session.email, subject, html });
           }
         }

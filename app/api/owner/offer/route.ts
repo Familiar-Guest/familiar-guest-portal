@@ -5,6 +5,7 @@ import { getOwner } from "@/lib/auth";
 import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
 import { buildOfferEmail, sendEmail, bookingUrl } from "@/lib/email";
 import { getOwnerContact } from "@/lib/owner";
+import { ensureGuestPortal } from "@/lib/guestPortal";
 import { findInternalConflict, offerExpiresAt } from "@/lib/offers";
 import { nights } from "@/lib/format";
 import type { Booking, OfferKind, Property } from "@/lib/types";
@@ -47,12 +48,6 @@ export async function POST(request: NextRequest) {
     String(body.checkin_instructions ?? "").trim() ||
     property.checkin_instructions ||
     null;
-  const bodyWelcome = String(body.welcome_message_html ?? "").trim();
-  let welcome_message_html: string | null = bodyWelcome || (property as Property & { welcome_message_html?: string }).welcome_message_html || null;
-  if (!welcome_message_html) {
-    const { data: ownerRow } = await supabase.from("owners").select("welcome_message_html").eq("id", owner.id).single();
-    welcome_message_html = (ownerRow as { welcome_message_html?: string } | null)?.welcome_message_html ?? null;
-  }
   const kind: OfferKind = KINDS.includes(body.kind as OfferKind)
     ? (body.kind as OfferKind)
     : "offer";
@@ -126,7 +121,11 @@ export async function POST(request: NextRequest) {
     return bad("Could not create the offer. Please try again.", 500);
   }
 
-  const booking: Booking = { ...(data as Booking), welcome_message_html };
+  const booking = data as Booking;
+  // Make sure the invited guest has a permanent portal token before any
+  // booking/portal links go out.
+  await ensureGuestPortal(booking.guest_email, supabase);
+
   const contact = await getOwnerContact(supabase, owner.id);
   const { subject, html } = buildOfferEmail(booking, contact);
   const sent = await sendEmail({

@@ -8,8 +8,9 @@ import { PropertyForm } from "./PropertyForm";
 import { OfferForm, type FormMode, type OfferInitial } from "./OfferForm";
 import { CalendarTab } from "./CalendarTab";
 import { SettingsTab } from "./SettingsTab";
+import { MessagesTab, type StartBooking } from "./MessagesTab";
 
-type Tab = "properties" | "calendar" | "bookings" | "offers" | "settings";
+type Tab = "properties" | "calendar" | "bookings" | "offers" | "messages" | "settings";
 
 type Overlay =
   | { kind: "none" }
@@ -41,6 +42,12 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
   const [overlay, setOverlay] = useState<Overlay>({ kind: "none" });
   const [copied, setCopied] = useState<string | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
+  const [messageBooking, setMessageBooking] = useState<StartBooking | null>(null);
+
+  function openMessages(b: Booking) {
+    setMessageBooking({ id: b.id, guest_name: b.guest_name, property_name: b.property_name });
+    setTab("messages");
+  }
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -316,6 +323,9 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
                             {copied === b.token ? "Copied!" : "Copy link"}
                           </button>
                         )}
+                        <button className="op-link" onClick={() => openMessages(b)}>
+                          Message
+                        </button>
                       </div>
                     </div>
                   </li>
@@ -422,6 +432,14 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
         </div>
       )}
 
+      {/* MESSAGES */}
+      {tab === "messages" && (
+        <MessagesTab
+          startBooking={messageBooking}
+          onConsumeStart={() => setMessageBooking(null)}
+        />
+      )}
+
       {/* SETTINGS */}
       {tab === "settings" && <SettingsTab onHandleChange={setHandle} />}
 
@@ -441,7 +459,6 @@ function editInitial(b: Booking): OfferInitial {
     nightly_rate: b.nightly_rate_cents != null ? centsToAmount(b.nightly_rate_cents) : "",
     cleaning_fee: b.cleaning_fee_cents ? centsToAmount(b.cleaning_fee_cents) : "",
     checkin_instructions: b.checkin_instructions ?? "",
-    welcome_message_html: b.welcome_message_html ?? undefined,
     paid: b.status === "paid",
   };
 }
@@ -477,6 +494,7 @@ function Shell({
     { id: "calendar", label: "Calendar" },
     { id: "bookings", label: "Booking activity" },
     { id: "offers", label: "Offers" },
+    { id: "messages", label: "Messages" },
     { id: "settings", label: "Settings" },
   ];
   return (

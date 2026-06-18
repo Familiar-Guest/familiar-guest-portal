@@ -18,7 +18,14 @@ export type PropertyInput = {
   is_listed: boolean;
   airbnb_ical_url: string | null;
   checkin_instructions: string | null;
-  welcome_message_html: string | null;
+  // Structured check-in + address fields used by the guest emails.
+  address: string | null;
+  check_in_time: string;
+  check_out_time: string;
+  entry_instructions: string | null;
+  wifi: string | null;
+  parking: string | null;
+  house_rules: string | null;
   gps_lat: number | null;
   gps_lng: number | null;
 };
@@ -40,8 +47,15 @@ export function parsePropertyInput(
     return { error: "The calendar link must start with http:// or https://" };
   const checkin_instructions =
     String(body.checkin_instructions ?? "").trim() || null;
-  const welcome_message_html =
-    String(body.welcome_message_html ?? "").trim() || null;
+
+  // Structured check-in + address fields (drive the booking/check-in emails).
+  const address = String(body.address ?? "").trim() || null;
+  const check_in_time = String(body.check_in_time ?? "").trim() || "3:00 PM";
+  const check_out_time = String(body.check_out_time ?? "").trim() || "11:00 AM";
+  const entry_instructions = String(body.entry_instructions ?? "").trim() || null;
+  const wifi = String(body.wifi ?? "").trim() || null;
+  const parking = String(body.parking ?? "").trim() || null;
+  const house_rules = String(body.house_rules ?? "").trim() || null;
 
   const photos = Array.isArray(body.photos)
     ? (body.photos as unknown[]).map((p) => String(p)).filter(Boolean).slice(0, 10)
@@ -86,7 +100,13 @@ export function parsePropertyInput(
       is_listed,
       airbnb_ical_url,
       checkin_instructions,
-      welcome_message_html,
+      address,
+      check_in_time,
+      check_out_time,
+      entry_instructions,
+      wifi,
+      parking,
+      house_rules,
       gps_lat,
       gps_lng,
     },

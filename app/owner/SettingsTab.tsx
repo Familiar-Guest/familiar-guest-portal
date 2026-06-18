@@ -1,13 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { RichTextEditor } from "./RichTextEditor";
 
 export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: string | null) => void }) {
   const [publicName, setPublicName] = useState("");
   const [defaultName, setDefaultName] = useState("");
   const [handle, setHandle] = useState<string | null>(null);
-  const [welcomeHtml, setWelcomeHtml] = useState("");
   const [contactEmail, setContactEmail] = useState("");
   const [contactPhone, setContactPhone] = useState("");
   const [contactWhatsapp, setContactWhatsapp] = useState("");
@@ -25,7 +23,6 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
         setPublicName(data.public_name ?? "");
         setDefaultName(data.default_public_name ?? "");
         setHandle(data.handle ?? null);
-        setWelcomeHtml(data.welcome_message_html ?? "");
         setContactEmail(data.contact_email ?? "");
         setContactPhone(data.contact_phone ?? "");
         setContactWhatsapp(data.contact_whatsapp ?? "");
@@ -44,7 +41,6 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         public_name: publicName,
-        welcome_message_html: welcomeHtml,
         contact_email: contactEmail,
         contact_phone: contactPhone,
         contact_whatsapp: contactWhatsapp,
@@ -135,21 +131,7 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
           </div>
         </div>
 
-        <div className="bk-field" style={{ marginTop: 24 }}>
-          <label htmlFor="welcome_msg">Default welcome message</label>
-          <p className="bk-note" style={{ textAlign: "left", marginBottom: 8 }}>
-            Included in the invitation email sent to guests. You can also edit it per-invite when sending a stay offer. Your contact info above is added automatically at the bottom.
-          </p>
-          <RichTextEditor
-            id="welcome_msg"
-            value={welcomeHtml}
-            onChange={setWelcomeHtml}
-            placeholder="A personal note to your guests — e.g. 'We're so happy to have you! Help yourself to the welcome basket in the kitchen.'"
-            minHeight={100}
-          />
-        </div>
-
-        <button className="bk-btn" type="submit" disabled={saving}>
+        <button className="bk-btn" type="submit" disabled={saving} style={{ marginTop: 24 }}>
           {saving ? "Saving…" : "Save"}
         </button>
         {saved && <p className="bk-note">Saved.</p>}

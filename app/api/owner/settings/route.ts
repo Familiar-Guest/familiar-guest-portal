@@ -15,14 +15,13 @@ export async function GET() {
   const admin = createAdminClient();
   const { data } = await admin
     .from("owners")
-    .select("full_name, public_name, handle, welcome_message_html, contact_email, contact_phone, contact_whatsapp")
+    .select("full_name, public_name, handle, contact_email, contact_phone, contact_whatsapp")
     .eq("id", owner.id)
     .single();
   const row = data as {
     full_name: string | null;
     public_name: string | null;
     handle: string | null;
-    welcome_message_html: string | null;
     contact_email: string | null;
     contact_phone: string | null;
     contact_whatsapp: string | null;
@@ -34,7 +33,6 @@ export async function GET() {
     full_name: row.full_name,
     public_name: row.public_name,
     handle: row.handle,
-    welcome_message_html: row.welcome_message_html,
     contact_email: row.contact_email ?? owner.email,
     contact_phone: row.contact_phone,
     contact_whatsapp: row.contact_whatsapp,
@@ -55,9 +53,6 @@ export async function PATCH(request: NextRequest) {
   }
 
   const public_name = String(body.public_name ?? "").trim() || null;
-  const welcome_message_html = "welcome_message_html" in body
-    ? (String(body.welcome_message_html ?? "").trim() || null)
-    : undefined;
 
   // Contact info shared with guests. Email is required if any contact field is sent.
   const contactKeys = ["contact_email", "contact_phone", "contact_whatsapp"];
@@ -77,7 +72,6 @@ export async function PATCH(request: NextRequest) {
   if ("error" in result) return NextResponse.json({ error: result.error }, { status: 500 });
 
   const updates: Record<string, unknown> = {};
-  if (welcome_message_html !== undefined) updates.welcome_message_html = welcome_message_html;
   if (contact_email !== undefined) updates.contact_email = contact_email;
   if (contact_phone !== undefined) updates.contact_phone = contact_phone;
   if (contact_whatsapp !== undefined) updates.contact_whatsapp = contact_whatsapp;

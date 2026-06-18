@@ -61,8 +61,6 @@ export async function PATCH(
   const check_out = String(body.check_out ?? "").trim();
   const checkin_instructions =
     String(body.checkin_instructions ?? "").trim() || null;
-  const bodyWelcome = String(body.welcome_message_html ?? "").trim();
-  const welcome_message_html = bodyWelcome || null;
   const force = body.force === true;
 
   if (!guest_name) return bad("Enter the guest's name.");
@@ -156,7 +154,7 @@ export async function PATCH(
     return bad("Could not update the booking. Please try again.", 500);
   }
 
-  const booking = { ...(data as Booking), welcome_message_html };
+  const booking = data as Booking;
   const contact = await getOwnerContact(supabase, owner.id);
 
   // A paid booking that's edited gets a change notice (it already paid — no pay

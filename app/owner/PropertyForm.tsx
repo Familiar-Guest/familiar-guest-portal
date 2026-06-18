@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import type { Property } from "@/lib/types";
-import { DEFAULT_WELCOME_TEMPLATE } from "@/lib/welcome";
 import { RichTextEditor } from "./RichTextEditor";
 
 export function PropertyForm({
@@ -30,11 +29,14 @@ export function PropertyForm({
     gps_lng: initial?.gps_lng != null ? String(initial.gps_lng) : "",
     airbnb_ical_url: initial?.airbnb_ical_url ?? "",
     checkin_instructions: initial?.checkin_instructions ?? "",
-    // New properties seed the welcome message with the default template; existing
-    // ones keep whatever the owner has saved.
-    welcome_message_html: initial
-      ? ((initial as Property & { welcome_message_html?: string }).welcome_message_html ?? "")
-      : DEFAULT_WELCOME_TEMPLATE,
+    // Structured check-in + address fields that populate the guest emails.
+    address: initial?.address ?? "",
+    check_in_time: initial?.check_in_time ?? "3:00 PM",
+    check_out_time: initial?.check_out_time ?? "11:00 AM",
+    entry_instructions: initial?.entry_instructions ?? "",
+    wifi: initial?.wifi ?? "",
+    parking: initial?.parking ?? "",
+    house_rules: initial?.house_rules ?? "",
     is_listed: initial?.is_listed ?? false,
   });
   const [photos, setPhotos] = useState<string[]>(initial?.photos ?? []);
@@ -165,6 +167,12 @@ export function PropertyForm({
         </div>
 
         <div className="bk-field">
+          <label htmlFor="address">Street address <span style={{ fontWeight: 400 }}>(shown to guests in their booking &amp; check-in emails)</span></label>
+          <input id="address" value={form.address} onChange={(e) => set("address", e.target.value)} placeholder="Calle Pescadores 12, Todos Santos, BCS 23300" />
+          <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>Add latitude/longitude below for an exact &ldquo;Get directions&rdquo; map pin.</p>
+        </div>
+
+        <div className="bk-field">
           <label htmlFor="rate">Nightly rate</label>
           <input id="rate" type="number" min="0" step="0.01" value={form.nightly_rate} onChange={(e) => set("nightly_rate", e.target.value)} placeholder="240.00" />
         </div>
@@ -243,29 +251,54 @@ export function PropertyForm({
           </div>
         </div>
 
-        <div className="bk-field">
-          <label htmlFor="ci">Default check-in instructions <span style={{ fontWeight: 400 }}>(optional — sent 2 days before check-in)</span></label>
-          <RichTextEditor
-            id="ci"
-            value={form.checkin_instructions}
-            onChange={(html) => set("checkin_instructions", html)}
-            placeholder="Door code, parking, WiFi, directions…"
-            minHeight={100}
-          />
-        </div>
-
-        <div className="bk-field">
-          <label htmlFor="welcome">Welcome message <span style={{ fontWeight: 400 }}>(included in the guest invitation email)</span></label>
-          <p className="bk-note" style={{ textAlign: "left", marginBottom: 8 }}>
-            <strong>[property name]</strong>, <strong>[start date]</strong>, and <strong>[end date]</strong> are filled in automatically for each booking. Your contact info (set in Settings) is added at the bottom.
+        <div style={{ marginTop: 28, paddingTop: 24, borderTop: "1px solid var(--line, #E0D6C5)" }}>
+          <h3 className="op-subhead" style={{ marginTop: 0 }}>Check-in details</h3>
+          <p className="bk-note" style={{ textAlign: "left", marginBottom: 14 }}>
+            These fields build the check-in email sent to your guest two days before arrival. Leave any blank to omit it.
           </p>
-          <RichTextEditor
-            id="welcome"
-            value={form.welcome_message_html}
-            onChange={(html) => set("welcome_message_html", html)}
-            placeholder="A personal note to your guests — e.g. 'We're so happy to have you at Casa del Mar. Help yourself to the welcome basket!'"
-            minHeight={100}
-          />
+
+          <div className="bk-grid2">
+            <div className="bk-field">
+              <label htmlFor="cit">Check-in time</label>
+              <input id="cit" value={form.check_in_time} onChange={(e) => set("check_in_time", e.target.value)} placeholder="3:00 PM" />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="cot">Check-out time</label>
+              <input id="cot" value={form.check_out_time} onChange={(e) => set("check_out_time", e.target.value)} placeholder="11:00 AM" />
+            </div>
+          </div>
+
+          <div className="bk-field">
+            <label htmlFor="entry">Entry instructions</label>
+            <textarea id="entry" rows={2} value={form.entry_instructions} onChange={(e) => set("entry_instructions", e.target.value)} placeholder="Lockbox code 4471, to the right of the front door." />
+          </div>
+
+          <div className="bk-field">
+            <label htmlFor="wifi">Wifi</label>
+            <textarea id="wifi" rows={2} value={form.wifi} onChange={(e) => set("wifi", e.target.value)} placeholder={"Network: CasaDelMar\nPassword: sandpiper22"} />
+          </div>
+
+          <div className="bk-grid2">
+            <div className="bk-field">
+              <label htmlFor="parking">Parking</label>
+              <textarea id="parking" rows={2} value={form.parking} onChange={(e) => set("parking", e.target.value)} placeholder="One spot in the driveway; street parking is fine too." />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="house_rules">House rules</label>
+              <textarea id="house_rules" rows={2} value={form.house_rules} onChange={(e) => set("house_rules", e.target.value)} placeholder="No smoking. Quiet hours after 10pm." />
+            </div>
+          </div>
+
+          <div className="bk-field">
+            <label htmlFor="ci">Additional check-in notes <span style={{ fontWeight: 400 }}>(optional)</span></label>
+            <RichTextEditor
+              id="ci"
+              value={form.checkin_instructions}
+              onChange={(html) => set("checkin_instructions", html)}
+              placeholder="Anything else your guest should know before arrival…"
+              minHeight={90}
+            />
+          </div>
         </div>
 
         <label className="ph-publish">

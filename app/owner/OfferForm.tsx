@@ -25,7 +25,6 @@ export interface OfferInitial {
   nightly_rate?: string;
   cleaning_fee?: string;
   checkin_instructions?: string;
-  welcome_message_html?: string;
   paid?: boolean; // editing an already-paid booking
 }
 
@@ -78,10 +77,6 @@ export function OfferForm({
       initial?.checkin_instructions ??
       initialProperty?.checkin_instructions ??
       "",
-    welcome_message_html:
-      initial?.welcome_message_html ??
-      (initialProperty as (Property & { welcome_message_html?: string }) | undefined)?.welcome_message_html ??
-      "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -105,16 +100,13 @@ export function OfferForm({
   }
 
   function setProperty(id: string) {
-    const p = properties.find((x) => x.id === id) as (Property & { welcome_message_html?: string }) | undefined;
+    const p = properties.find((x) => x.id === id);
     setForm((f) => ({
       ...f,
       property_id: id,
       checkin_instructions: instructionsTouched
         ? f.checkin_instructions
         : p?.checkin_instructions ?? "",
-      welcome_message_html: instructionsTouched
-        ? f.welcome_message_html
-        : p?.welcome_message_html ?? "",
       nightly_rate: pricingTouched
         ? f.nightly_rate
         : centsToStr(p?.nightly_rate_cents),
@@ -373,27 +365,11 @@ export function OfferForm({
           </div>
         )}
         <div className="bk-field">
-          <label htmlFor="welcome_message_html">
-            Welcome message{" "}
-            <span style={{ fontWeight: 400 }}>
-              (included in the invitation email — pre-filled from the property&apos;s default)
-            </span>
-          </label>
-          <RichTextEditor
-            id="welcome_message_html"
-            value={form.welcome_message_html}
-            onChange={(html) => { setInstructionsTouched(true); set("welcome_message_html", html); }}
-            placeholder="A personal note to your guest…"
-            minHeight={80}
-          />
-        </div>
-
-        <div className="bk-field">
           <label htmlFor="checkin_instructions">
-            Check-in instructions{" "}
+            Check-in notes{" "}
             <span style={{ fontWeight: 400 }}>
-              (sent 2 days before — pre-filled from the property&apos;s default,
-              edit as needed for this guest)
+              (optional, for this guest — added to the check-in email alongside the
+              property&apos;s check-in details)
             </span>
           </label>
           <RichTextEditor

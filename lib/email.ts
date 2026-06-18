@@ -1,8 +1,11 @@
 import { Resend } from "resend";
-import type { Booking } from "./types";
+import type { Booking, Property } from "./types";
 import { formatDate, formatMoney, nights } from "./format";
 import { expiryDate } from "./offers";
-import { fillWelcomePlaceholders, hasContact, type OwnerContact } from "./welcome";
+import { hasContact, type OwnerContact } from "./welcome";
+import { createAdminClient } from "./supabase/admin";
+import { buildBookingEmail } from "./emails/bookingEmail";
+import { buildCheckInEmail, type CheckInInstruction } from "./emails/checkInEmail";
 
 const FOREST = "#14543F";
 const CLAY = "#C0673E";
@@ -15,20 +18,6 @@ export function siteUrl(): string {
     /\/$/,
     ""
   );
-}
-
-/** Guest welcome — sent when a guest account is created. Links to their stays. */
-export function buildGuestWelcomeEmail(name: string): {
-  subject: string;
-  html: string;
-} {
-  const greeting = name ? `Hi ${name},` : "Hi there,";
-  const inner =
-    heading("Welcome to Familiar Guest") +
-    p(`${greeting} your guest account is ready.`) +
-    p(`Your stays page keeps every Familiar Guest booking in one place — current and past — with check-in details and payment links.`) +
-    button(`${siteUrl()}/guest`, "Go to your stays");
-  return { subject: "Your Familiar Guest account is ready", html: layout(inner) };
 }
 
 export function bookingUrl(token: string): string {
@@ -139,26 +128,10 @@ function contactBlock(c: OwnerContact): string {
     <strong style="display:block;margin-bottom:4px;">Contact</strong>${rows.join("")}</div>`;
 }
 
-/** The welcome message with placeholders filled and the owner's contact at the bottom. */
-function welcomeSection(b: Booking, contact?: OwnerContact | null): string {
-  const raw = b.welcome_message_html ?? "";
-  const showContact = hasContact(contact);
-  if (!raw && !showContact) return "";
-  const filled = raw
-    ? fillWelcomePlaceholders(raw, {
-        propertyName: b.property_name,
-        checkIn: formatDate(b.check_in),
-        checkOut: formatDate(b.check_out),
-      })
-    : "";
-  const isHtml = /^<[a-z]/i.test(filled.trim());
-  const body = isHtml
-    ? filled
-    : filled
-    ? `<div style="white-space:pre-wrap;">${filled}</div>`
-    : "";
-  const contactHtml = showContact ? contactBlock(contact!) : "";
-  return `<div style="margin:18px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:14px;line-height:1.55;">${body}${contactHtml}</div>`;
+/** The owner's contact details, rendered as a standalone block in the offer email. */
+function contactSection(contact?: OwnerContact | null): string {
+  if (!hasContact(contact)) return "";
+  return `<div style="margin:18px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:14px;line-height:1.55;">${contactBlock(contact!)}</div>`;
 }
 
 /** 1. Offer — sent when the owner creates the booking. Contains the pay link.
@@ -175,7 +148,7 @@ export function buildOfferEmail(b: Booking, contact?: OwnerContact | null): { su
   const lead = isRebook
     ? `Hi ${b.guest_name}, great to have you back! Your host has lined up these dates at ${b.property_name}. Review the details below and complete your payment to lock it in.`
     : `Hi ${b.guest_name}, your host has set aside these dates for you. Review the details below and complete your payment to lock it in.`;
-  const welcomeBlock = welcomeSection(b, contact);
+  const contactHtml = contactSection(contact);
   const inner =
     heading(
       isRebook
@@ -183,7 +156,7 @@ export function buildOfferEmail(b: Booking, contact?: OwnerContact | null): { su
         : `You're invited to book ${b.property_name}`
     ) +
     p(lead) +
-    welcomeBlock +
+    contactHtml +
     summaryTable(b) +
     button(bookingUrl(b.token), "Review & complete payment") +
     expiryLine +
@@ -196,21 +169,83 @@ export function buildOfferEmail(b: Booking, contact?: OwnerContact | null): { su
   };
 }
 
-/** 2. Confirmation — sent on successful payment. */
-export function buildConfirmationEmail(b: Booking): {
-  subject: string;
-  html: string;
-} {
-  const inner =
-    heading("Your booking is confirmed") +
-    p(`Hi ${b.guest_name}, your payment is complete and your stay at ${b.property_name} is booked. We can't wait to host you.`) +
-    summaryTable(b) +
-    p(`We'll send a reminder a week before your stay, and check-in details two days before you arrive.`) +
-    button(bookingUrl(b.token), "View your booking");
-  return {
-    subject: `Confirmed: your stay at ${b.property_name}`,
-    html: layout(inner),
-  };
+// ── Booking confirmation + check-in (Tidewater templates) ───────────────────
+
+interface BookingEmailContext {
+  property: Property | null;
+  ownerName: string;
+}
+
+/** Load the live property + owner name needed to hydrate the email templates. */
+async function loadBookingContext(b: Booking): Promise<BookingEmailContext> {
+  const admin = createAdminClient();
+  let property: Property | null = null;
+  if (b.property_id) {
+    const { data } = await admin
+      .from("properties")
+      .select("*")
+      .eq("id", b.property_id)
+      .maybeSingle();
+    property = (data as Property | null) ?? null;
+  }
+  let ownerName = "Your host";
+  if (b.owner_id) {
+    const { data } = await admin
+      .from("owners")
+      .select("full_name")
+      .eq("id", b.owner_id)
+      .maybeSingle();
+    const fn = (data as { full_name: string | null } | null)?.full_name;
+    if (fn) ownerName = fn;
+  }
+  return { property, ownerName };
+}
+
+/** Short human-friendly confirmation code derived from the booking id. */
+function confirmationNumber(b: Booking): string {
+  return `FG-${b.id.replace(/-/g, "").slice(0, 6).toUpperCase()}`;
+}
+
+/** True if this guest email already has another paid booking. */
+async function isRepeatGuest(b: Booking): Promise<boolean> {
+  const admin = createAdminClient();
+  const { count } = await admin
+    .from("bookings")
+    .select("id", { count: "exact", head: true })
+    .eq("guest_email", b.guest_email)
+    .eq("status", "paid")
+    .neq("id", b.id);
+  return (count ?? 0) > 0;
+}
+
+/** Best available street/region address for the email's address line. */
+function emailAddress(b: Booking, property: Property | null): string {
+  return property?.address || property?.location || b.property_name;
+}
+
+/**
+ * 2. Confirmation — sent on successful payment. Uses the provided Tidewater
+ * booking-confirmation template, hydrated from the live property + owner.
+ */
+export async function buildBookingConfirmation(
+  b: Booking
+): Promise<{ subject: string; html: string }> {
+  const { property, ownerName } = await loadBookingContext(b);
+  return buildBookingEmail({
+    guestName: b.guest_name,
+    ownerName,
+    rentalName: b.property_name,
+    address: emailAddress(b, property),
+    startDate: b.check_in,
+    endDate: b.check_out,
+    checkInTime: property?.check_in_time || undefined,
+    checkOutTime: property?.check_out_time || undefined,
+    confirmationNumber: confirmationNumber(b),
+    latitude: property?.gps_lat ?? null,
+    longitude: property?.gps_lng ?? null,
+    isRepeatGuest: await isRepeatGuest(b),
+    bookingUrl: bookingUrl(b.token),
+  });
 }
 
 /** 3. Reminder — 7 days before check-in. */
@@ -246,33 +281,62 @@ export function buildOwnerRequestEmail(b: Booking): {
   };
 }
 
-/** Render owner-supplied instructions as HTML (rich) or plain text block. */
-function instructionsBlock(raw: string): string {
-  const isHtml = /^<[a-z]/i.test(raw.trim());
-  if (isHtml) {
-    return `<div style="margin:18px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:14px;line-height:1.55;">${raw}</div>`;
-  }
-  return `<div style="margin:18px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:14px;line-height:1.55;white-space:pre-wrap;">${raw}</div>`;
+/** Collapse owner rich-text (per-booking note) down to plain text for a table row. */
+function stripHtml(html: string): string {
+  return html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div|li|h[1-6])>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\n{2,}/g, "\n")
+    .trim();
 }
 
-/** 4. Check-in — 2 days before check-in. Includes any instructions the owner set. */
-export function buildCheckinEmail(b: Booking): {
-  subject: string;
-  html: string;
-} {
-  const instructions = b.checkin_instructions
-    ? instructionsBlock(b.checkin_instructions)
-    : p(`Your host will share check-in details shortly.`);
-  const inner =
-    heading("Check-in details for your stay") +
-    p(`Hi ${b.guest_name}, your stay at ${b.property_name} begins on ${formatDate(b.check_in)}. Here's what you need to know:`) +
-    instructions +
-    summaryTable(b) +
-    button(bookingUrl(b.token), "View your booking");
-  return {
-    subject: `Check-in details for ${b.property_name}`,
-    html: layout(inner),
+/**
+ * 4. Check-in — 2 days before check-in. Driven by the property's structured
+ * check-in fields (entry instructions, wifi, parking, house rules), rendered
+ * with the provided Tidewater check-in template.
+ */
+export async function buildCheckinForBooking(
+  b: Booking
+): Promise<{ subject: string; html: string }> {
+  const { property, ownerName } = await loadBookingContext(b);
+
+  const instructions: CheckInInstruction[] = [];
+  const add = (label: string, value: string | null | undefined) => {
+    const v = (value ?? "").trim();
+    if (v) instructions.push({ label, value: v });
   };
+  add("Entry instructions", property?.entry_instructions);
+  add("Wifi", property?.wifi);
+  add("Parking", property?.parking);
+  add("House rules", property?.house_rules);
+
+  // Any per-booking note the owner customized at offer time (rich text → plain).
+  const note = b.checkin_instructions ? stripHtml(b.checkin_instructions) : "";
+  if (note) instructions.push({ label: "Notes", value: note });
+
+  if (instructions.length === 0) {
+    instructions.push({
+      label: "Check-in",
+      value: "Your host will share check-in details shortly.",
+    });
+  }
+
+  return buildCheckInEmail({
+    guestName: b.guest_name,
+    ownerName,
+    rentalName: b.property_name,
+    address: emailAddress(b, property),
+    checkInDate: b.check_in,
+    checkInTime: property?.check_in_time || undefined,
+    latitude: property?.gps_lat ?? null,
+    longitude: property?.gps_lng ?? null,
+    instructions,
+  });
 }
 
 /** 5. Change — sent when an owner changes the dates of an existing booking. */
@@ -312,6 +376,41 @@ export function buildCancellationEmail(b: Booking): { subject: string; html: str
     p(`If you have questions or this was unexpected, please reply to this email to reach your host.`);
   return {
     subject: `Cancelled: your stay at ${b.property_name}`,
+    html: layout(inner),
+  };
+}
+
+/** Escape user-supplied text before embedding it in an HTML email. */
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/**
+ * Notification that a new owner⇄guest message arrived. The recipient reads and
+ * replies in their portal (link), keeping the thread in one place.
+ */
+export function buildMessageNotificationEmail(args: {
+  toName: string;
+  fromLabel: string;
+  subject: string;
+  snippet: string;
+  link: string;
+  linkLabel?: string;
+}): { subject: string; html: string } {
+  const { toName, fromLabel, subject, snippet, link, linkLabel = "Read & reply" } = args;
+  const greeting = toName ? `Hi ${escapeHtml(toName)},` : "Hi there,";
+  const safeSubject = escapeHtml(subject);
+  const inner =
+    heading("You have a new message") +
+    p(`${greeting} ${escapeHtml(fromLabel)} sent you a message${subject ? ` about &ldquo;${safeSubject}&rdquo;` : ""}:`) +
+    `<div style="margin:18px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:14px;line-height:1.55;white-space:pre-wrap;">${escapeHtml(snippet)}</div>` +
+    button(link, linkLabel);
+  return {
+    subject: subject ? `New message: ${subject}` : "You have a new message",
     html: layout(inner),
   };
 }
