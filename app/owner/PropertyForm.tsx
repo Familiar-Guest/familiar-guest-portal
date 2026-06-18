@@ -116,7 +116,7 @@ export function PropertyForm({
       <form onSubmit={submit}>
         <div className="bk-field">
           <label htmlFor="name">Property name</label>
-          <input id="name" value={form.name} onChange={(e) => set("name", e.target.value)} placeholder="Casa del Mar" required />
+          <input id="name" value={form.name} onChange={(e) => set("name", e.target.value)} required />
         </div>
 
         {/* Photos */}
@@ -148,13 +148,13 @@ export function PropertyForm({
 
         <div className="bk-field">
           <label htmlFor="description">Short description <span style={{ fontWeight: 400 }}>(shown on the listing card)</span></label>
-          <textarea id="description" rows={2} value={form.description} onChange={(e) => set("description", e.target.value)} placeholder="Beachfront casita, steps from the sand, sleeps 4." />
+          <textarea id="description" rows={2} value={form.description} onChange={(e) => set("description", e.target.value)} />
         </div>
 
         <div className="bk-grid2">
           <div className="bk-field">
             <label htmlFor="location">Location</label>
-            <input id="location" value={form.location} onChange={(e) => set("location", e.target.value)} placeholder="Todos Santos, BCS" />
+            <input id="location" value={form.location} onChange={(e) => set("location", e.target.value)} />
           </div>
           <div className="bk-field">
             <label htmlFor="currency">Payout currency</label>
@@ -168,13 +168,13 @@ export function PropertyForm({
 
         <div className="bk-field">
           <label htmlFor="address">Street address <span style={{ fontWeight: 400 }}>(shown to guests in their booking &amp; check-in emails)</span></label>
-          <input id="address" value={form.address} onChange={(e) => set("address", e.target.value)} placeholder="Calle Pescadores 12, Todos Santos, BCS 23300" />
+          <input id="address" value={form.address} onChange={(e) => set("address", e.target.value)} />
           <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>Add latitude/longitude below for an exact &ldquo;Get directions&rdquo; map pin.</p>
         </div>
 
         <div className="bk-field">
           <label htmlFor="rate">Nightly rate</label>
-          <input id="rate" type="number" min="0" step="0.01" value={form.nightly_rate} onChange={(e) => set("nightly_rate", e.target.value)} placeholder="240.00" />
+          <input id="rate" type="number" min="0" step="0.01" value={form.nightly_rate} onChange={(e) => set("nightly_rate", e.target.value)} />
         </div>
 
         <div className="bk-field">
@@ -188,7 +188,7 @@ export function PropertyForm({
                 onChange={() => set("cleaning_fee_type", "standard")}
               />
               <span>Standard cleaning fee</span>
-              <input type="number" min="0" step="0.01" value={form.cleaning_fee} onChange={(e) => set("cleaning_fee", e.target.value)} placeholder="75.00" />
+              <input type="number" min="0" step="0.01" value={form.cleaning_fee} onChange={(e) => set("cleaning_fee", e.target.value)} />
             </label>
             <label className="cf-option">
               <input
@@ -198,7 +198,7 @@ export function PropertyForm({
                 onChange={() => set("cleaning_fee_type", "daily")}
               />
               <span>Daily cleaning fee rate</span>
-              <input type="number" min="0" step="0.01" value={form.daily_cleaning_fee} onChange={(e) => set("daily_cleaning_fee", e.target.value)} placeholder="0.00" />
+              <input type="number" min="0" step="0.01" value={form.daily_cleaning_fee} onChange={(e) => set("daily_cleaning_fee", e.target.value)} />
             </label>
             <label className="cf-option">
               <input
@@ -208,7 +208,7 @@ export function PropertyForm({
                 onChange={() => set("cleaning_fee_type", "alt1")}
               />
               <span>Alternate cleaning fee 1</span>
-              <input type="number" min="0" step="0.01" value={form.alt_cleaning_fee_1} onChange={(e) => set("alt_cleaning_fee_1", e.target.value)} placeholder="0.00" />
+              <input type="number" min="0" step="0.01" value={form.alt_cleaning_fee_1} onChange={(e) => set("alt_cleaning_fee_1", e.target.value)} />
             </label>
             <label className="cf-option">
               <input
@@ -218,7 +218,7 @@ export function PropertyForm({
                 onChange={() => set("cleaning_fee_type", "alt2")}
               />
               <span>Alternate cleaning fee 2</span>
-              <input type="number" min="0" step="0.01" value={form.alt_cleaning_fee_2} onChange={(e) => set("alt_cleaning_fee_2", e.target.value)} placeholder="0.00" />
+              <input type="number" min="0" step="0.01" value={form.alt_cleaning_fee_2} onChange={(e) => set("alt_cleaning_fee_2", e.target.value)} />
             </label>
           </div>
           <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>
@@ -236,18 +236,18 @@ export function PropertyForm({
 
         <div className="bk-field">
           <label htmlFor="ical">Airbnb calendar link <span style={{ fontWeight: 400 }}>(iCal export URL)</span></label>
-          <input id="ical" value={form.airbnb_ical_url} onChange={(e) => set("airbnb_ical_url", e.target.value)} placeholder="https://www.airbnb.com/calendar/ical/…" />
+          <input id="ical" value={form.airbnb_ical_url} onChange={(e) => set("airbnb_ical_url", e.target.value)} />
           <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>Airbnb → your listing → Availability → Export calendar. Keeps your listing from double-booking.</p>
         </div>
 
         <div className="bk-grid2">
           <div className="bk-field">
             <label htmlFor="lat">Latitude <span style={{ fontWeight: 400 }}>(optional)</span></label>
-            <input id="lat" value={form.gps_lat} onChange={(e) => set("gps_lat", e.target.value)} placeholder="23.4487" />
+            <input id="lat" value={form.gps_lat} onChange={(e) => set("gps_lat", e.target.value)} />
           </div>
           <div className="bk-field">
             <label htmlFor="lng">Longitude <span style={{ fontWeight: 400 }}>(optional)</span></label>
-            <input id="lng" value={form.gps_lng} onChange={(e) => set("gps_lng", e.target.value)} placeholder="-110.2317" />
+            <input id="lng" value={form.gps_lng} onChange={(e) => set("gps_lng", e.target.value)} />
           </div>
         </div>
 
@@ -260,32 +260,32 @@ export function PropertyForm({
           <div className="bk-grid2">
             <div className="bk-field">
               <label htmlFor="cit">Check-in time</label>
-              <input id="cit" value={form.check_in_time} onChange={(e) => set("check_in_time", e.target.value)} placeholder="3:00 PM" />
+              <input id="cit" value={form.check_in_time} onChange={(e) => set("check_in_time", e.target.value)} />
             </div>
             <div className="bk-field">
               <label htmlFor="cot">Check-out time</label>
-              <input id="cot" value={form.check_out_time} onChange={(e) => set("check_out_time", e.target.value)} placeholder="11:00 AM" />
+              <input id="cot" value={form.check_out_time} onChange={(e) => set("check_out_time", e.target.value)} />
             </div>
           </div>
 
           <div className="bk-field">
             <label htmlFor="entry">Entry instructions</label>
-            <textarea id="entry" rows={2} value={form.entry_instructions} onChange={(e) => set("entry_instructions", e.target.value)} placeholder="Lockbox code 4471, to the right of the front door." />
+            <textarea id="entry" rows={2} value={form.entry_instructions} onChange={(e) => set("entry_instructions", e.target.value)} />
           </div>
 
           <div className="bk-field">
             <label htmlFor="wifi">Wifi</label>
-            <textarea id="wifi" rows={2} value={form.wifi} onChange={(e) => set("wifi", e.target.value)} placeholder={"Network: CasaDelMar\nPassword: sandpiper22"} />
+            <textarea id="wifi" rows={2} value={form.wifi} onChange={(e) => set("wifi", e.target.value)} />
           </div>
 
           <div className="bk-grid2">
             <div className="bk-field">
               <label htmlFor="parking">Parking</label>
-              <textarea id="parking" rows={2} value={form.parking} onChange={(e) => set("parking", e.target.value)} placeholder="One spot in the driveway; street parking is fine too." />
+              <textarea id="parking" rows={2} value={form.parking} onChange={(e) => set("parking", e.target.value)} />
             </div>
             <div className="bk-field">
               <label htmlFor="house_rules">House rules</label>
-              <textarea id="house_rules" rows={2} value={form.house_rules} onChange={(e) => set("house_rules", e.target.value)} placeholder="No smoking. Quiet hours after 10pm." />
+              <textarea id="house_rules" rows={2} value={form.house_rules} onChange={(e) => set("house_rules", e.target.value)} />
             </div>
           </div>
 
@@ -295,7 +295,6 @@ export function PropertyForm({
               id="ci"
               value={form.checkin_instructions}
               onChange={(html) => set("checkin_instructions", html)}
-              placeholder="Anything else your guest should know before arrival…"
               minHeight={90}
             />
           </div>

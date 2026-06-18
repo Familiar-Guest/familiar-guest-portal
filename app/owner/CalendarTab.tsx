@@ -26,14 +26,21 @@ function shortLabelFrom(label: string): string {
   return label.slice(idx + 1).trim().split(/\s+/)[0];
 }
 
-function toCalendarBars(ranges: BusyRange[]): CalendarBar[] {
-  return ranges.map(r => ({
-    start: r.start,
-    end: r.end,
-    shortLabel: shortLabelFrom(r.label),
-    fullLabel: r.label,
-    type: r.type,
-  }));
+function toCalendarBars(ranges: BusyRange[], bookings: Booking[]): CalendarBar[] {
+  return ranges.map(r => {
+    // Match to a real booking so we can link the Gantt bar to /book/<token>.
+    const linked = r.type !== "airbnb"
+      ? bookings.find(b => b.check_in === r.start && b.check_out === r.end)
+      : undefined;
+    return {
+      start: r.start,
+      end: r.end,
+      shortLabel: shortLabelFrom(r.label),
+      fullLabel: r.label,
+      type: r.type,
+      href: linked ? `/book/${linked.token}` : undefined,
+    };
+  });
 }
 
 type View = "calendar" | "list";
@@ -87,7 +94,7 @@ export function CalendarTab({
 
   const todayIso = new Date().toISOString().slice(0, 10);
   const upcoming = ranges.filter(r => r.end >= todayIso);
-  const calBars  = toCalendarBars(ranges);
+  const calBars  = toCalendarBars(ranges, bookings);
 
   // Editable bookings for the selected property: confirmed stays + live offers,
   // still in the future. Airbnb-synced dates aren't editable here.
@@ -164,20 +171,32 @@ export function CalendarTab({
           )}
           {upcoming.length > 0 && (
             <ul className="op-list">
-              {upcoming.map((r, i) => (
-                <li key={i} className="op-item">
-                  <div className="op-main">
-                    <div className="op-title">
-                      <span className={`cal-dot cal-${r.type}`} />
-                      {formatDate(r.start)} → {formatDate(r.end)}
+              {upcoming.map((r, i) => {
+                const linked = r.type !== "airbnb"
+                  ? bookings.find(b => b.check_in === r.start && b.check_out === r.end)
+                  : undefined;
+                return (
+                  <li key={i} className="op-item">
+                    <div className="op-main">
+                      <div className="op-title">
+                        <span className={`cal-dot cal-${r.type}`} />
+                        {formatDate(r.start)} → {formatDate(r.end)}
+                      </div>
+                      <div className="op-meta">{r.label}</div>
                     </div>
-                    <div className="op-meta">{r.label}</div>
-                  </div>
-                  <span className={`op-status cal-badge-${r.type}`}>
-                    {TYPE_LABEL[r.type]}
-                  </span>
-                </li>
-              ))}
+                    <div className="op-side">
+                      <span className={`op-status cal-badge-${r.type}`}>
+                        {TYPE_LABEL[r.type]}
+                      </span>
+                      {linked && (
+                        <a className="op-link" href={`/book/${linked.token}`} target="_blank" rel="noreferrer">
+                          View booking
+                        </a>
+                      )}
+                    </div>
+                  </li>
+                );
+              })}
             </ul>
           )}
         </>
@@ -210,6 +229,9 @@ export function CalendarTab({
                         {paid ? "Booked" : "Offer sent"}
                       </span>
                       <div className="op-actions">
+                        <a className="op-link" href={`/book/${b.token}`} target="_blank" rel="noreferrer">
+                          View
+                        </a>
                         <button className="op-link" onClick={() => onEdit(b)}>
                           Edit
                         </button>

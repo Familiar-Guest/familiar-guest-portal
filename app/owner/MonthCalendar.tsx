@@ -8,6 +8,7 @@ export interface CalendarBar {
   shortLabel: string;  // text shown on the bar (guest first name, property name…)
   fullLabel: string;   // tooltip
   type: "booked" | "offer" | "airbnb";
+  href?: string;       // optional link (e.g. /book/<token>) — renders bar as <a>
 }
 
 const MONTHS = [
@@ -127,29 +128,34 @@ export function MonthCalendar({ bars }: { bars: CalendarBar[] }) {
               })}
             </div>
 
-            {/* Booking bars */}
+            {/* Booking bars — render as <a> when href is provided */}
             <div className="mc-bar-layer">
-              {weekBars.map((bar, i) => (
-                <div
-                  key={i}
-                  className={[
-                    "mc-bar",
-                    `mc-bar-${bar.type}`,
-                    bar.continuesLeft  ? "mc-cl" : "",
-                    bar.continuesRight ? "mc-cr" : "",
-                  ].filter(Boolean).join(" ")}
-                  style={{
-                    left:  `${bar.leftPct}%`,
-                    width: `${bar.widthPct}%`,
-                    top:   `${bar.track * 24 + 4}px`,
-                  }}
-                  title={bar.fullLabel}
-                >
-                  {!bar.continuesLeft && (
-                    <span className="mc-bar-name">{bar.shortLabel}</span>
-                  )}
-                </div>
-              ))}
+              {weekBars.map((bar, i) => {
+                const cls = [
+                  "mc-bar",
+                  `mc-bar-${bar.type}`,
+                  bar.continuesLeft  ? "mc-cl" : "",
+                  bar.continuesRight ? "mc-cr" : "",
+                  bar.href ? "mc-bar-link" : "",
+                ].filter(Boolean).join(" ");
+                const style = {
+                  left:  `${bar.leftPct}%`,
+                  width: `${bar.widthPct}%`,
+                  top:   `${bar.track * 24 + 4}px`,
+                };
+                const inner = !bar.continuesLeft
+                  ? <span className="mc-bar-name">{bar.shortLabel}</span>
+                  : null;
+                return bar.href ? (
+                  <a key={i} className={cls} style={style} title={bar.fullLabel} href={bar.href} target="_blank" rel="noreferrer">
+                    {inner}
+                  </a>
+                ) : (
+                  <div key={i} className={cls} style={style} title={bar.fullLabel}>
+                    {inner}
+                  </div>
+                );
+              })}
             </div>
           </div>
         );

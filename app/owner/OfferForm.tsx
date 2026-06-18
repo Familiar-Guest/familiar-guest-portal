@@ -318,7 +318,6 @@ export function OfferForm({
               step="0.01"
               value={form.nightly_rate}
               onChange={(e) => setPricing("nightly_rate", e.target.value)}
-              placeholder="250.00"
               required
             />
           </div>
@@ -334,7 +333,6 @@ export function OfferForm({
               step="0.01"
               value={form.cleaning_fee}
               onChange={(e) => setPricing("cleaning_fee", e.target.value)}
-              placeholder="0.00"
             />
           </div>
         </div>
@@ -376,7 +374,6 @@ export function OfferForm({
             id="checkin_instructions"
             value={form.checkin_instructions}
             onChange={(html) => setInstructions(html)}
-            placeholder="Door code, parking, WiFi, directions…"
             minHeight={100}
           />
         </div>

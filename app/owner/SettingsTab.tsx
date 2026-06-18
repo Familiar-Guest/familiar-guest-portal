@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { PhoneField } from "../PhoneField";
 
-export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: string | null) => void }) {
+export function SettingsTab({ onHandleChange, onPublicNameChange }: { onHandleChange: (handle: string | null) => void; onPublicNameChange?: (name: string | null) => void }) {
   const [publicName, setPublicName] = useState("");
   const [defaultName, setDefaultName] = useState("");
   const [handle, setHandle] = useState<string | null>(null);
@@ -54,6 +55,7 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
     }
     setHandle(data.handle ?? null);
     onHandleChange(data.handle ?? null);
+    onPublicNameChange?.(publicName || null);
     setSaved(true);
     setSaving(false);
   }
@@ -76,7 +78,6 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
             id="public_name"
             value={publicName}
             onChange={(e) => setPublicName(e.target.value)}
-            placeholder={defaultName || "e.g. Casa Vista Rentals"}
           />
           <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>
             Used in your listings page URL instead of your name. Leave blank to default to{" "}
@@ -87,7 +88,20 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
         {handle && (
           <div className="op-share" style={{ marginBottom: 18 }}>
             <span>Your listings page:</span>
-            <code>famguest.com/h/{handle}</code>
+            <code>famguest.com/owner/{handle}</code>
+            <button
+              type="button"
+              className="op-link op-copy-btn"
+              title="Copy link"
+              aria-label="Copy listings page link"
+              onClick={async () => {
+                const url = `${window.location.origin}/owner/${handle}`;
+                try { await navigator.clipboard.writeText(url); } catch { window.prompt("Your listings page:", url); }
+              }}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" /></svg>
+              Copy
+            </button>
           </div>
         )}
 
@@ -103,31 +117,24 @@ export function SettingsTab({ onHandleChange }: { onHandleChange: (handle: strin
               type="email"
               value={contactEmail}
               onChange={(e) => setContactEmail(e.target.value)}
-              placeholder="you@example.com"
               required
             />
           </div>
           <div className="bk-grid2">
-            <div className="bk-field">
-              <label htmlFor="contact_phone">Phone <span style={{ fontWeight: 400 }}>(optional)</span></label>
-              <input
-                id="contact_phone"
-                type="tel"
-                value={contactPhone}
-                onChange={(e) => setContactPhone(e.target.value)}
-                placeholder="+1 555 123 4567"
-              />
-            </div>
-            <div className="bk-field">
-              <label htmlFor="contact_whatsapp">WhatsApp <span style={{ fontWeight: 400 }}>(optional)</span></label>
-              <input
-                id="contact_whatsapp"
-                type="tel"
-                value={contactWhatsapp}
-                onChange={(e) => setContactWhatsapp(e.target.value)}
-                placeholder="+52 612 123 4567"
-              />
-            </div>
+            <PhoneField
+              id="contact_phone"
+              label="Phone"
+              value={contactPhone}
+              onChange={setContactPhone}
+              optional
+            />
+            <PhoneField
+              id="contact_whatsapp"
+              label="WhatsApp"
+              value={contactWhatsapp}
+              onChange={setContactWhatsapp}
+              optional
+            />
           </div>
         </div>
 

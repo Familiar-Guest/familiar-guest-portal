@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { sendEmail, siteUrl } from "@/lib/email";
 import { buildOwnerRegistrationEmail } from "@/lib/emails/ownerRegistrationEmail";
+import { setOwnerPublicName } from "@/lib/owner";
 
 export const runtime = "nodejs";
 
@@ -19,6 +20,7 @@ export async function POST(request: NextRequest) {
   const email = String(body.email ?? "").trim().toLowerCase();
   const password = String(body.password ?? "");
   const full_name = String(body.full_name ?? "").trim();
+  const public_name = String(body.public_name ?? "").trim() || full_name || null;
   const phone = String(body.phone ?? "").trim() || null;
 
   if (!full_name) return bad("Enter your name.");
@@ -54,6 +56,9 @@ export async function POST(request: NextRequest) {
   if (profileErr) {
     console.error("owner profile insert failed", profileErr);
     // Account exists in auth; surface a soft error but let them log in.
+  } else {
+    // Set public name + mint handle immediately so the owner's listing URL is ready.
+    await setOwnerPublicName(created.user.id, public_name);
   }
 
   // Registration confirmation email (Tidewater template). Best-effort.

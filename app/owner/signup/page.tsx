@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { OAuthButtons } from "../OAuthButtons";
 import { PasswordField } from "../../PasswordField";
+import { PhoneField } from "../../PhoneField";
 
 export default function SignupPage() {
   const [form, setForm] = useState({
     full_name: "",
+    public_name: "",
     email: "",
     phone: "",
     password: "",
@@ -52,8 +54,26 @@ export default function SignupPage() {
             <input
               id="full_name"
               value={form.full_name}
-              onChange={(e) => set("full_name", e.target.value)}
+              onChange={(e) => {
+                // Keep public_name in sync until the user diverges it manually
+                if (form.public_name === form.full_name) set("public_name", e.target.value);
+                set("full_name", e.target.value);
+              }}
               autoComplete="name"
+              required
+            />
+          </div>
+          <div className="bk-field">
+            <label htmlFor="public_name">
+              Public name{" "}
+              <span style={{ fontWeight: 400, fontSize: 13 }}>
+                (shown on your listing page and part of your listing link; can be a company name)
+              </span>
+            </label>
+            <input
+              id="public_name"
+              value={form.public_name}
+              onChange={(e) => set("public_name", e.target.value)}
               required
             />
           </div>
@@ -68,18 +88,14 @@ export default function SignupPage() {
               required
             />
           </div>
-          <div className="bk-field">
-            <label htmlFor="phone">
-              Phone <span style={{ fontWeight: 400 }}>(optional)</span>
-            </label>
-            <input
-              id="phone"
-              type="tel"
-              value={form.phone}
-              onChange={(e) => set("phone", e.target.value)}
-              autoComplete="tel"
-            />
-          </div>
+          <PhoneField
+            id="phone"
+            label="Phone"
+            value={form.phone}
+            onChange={(v) => set("phone", v)}
+            optional
+            autoComplete="tel"
+          />
           <PasswordField
             id="pw"
             value={form.password}

@@ -40,9 +40,15 @@ export async function middleware(request: NextRequest) {
   // The permanent guest portal /guest/<token> is public (the token is the
   // credential) — it must not be gated behind login.
   const guestTokenPage = /^\/guest\/[0-9a-f]{40,}$/i.test(path);
+  // Public owner storefront: /owner/<handle> and /owner/<handle>/<slug>
+  // Static routes (login, signup, offer) take Next.js precedence so we only
+  // need to exempt the dynamic handle pattern here.
+  const ownerPublicPage =
+    /^\/owner\/[a-z0-9][a-z0-9-]*(\/[a-z0-9][a-z0-9-]*)?$/i.test(path) &&
+    !/^\/owner\/(login|signup|offer)(\/|$)/.test(path);
 
   // Gate the protected areas.
-  if (!user && !isAuthPage && !guestTokenPage) {
+  if (!user && !isAuthPage && !guestTokenPage && !ownerPublicPage) {
     if (path.startsWith("/owner")) return redirectTo(request, "/owner/login");
     if (path.startsWith("/guest")) return redirectTo(request, "/guest/login");
   }

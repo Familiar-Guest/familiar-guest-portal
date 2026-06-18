@@ -194,7 +194,6 @@ function ThreadView({
       <form onSubmit={send} style={{ marginTop: 14 }}>
         <div className="bk-field">
           <input
-            placeholder="Subject (optional)"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
           />
@@ -202,7 +201,6 @@ function ThreadView({
         <div className="bk-field">
           <textarea
             rows={3}
-            placeholder={`Message ${booking.guest_name}…`}
             value={body}
             onChange={(e) => setBody(e.target.value)}
             required

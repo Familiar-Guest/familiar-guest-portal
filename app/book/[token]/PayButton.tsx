@@ -58,7 +58,6 @@ export function PayButton({
             setPhone(value);
             if (!value.trim() && method === "sms") setMethod("email");
           }}
-          placeholder="+1 555 123 4567"
         />
       </div>
 

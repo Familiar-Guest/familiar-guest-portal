@@ -13,7 +13,13 @@ export async function GET() {
 
   const admin = createAdminClient();
   const policy = await getOwnerPolicies(admin, owner.id);
-  return NextResponse.json({ ok: true, policy });
+  // has_custom_row: true when the owner has saved their own policy (not just defaults)
+  const { data: row } = await admin
+    .from("owner_policies")
+    .select("owner_id")
+    .eq("owner_id", owner.id)
+    .maybeSingle();
+  return NextResponse.json({ ok: true, policy, has_custom_row: Boolean(row) });
 }
 
 /** Save the owner's global rental policies. */

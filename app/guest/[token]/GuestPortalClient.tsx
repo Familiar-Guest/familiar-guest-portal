@@ -274,7 +274,6 @@ function Thread({ token, bookingId }: { token: string; bookingId: string }) {
       <form onSubmit={send} style={{ marginTop: 10 }}>
         <div className="bk-field">
           <input
-            placeholder="Subject (optional)"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
           />
@@ -282,7 +281,6 @@ function Thread({ token, bookingId }: { token: string; bookingId: string }) {
         <div className="bk-field">
           <textarea
             rows={3}
-            placeholder="Write a message to your host…"
             value={body}
             onChange={(e) => setBody(e.target.value)}
             required

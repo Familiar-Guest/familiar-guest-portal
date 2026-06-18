@@ -326,6 +326,7 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 .op-status.op-muted{background:var(--paper-2);color:var(--ink-soft);border:1px solid var(--line)}
 .op-actions{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end}
 .op-link{background:none;border:none;padding:0;font-family:var(--body);font-size:13px;font-weight:600;color:var(--teal);cursor:pointer;display:block}
+.op-copy-btn{display:inline-flex;align-items:center;gap:4px}
 .op-link:hover{text-decoration:underline}
 .op-link:disabled{opacity:.5;cursor:default}
 .op-danger{color:var(--coral-ink)}
@@ -360,6 +361,12 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 .op-msg{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px}
 .op-msg-body{font-size:14px;color:var(--ink);white-space:pre-wrap}
 .op-msg-time{font-size:11px;color:var(--ink-soft);margin-top:5px}
+/* suppress browser-native password reveal so our custom toggle is the only one */
+input[type="password"]::-ms-reveal,
+input[type="password"]::-ms-clear,
+input[type="password"]::-webkit-credentials-auto-fill-button,
+input[type="password"]::-webkit-textfield-decoration-container { display: none }
+
 /* OAuth buttons */
 .oauth{margin-bottom:6px}
 .oauth-btn{width:100%;display:flex;align-items:center;justify-content:center;gap:10px;background:#fff;border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px 16px;font-family:var(--body);font-size:15px;font-weight:600;color:var(--ink);cursor:pointer;margin-bottom:10px;transition:border-color .15s,background .15s}
@@ -393,6 +400,8 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 .mc-bar.mc-bar-booked{background:var(--forest)}
 .mc-bar.mc-bar-offer{background:var(--clay)}
 .mc-bar.mc-bar-airbnb{background:#b08968}
+.mc-bar.mc-bar-link{cursor:pointer;text-decoration:none}
+.mc-bar.mc-bar-link:hover{filter:brightness(1.12)}
 .mc-bar-name{overflow:hidden;text-overflow:ellipsis}
 @media(max-width:600px){.mc-dow{font-size:10px}.mc-bar{font-size:10px;padding:0 4px}}
 
@@ -492,6 +501,27 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
   .listing-gallery{grid-template-columns:1fr 1fr;grid-auto-rows:120px}
   .listing-gallery .lg-main{grid-column:1 / span 2}
 }
+
+/* ── Onboarding checklist ──────────────────────────────────────────────────── */
+.ob-wrap{background:var(--card);border:1px solid var(--seaglass-tint-border);border-left:4px solid var(--teal);border-radius:var(--radius-md);padding:18px 20px;margin-bottom:20px}
+.ob-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:10px}
+.ob-title-row{display:flex;align-items:center;gap:12px}
+.ob-title{font-family:var(--display);font-size:17px;font-weight:600;color:var(--forest)}
+.ob-progress{font-size:13px;color:var(--ink-soft)}
+.ob-track{height:4px;background:var(--paper-2);border-radius:99px;margin-bottom:14px;overflow:hidden}
+.ob-track-fill{height:100%;background:var(--seaglass);border-radius:99px;transition:width .4s}
+.ob-list{list-style:none}
+.ob-item{border-top:1px solid var(--line)}
+.ob-item:last-child{border-bottom:1px solid var(--line)}
+.ob-item-btn{display:flex;align-items:center;gap:10px;width:100%;background:none;border:none;padding:12px 0;cursor:pointer;text-align:left;font-family:var(--body);font-size:14px;color:var(--ink)}
+.ob-item-btn:hover{color:var(--forest)}
+.ob-check{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--teal)}
+.ob-done .ob-check{background:var(--seaglass-tint);border-color:var(--seaglass);color:var(--teal)}
+.ob-item-label{flex:1;font-weight:600}
+.ob-done .ob-item-label{color:var(--ink-soft);text-decoration:line-through;font-weight:400}
+.ob-chevron{font-size:10px;color:var(--ink-soft)}
+.ob-detail{padding:4px 0 14px 32px}
+.ob-desc{font-size:14px;color:var(--ink-soft);line-height:1.6;margin-bottom:4px}
 
 /* ── Messaging (owner inbox + guest portal threads) ───────────────────────── */
 .msg-list{list-style:none;display:flex;flex-direction:column;gap:10px;margin:10px 0 0}

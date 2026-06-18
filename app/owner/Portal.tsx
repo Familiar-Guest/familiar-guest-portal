@@ -10,8 +10,18 @@ import { CalendarTab } from "./CalendarTab";
 import { SettingsTab } from "./SettingsTab";
 import { MessagesTab, type StartBooking } from "./MessagesTab";
 import { PoliciesTab } from "./PoliciesTab";
+import { OnboardingChecklist } from "./OnboardingChecklist";
 
 type Tab = "properties" | "calendar" | "bookings" | "offers" | "messages" | "policies" | "settings";
+
+function CopyIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="9" y="9" width="13" height="13" rx="2" />
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+    </svg>
+  );
+}
 
 type Overlay =
   | { kind: "none" }
@@ -36,11 +46,21 @@ function statusLabel(b: Booking): { text: string; cls: string } {
   return { text: `Offer sent${suffix}`, cls: "op-open" };
 }
 
-export function Portal({ ownerName, handle: initialHandle }: { ownerName: string; handle: string | null }) {
+export function Portal({
+  ownerName,
+  ownerPublicName,
+  handle: initialHandle,
+}: {
+  ownerName: string;
+  ownerPublicName: string | null;
+  handle: string | null;
+}) {
   const [tab, setTab] = useState<Tab>("properties");
   const [handle, setHandle] = useState(initialHandle);
+  const [publicName, setPublicName] = useState(ownerPublicName);
   const [properties, setProperties] = useState<Property[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
+  const [policiesConfigured, setPoliciesConfigured] = useState(false);
   const [loading, setLoading] = useState(true);
   const [overlay, setOverlay] = useState<Overlay>({ kind: "none" });
   const [copied, setCopied] = useState<string | null>(null);
@@ -55,14 +75,18 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [pRes, bRes] = await Promise.all([
+      const [pRes, bRes, polRes] = await Promise.all([
         fetch("/api/owner/properties", { cache: "no-store" }),
         fetch("/api/owner/bookings", { cache: "no-store" }),
+        fetch("/api/owner/policies", { cache: "no-store" }),
       ]);
       const pData = await pRes.json().catch(() => ({}));
       const bData = await bRes.json().catch(() => ({}));
+      const polData = await polRes.json().catch(() => ({}));
       if (pRes.ok) setProperties(pData.properties ?? []);
       if (bRes.ok) setBookings(bData.bookings ?? []);
+      // Policies are "configured" if the owner has saved at least one custom value.
+      if (polRes.ok) setPoliciesConfigured(Boolean(polData.has_custom_row));
     } finally {
       setLoading(false);
     }
@@ -140,10 +164,10 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
     load();
   }
 
-  const shareDisplay = handle ? `famguest.com/h/${handle}` : null;
+  const shareDisplay = handle ? `famguest.com/owner/${handle}` : null;
   async function copyShare() {
     if (!handle) return;
-    const url = `${window.location.origin}/h/${handle}`;
+    const url = `${window.location.origin}/owner/${handle}`;
     try {
       await navigator.clipboard.writeText(url);
       setShareCopied(true);
@@ -198,6 +222,12 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
 
   return (
     <Shell ownerName={ownerName} onLogout={logout} tab={tab} setTab={setTab}>
+      <OnboardingChecklist
+        publicName={publicName}
+        propertyCount={properties.length}
+        policiesConfigured={policiesConfigured}
+        onNavigate={(t) => setTab(t)}
+      />
       {/* PROPERTIES */}
       {tab === "properties" && (
         <div>
@@ -214,10 +244,11 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
             <div className="op-share">
               <span>Your listings page:</span>
               <code>{shareDisplay}</code>
-              <button className="op-link" onClick={copyShare}>
-                {shareCopied ? "Copied!" : "Copy link"}
+              <button className="op-link op-copy-btn" onClick={copyShare} title="Copy link" aria-label="Copy listings page link">
+                <CopyIcon />
+                {shareCopied ? "Copied!" : "Copy"}
               </button>
-              <a className="op-link" href={`/h/${handle}`} target="_blank" rel="noreferrer">
+              <a className="op-link" href={`/owner/${handle}`} target="_blank" rel="noreferrer">
                 Preview
               </a>
             </div>
@@ -307,6 +338,9 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
                     <div className="op-side">
                       <span className={`op-status ${s.cls}`}>{s.text}</span>
                       <div className="op-actions">
+                        <a className="op-link" href={`/book/${b.token}`} target="_blank" rel="noreferrer">
+                          View
+                        </a>
                         {b.status === "paid" && (
                           <button
                             className="op-link"
@@ -322,8 +356,8 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
                           </button>
                         )}
                         {b.status !== "cancelled" && (
-                          <button className="op-link" onClick={() => copyLink(b.token)}>
-                            {copied === b.token ? "Copied!" : "Copy link"}
+                          <button className="op-link op-copy-btn" onClick={() => copyLink(b.token)} title="Copy payment link" aria-label="Copy payment link">
+                            <CopyIcon />{copied === b.token ? "Copied!" : "Copy link"}
                           </button>
                         )}
                         <button className="op-link" onClick={() => openMessages(b)}>
@@ -447,7 +481,12 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
       {tab === "policies" && <PoliciesTab />}
 
       {/* SETTINGS */}
-      {tab === "settings" && <SettingsTab onHandleChange={setHandle} />}
+      {tab === "settings" && (
+        <SettingsTab
+          onHandleChange={setHandle}
+          onPublicNameChange={setPublicName}
+        />
+      )}
 
     </Shell>
   );

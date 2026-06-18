@@ -35,7 +35,7 @@ export default async function OwnerPage() {
 
   return (
     <div className="bk-wrap op-wrap-page">
-      <Portal ownerName={ownerName} handle={handle} />
+      <Portal ownerName={ownerName} ownerPublicName={publicName} handle={handle} />
     </div>
   );
 }
