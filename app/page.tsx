@@ -27,9 +27,9 @@ function HomeMark() {
       <line x1="30" y1="14.5" x2="30" y2="23" stroke="#0F4D45" strokeWidth="3.5" strokeLinecap="square" />
       {/* Bow circle */}
       <circle cx="30" cy="44" r="21" stroke="#0F4D45" strokeWidth="3.5" />
-      {/* Heart — solid coral, sits inside the bow */}
+      {/* Heart — solid coral, centered in the bow (bow cy=44, heart center=44) */}
       <path
-        d="M30 54 C30 54 14 45 14 36 C14 29 19 24 25 25.5 C27.5 26.5 29 29 30 31 C31 29 32.5 26.5 35 25.5 C41 24 46 29 46 36 C46 45 30 54 30 54 Z"
+        d="M30 59 C30 59 14 50 14 41 C14 34 19 29 25 30.5 C27.5 31.5 29 34 30 36 C31 34 32.5 31.5 35 30.5 C41 29 46 34 46 41 C46 50 30 59 30 59 Z"
         fill="#D9663F"
       />
       {/* Shaft */}
