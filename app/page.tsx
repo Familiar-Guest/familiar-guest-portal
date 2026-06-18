@@ -434,96 +434,6 @@ export default function Home() {
             That&rsquo;s it — share your booking link and the page, payment,
             rental agreement, and house guide all run themselves.
           </p>
-
-          <div className="setup-panel">
-            <div className="setup-half left">
-              <p className="eyebrow">Your photos, your way</p>
-              <h3>The photos you already have are enough.</h3>
-              <div className="method-chips">
-                <div className="chip">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M7 18a4 4 0 01-1-7.9 5 5 0 019.6-1.6A4.5 4.5 0 0117 18z"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M12 12v5M9.5 14l2.5-2.5L14.5 14"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>{" "}
-                  Connect Google Photos, iCloud, or Drive
-                </div>
-                <div className="chip">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <rect
-                      x="6"
-                      y="2"
-                      width="12"
-                      height="20"
-                      rx="3"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                    />
-                    <path d="M10 18h4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
-                  </svg>{" "}
-                  Upload straight from your phone
-                </div>
-                <div className="chip">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 16V4m0 0L8 8m4-4l4 4"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                    />
-                  </svg>{" "}
-                  Drag &amp; drop from your computer
-                </div>
-              </div>
-              <p className="setup-note">
-                You&rsquo;re always in control of what you share — we only ever
-                use the photos you give us.
-              </p>
-            </div>
-            <div className="setup-half shots">
-              <p className="eyebrow">Suggested shots</p>
-              <h3>Not sure which photos to add?</h3>
-              <ul className="shot-list">
-                <li>
-                  <Check /> A bright photo of the front of the home
-                </li>
-                <li>
-                  <Check /> The main living area and the kitchen
-                </li>
-                <li>
-                  <Check /> Each bedroom and each bathroom
-                </li>
-                <li>
-                  <Check /> Your standout feature — the view, pool, deck, or
-                  fireplace
-                </li>
-                <li>
-                  <Check /> A welcoming detail — a made bed or fresh towels
-                </li>
-              </ul>
-              <p className="setup-note">
-                Shoot in daylight, tidy up first, and hold your phone sideways.
-                Eight to twelve photos is plenty.
-              </p>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -726,6 +636,76 @@ export default function Home() {
                   <div className="mock-cta">Reserve your dates</div>
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* STOREFRONT SPOTLIGHT */}
+      <section className="block" id="storefront" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <div className="offer-spot">
+            <div className="offer-visual">
+              <div className="mock">
+                <div className="mock-head">
+                  <span className="mock-dot"></span>
+                  <span className="mock-dot"></span>
+                  <span className="mock-dot"></span>
+                  <span className="mock-title">famguest.com/owner/casa-vista</span>
+                </div>
+                <div className="mock-body">
+                  <span className="mock-pill">
+                    <svg viewBox="0 0 24 24" fill="none">
+                      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
+                      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+                    </svg>
+                    Permanent link
+                  </span>
+                  <div className="store-mini">
+                    <span className="store-mini-thumb" style={{ background: "linear-gradient(135deg,#2f6f57,#5fa37e)" }}></span>
+                    <div className="store-mini-info">
+                      <span className="store-mini-name">Casa Vista</span>
+                      <span className="store-mini-meta">Todos Santos · $240 / night</span>
+                    </div>
+                  </div>
+                  <div className="store-mini">
+                    <span className="store-mini-thumb" style={{ background: "linear-gradient(135deg,#5fa37e,#cdb893)" }}></span>
+                    <div className="store-mini-info">
+                      <span className="store-mini-name">Casa Luna</span>
+                      <span className="store-mini-meta">La Paz · $180 / night</span>
+                    </div>
+                  </div>
+                  <div className="mock-cta">Browse &amp; book</div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <p className="eyebrow">Your booking page</p>
+              <h2>One link to all your places — that never changes.</h2>
+              <p className="lead">
+                Every owner gets a permanent storefront link. Share it once — in
+                your Airbnb profile, your email signature, your Instagram bio —
+                and guests browse all your available properties and book the
+                dates they want.
+              </p>
+              <ul className="spot-list">
+                <li>
+                  <Check /> One link for your whole portfolio — guests browse and
+                  pick.
+                </li>
+                <li>
+                  <Check /> Permanent and unchanging — share it once, it works
+                  forever.
+                </li>
+                <li>
+                  <Check /> Guests book themselves — live availability, secure
+                  payment.
+                </li>
+                <li>
+                  <Check /> Your name on the page, not ours —
+                  famguest.com/owner/your-name.
+                </li>
+              </ul>
             </div>
           </div>
         </div>
@@ -973,6 +953,7 @@ export default function Home() {
                 <h4>Product</h4>
                 <a href="#how">How it works</a>
                 <a href="#features">Features</a>
+                <a href="#storefront">Your booking page</a>
                 <a href="#pricing">Pricing</a>
               </div>
               <div className="foot-col">
