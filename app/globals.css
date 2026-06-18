@@ -34,8 +34,8 @@ nav{position:sticky;top:0;z-index:50;transition:background .3s,box-shadow .3s,bo
 nav.scrolled{background:rgba(246,241,232,.86);backdrop-filter:blur(12px);border-color:var(--line)}
 .nav-in{max-width:var(--maxw);margin:0 auto;padding:18px 28px;display:flex;align-items:center;justify-content:space-between}
 .logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:21px;letter-spacing:-.01em}
-.logo .mark{width:30px;height:30px;border-radius:50%;background:var(--forest);display:grid;place-items:center;flex-shrink:0}
-.logo .mark svg{width:16px;height:16px}
+.logo .mark{display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.logo .mark svg{width:22px;height:36px}
 .nav-links{display:flex;align-items:center;gap:34px;font-size:15px;font-weight:500}
 .nav-links a.txt{color:var(--ink-soft);transition:color .2s}
 .nav-links a.txt:hover{color:var(--ink)}

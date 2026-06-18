@@ -17,31 +17,27 @@ function Check() {
   );
 }
 
-/* The home / logo mark */
+/* Familiar Guest key+heart logo mark */
 function HomeMark() {
   return (
-    <svg viewBox="0 0 24 24" fill="none">
+    <svg viewBox="0 0 60 100" fill="none" aria-hidden="true">
+      {/* Key ring at top */}
+      <circle cx="30" cy="9" r="5.5" stroke="#0F4D45" strokeWidth="3.5" />
+      {/* Connector from ring to bow */}
+      <line x1="30" y1="14.5" x2="30" y2="23" stroke="#0F4D45" strokeWidth="3.5" strokeLinecap="square" />
+      {/* Bow circle */}
+      <circle cx="30" cy="44" r="21" stroke="#0F4D45" strokeWidth="3.5" />
+      {/* Heart — solid coral, sits inside the bow */}
       <path
-        d="M3 11.5 12 4l9 7.5"
-        stroke="#fff"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
+        d="M30 54 C30 54 14 45 14 36 C14 29 19 24 25 25.5 C27.5 26.5 29 29 30 31 C31 29 32.5 26.5 35 25.5 C41 24 46 29 46 36 C46 45 30 54 30 54 Z"
+        fill="#D9663F"
       />
-      <path
-        d="M5 10v9h14v-9"
-        stroke="#fff"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M10 19v-5h4v5"
-        stroke="#E7C8B5"
-        strokeWidth="2"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      {/* Shaft */}
+      <line x1="30" y1="65" x2="30" y2="91" stroke="#0F4D45" strokeWidth="5.5" strokeLinecap="square" />
+      {/* Upper bit */}
+      <line x1="30" y1="74" x2="41" y2="74" stroke="#0F4D45" strokeWidth="5.5" strokeLinecap="square" />
+      {/* Lower bit */}
+      <line x1="30" y1="84" x2="36" y2="84" stroke="#0F4D45" strokeWidth="5.5" strokeLinecap="square" />
     </svg>
   );
 }
@@ -947,22 +943,7 @@ export default function Home() {
             <div>
               <a href="#" className="logo" style={{ fontSize: "20px" }}>
                 <span className="mark">
-                  <svg viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M3 11.5 12 4l9 7.5"
-                      stroke="#fff"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M5 10v9h14v-9"
-                      stroke="#fff"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <HomeMark />
                 </span>
                 Familiar Guest
               </a>
