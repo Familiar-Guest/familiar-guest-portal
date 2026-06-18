@@ -6,6 +6,7 @@ import { hasContact, type OwnerContact } from "./welcome";
 import { createAdminClient } from "./supabase/admin";
 import { buildBookingEmail } from "./emails/bookingEmail";
 import { buildCheckInEmail, type CheckInInstruction } from "./emails/checkInEmail";
+import { getOwnerPolicies, type OwnerPolicy } from "./policies";
 
 const FOREST = "#14543F";
 const CLAY = "#C0673E";
@@ -223,14 +224,59 @@ function emailAddress(b: Booking, property: Property | null): string {
   return property?.address || property?.location || b.property_name;
 }
 
+/** The refund-policy lines shown to guests (payment schedule + cancellation terms). */
+function policyLines(b: Booking, policy: OwnerPolicy, kind: PaymentKind): string[] {
+  const lines: string[] = [];
+  if (kind === "deposit" && b.balance_due_date) {
+    lines.push(
+      `Balance of ${formatMoney(b.balance_cents, b.currency)} is due by ${formatDate(
+        b.balance_due_date
+      )} (${policy.full_payment_due_days} days before check-in).`
+    );
+  }
+  lines.push(
+    `Cancellation: full refund if cancelled ${policy.refund_100_days}+ days before check-in; ` +
+      `${policy.refund_50_days}–${policy.refund_100_days} days before, 50%; after that, no refund.`
+  );
+  return lines;
+}
+
+/** Payment breakdown rows for the confirmation card. */
+function paymentRows(
+  b: Booking,
+  kind: PaymentKind
+): { label: string; value: string }[] {
+  const money = (c: number) => formatMoney(c, b.currency);
+  if (kind === "deposit") {
+    return [
+      { label: "Total", value: money(b.amount_cents) },
+      { label: "Deposit paid", value: money(b.deposit_cents) },
+      {
+        label: "Balance due",
+        value: b.balance_due_date
+          ? `${money(b.balance_cents)} by ${formatDate(b.balance_due_date)}`
+          : money(b.balance_cents),
+      },
+    ];
+  }
+  return [{ label: "Paid in full", value: money(b.amount_cents) }];
+}
+
+type PaymentKind = "full" | "deposit" | "balance";
+
 /**
  * 2. Confirmation — sent on successful payment. Uses the provided Tidewater
- * booking-confirmation template, hydrated from the live property + owner.
+ * booking-confirmation template, hydrated from the live property + owner, and
+ * carries the owner's payment + refund policy. `kind` selects the deposit-
+ * received vs paid-in-full variant.
  */
 export async function buildBookingConfirmation(
-  b: Booking
+  b: Booking,
+  kind: PaymentKind = "full"
 ): Promise<{ subject: string; html: string }> {
   const { property, ownerName } = await loadBookingContext(b);
+  const admin = createAdminClient();
+  const policy = await getOwnerPolicies(admin, b.owner_id);
   return buildBookingEmail({
     guestName: b.guest_name,
     ownerName,
@@ -245,6 +291,9 @@ export async function buildBookingConfirmation(
     longitude: property?.gps_lng ?? null,
     isRepeatGuest: await isRepeatGuest(b),
     bookingUrl: bookingUrl(b.token),
+    paymentTitle: kind === "deposit" ? "Payment schedule & policy" : "Payment & policy",
+    paymentRows: paymentRows(b, kind),
+    policyLines: policyLines(b, policy, kind),
   });
 }
 
@@ -261,6 +310,30 @@ export function buildReminderEmail(b: Booking): {
     button(bookingUrl(b.token), "View your booking");
   return {
     subject: `One week until your stay at ${b.property_name}`,
+    html: layout(inner),
+  };
+}
+
+/**
+ * Overdue-balance reminder — sent after a deposit when the balance is past due.
+ * States the forfeiture deadline (5 days past the due date) professionally.
+ */
+export function buildBalanceReminderEmail(
+  b: Booking,
+  forfeitDate: string
+): { subject: string; html: string } {
+  const inner =
+    heading("Your balance is due") +
+    p(`Hi ${b.guest_name}, the remaining balance for your stay at ${b.property_name} (${formatDate(b.check_in)} → ${formatDate(b.check_out)}) is now due.`) +
+    `<table width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0;border-top:1px solid ${LINE};border-bottom:1px solid ${LINE};">
+      <tr><td style="padding:7px 0;color:#8a7e72;font-size:14px;">Deposit paid</td><td style="padding:7px 0;text-align:right;font-size:14px;color:${INK};font-weight:600;">${formatMoney(b.deposit_cents, b.currency)}</td></tr>
+      <tr><td style="padding:7px 0;color:#8a7e72;font-size:14px;">Balance due</td><td style="padding:7px 0;text-align:right;font-size:14px;color:${INK};font-weight:600;">${formatMoney(b.balance_cents, b.currency)}</td></tr>
+    </table>` +
+    p(`Please complete your balance by <strong>${formatDate(forfeitDate)}</strong>. If the balance remains unpaid after this date, your reservation will be released and your deposit forfeited, in line with your host's policy.`) +
+    button(bookingUrl(b.token), "Pay your balance") +
+    p(`<span style="font-size:13px;color:#8a7e72;">If you've already paid or have any questions, just reply to this email.</span>`);
+  return {
+    subject: `Balance due for your stay at ${b.property_name}`,
     html: layout(inner),
   };
 }
@@ -368,11 +441,15 @@ export function buildChangeEmail(
 }
 
 /** 6. Cancellation — sent when an owner removes an active booking. */
-export function buildCancellationEmail(b: Booking): { subject: string; html: string } {
+export function buildCancellationEmail(
+  b: Booking,
+  refundNote?: string
+): { subject: string; html: string } {
   const inner =
     heading("Your booking has been cancelled") +
     p(`Hi ${b.guest_name}, your host has cancelled your booking at ${b.property_name}. The details below are no longer reserved.`) +
     summaryTable(b) +
+    (refundNote ? p(refundNote) : "") +
     p(`If you have questions or this was unexpected, please reply to this email to reach your host.`);
   return {
     subject: `Cancelled: your stay at ${b.property_name}`,

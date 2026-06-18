@@ -3,7 +3,8 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getEmailForToken } from "@/lib/guestPortal";
 import { postMessage } from "@/lib/messages";
 import { sendEmail, siteUrl } from "@/lib/email";
-import { formatDate } from "@/lib/format";
+import { formatDate, formatMoney } from "@/lib/format";
+import { getOwnerPolicies, computeRefund } from "@/lib/policies";
 import type { Booking } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -62,6 +63,14 @@ export async function POST(
     return bad("Could not cancel the booking. Please try again.", 500);
   }
 
+  // Refund owed per the owner's policy (computed, not auto-issued).
+  const policy = await getOwnerPolicies(admin, booking.owner_id);
+  const refund = computeRefund(policy, booking);
+  const refundLine =
+    refund.cents > 0
+      ? `Refund due per your policy: ${formatMoney(refund.cents, booking.currency)} (${refund.pct}%).`
+      : `No refund is due per your policy (cancelled inside the refund window).`;
+
   // Record + notify on the message thread, and email the owner.
   await postMessage(admin, {
     booking,
@@ -85,10 +94,10 @@ export async function POST(
         subject: `Cancelled by guest: ${booking.property_name} (${formatDate(booking.check_in)})`,
         html: `<p>${booking.guest_name} cancelled their stay at ${booking.property_name} for ${formatDate(
           booking.check_in
-        )} → ${formatDate(booking.check_out)}. The dates are now free.</p><p><a href="${siteUrl()}/owner">Open your portal</a></p>`,
+        )} → ${formatDate(booking.check_out)}. The dates are now free.</p><p>${refundLine}</p><p><a href="${siteUrl()}/owner">Open your portal</a></p>`,
       });
     }
   }
 
-  return NextResponse.json({ ok: true });
+  return NextResponse.json({ ok: true, refund });
 }

@@ -11,7 +11,8 @@ import {
 } from "@/lib/email";
 import { getOwnerContact } from "@/lib/owner";
 import { findInternalConflict, offerExpiresAt, isActiveOffer } from "@/lib/offers";
-import { nights } from "@/lib/format";
+import { getOwnerPolicies, computeRefund } from "@/lib/policies";
+import { nights, formatMoney } from "@/lib/format";
 import type { Booking, Property } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -200,12 +201,24 @@ export async function DELETE(
   const booking = existing as Booking | null;
   if (!booking) return bad("Booking not found.", 404);
 
-  const isPaid = booking.status === "paid";
-  const wasActive = isPaid || isActiveOffer(booking);
+  // A booking with money collected (paid or deposit_paid) is kept as a record;
+  // an unpaid offer is deleted outright.
+  const hasMoney = booking.status === "paid" || booking.status === "deposit_paid";
+  const wasActive = hasMoney || isActiveOffer(booking);
 
-  // Notify the guest before we remove their reservation.
+  // Notify the guest before we remove their reservation, with the refund owed
+  // per the owner's policy (computed, not auto-issued).
   if (wasActive) {
-    const { subject, html } = buildCancellationEmail(booking);
+    let refundNote: string | undefined;
+    if (hasMoney) {
+      const policy = await getOwnerPolicies(supabase, owner.id);
+      const refund = computeRefund(policy, booking);
+      refundNote =
+        refund.cents > 0
+          ? `A refund of ${formatMoney(refund.cents, booking.currency)} (${refund.pct}% of what you paid) will be processed per the cancellation policy.`
+          : undefined;
+    }
+    const { subject, html } = buildCancellationEmail(booking, refundNote);
     await sendEmail({
       to: booking.guest_email,
       subject,
@@ -214,7 +227,7 @@ export async function DELETE(
     });
   }
 
-  if (isPaid) {
+  if (hasMoney) {
     // Keep the row (payment history) but free the dates by marking cancelled.
     const { error } = await supabase
       .from("bookings")
@@ -237,5 +250,5 @@ export async function DELETE(
     }
   }
 
-  return NextResponse.json({ ok: true, cancelled: isPaid, emailed: wasActive });
+  return NextResponse.json({ ok: true, cancelled: hasMoney, emailed: wasActive });
 }

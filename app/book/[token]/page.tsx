@@ -33,19 +33,29 @@ export default async function BookingPage({
   const session = await getOwner();
   const n = nights(booking.check_in, booking.check_out);
   const isPaid = booking.status === "paid";
+  const isDepositPaid = booking.status === "deposit_paid";
+  const isForfeited = booking.status === "forfeited";
   const isCancelled = booking.status === "cancelled";
   const expired = booking.status === "expired" || isExpired(booking);
-  const canPay = !isPaid && !isCancelled && !expired;
+  const canPay = !isPaid && !isCancelled && !expired && !isForfeited;
 
   return (
     <div className="bk-wrap">
       <div className="bk-brand">Familiar&nbsp;Guest</div>
       <div className="bk-card">
         {isPaid && <span className="bk-badge">✓ Booking confirmed</span>}
+        {isDepositPaid && <span className="bk-badge">Deposit paid</span>}
         <h1>{booking.property_name}</h1>
         <p className="bk-lead">
           {isPaid
             ? `You're all set, ${booking.guest_name}. Your stay is confirmed — a copy is in your inbox.`
+            : isDepositPaid
+            ? `Hi ${booking.guest_name}, your deposit is paid and your dates are held. Pay your remaining balance of ${formatMoney(
+                booking.balance_cents,
+                booking.currency
+              )}${booking.balance_due_date ? ` by ${formatDate(booking.balance_due_date)}` : ""} to complete your booking.`
+            : isForfeited
+            ? "This reservation was released because the balance wasn't paid in time. Please contact your host."
             : isCancelled
             ? "This booking is no longer available. Please contact your host."
             : expired
@@ -93,6 +103,27 @@ export default async function BookingPage({
               {formatMoney(booking.amount_cents, booking.currency)}
             </span>
           </div>
+          {isDepositPaid && (
+            <>
+              <div className="bk-row">
+                <span className="bk-label">Deposit paid</span>
+                <span className="bk-val">
+                  {formatMoney(booking.deposit_cents, booking.currency)}
+                </span>
+              </div>
+              <div className="bk-row bk-total">
+                <span className="bk-label">
+                  Balance due
+                  {booking.balance_due_date
+                    ? ` by ${formatDate(booking.balance_due_date)}`
+                    : ""}
+                </span>
+                <span className="bk-val">
+                  {formatMoney(booking.balance_cents, booking.currency)}
+                </span>
+              </div>
+            </>
+          )}
         </div>
 
         {canPay && session && (
@@ -101,7 +132,7 @@ export default async function BookingPage({
             <p className="bk-note">
               Secure payment. You won&rsquo;t be charged until you confirm on the
               next screen.
-              {booking.expires_at && (
+              {booking.expires_at && !isDepositPaid && (
                 <>
                   {" "}
                   These dates are held for you until{" "}

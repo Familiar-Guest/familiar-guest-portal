@@ -8,6 +8,8 @@ import { MonthCalendar, type CalendarBar } from "@/app/owner/MonthCalendar";
 
 function statusLabel(b: Booking): { text: string; cls: string } {
   if (b.status === "paid") return { text: "Confirmed", cls: "op-paid" };
+  if (b.status === "deposit_paid") return { text: "Deposit paid — balance due", cls: "op-open" };
+  if (b.status === "forfeited") return { text: "Forfeited", cls: "op-muted" };
   if (b.status === "requested") return { text: "Requested — awaiting host", cls: "op-open" };
   if (b.status === "declined") return { text: "Declined", cls: "op-muted" };
   if (b.status === "cancelled") return { text: "Cancelled", cls: "op-muted" };
@@ -38,6 +40,7 @@ export function GuestStays({
       b.check_out >= todayIso &&
       b.status !== "declined" &&
       b.status !== "cancelled" &&
+      b.status !== "forfeited" &&
       !(b.status !== "paid" && b.status !== "requested" && isExpired(b))
   );
 
@@ -138,11 +141,16 @@ function StayRow({ booking: b }: { booking: Booking }) {
         </div>
       )}
 
-      {(canPay || b.status === "paid") && (
+      {(canPay || b.status === "deposit_paid" || b.status === "paid") && (
         <div className="op-actions" style={{ justifyContent: "flex-start" }}>
           {canPay && (
             <a className="op-link" href={`/book/${b.token}`}>
               Complete payment →
+            </a>
+          )}
+          {b.status === "deposit_paid" && (
+            <a className="op-link" href={`/book/${b.token}`}>
+              Pay balance ({formatMoney(b.balance_cents, b.currency)}) →
             </a>
           )}
           {b.status === "paid" && (

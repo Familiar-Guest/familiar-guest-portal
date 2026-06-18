@@ -41,6 +41,12 @@ export interface BookingEmailFields {
   longitude?: number | null;
   isRepeatGuest?: boolean;
   bookingUrl?: string;
+  /** Optional payment breakdown rows (e.g. deposit paid, balance due). */
+  paymentRows?: { label: string; value: string }[];
+  /** Optional policy lines (payment schedule + refund terms) shown to the guest. */
+  policyLines?: string[];
+  /** Heading for the payment/policy card (defaults to "Payment & policy"). */
+  paymentTitle?: string;
 }
 
 function formatDate(dateInput: string): string {
@@ -113,6 +119,9 @@ export function buildBookingEmail(fields: BookingEmailFields): {
     longitude,
     isRepeatGuest = false,
     bookingUrl,
+    paymentRows = [],
+    policyLines = [],
+    paymentTitle = "Payment & policy",
   } = fields;
 
   const hasCoordinates = latitude != null && longitude != null;
@@ -146,6 +155,33 @@ export function buildBookingEmail(fields: BookingEmailFields): {
   ].join("");
 
   const ctaHref = bookingUrl ?? "#";
+
+  // Optional payment + policy card (deposit/balance schedule, refund terms).
+  const paymentRowsHtml = paymentRows.map((r) => detailRow(r.label, r.value)).join("");
+  const policyHtml = policyLines.length
+    ? `<p style="margin: 14px 0 0; font-family: Inter, Helvetica, Arial, sans-serif; font-size: 13px; color: ${COLORS.body}; line-height: 1.6;">${policyLines.join("<br />")}</p>`
+    : "";
+  const paymentCard =
+    paymentRows.length || policyLines.length
+      ? `
+          <tr>
+            <td style="padding: 16px 32px 0;">
+              <p style="margin: 0 0 8px; font-family: Inter, Helvetica, Arial, sans-serif; font-size: 13px; font-weight: 600; color: ${COLORS.ink};">
+                ${paymentTitle}
+              </p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: ${COLORS.detailBg}; border-radius: 10px; padding: 8px 20px;">
+                <tr>
+                  <td style="padding: 12px 0 0;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                      ${paymentRowsHtml}
+                    </table>
+                    ${policyHtml}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>`
+      : "";
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -195,6 +231,8 @@ export function buildBookingEmail(fields: BookingEmailFields): {
               </table>
             </td>
           </tr>
+
+          <!-- Payment & policy -->${paymentCard}
 
           <!-- CTA -->
           <tr>

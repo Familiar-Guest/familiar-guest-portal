@@ -31,6 +31,10 @@ export async function POST(request: NextRequest) {
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const bookingId = session.metadata?.booking_id;
+    const paymentKind = (session.metadata?.payment_kind ?? "full") as
+      | "full"
+      | "deposit"
+      | "balance";
 
     if (bookingId && session.payment_status === "paid") {
       const supabase = createAdminClient();
@@ -41,41 +45,72 @@ export async function POST(request: NextRequest) {
         .single();
 
       const booking = data as Booking | null;
+      const intentId =
+        typeof session.payment_intent === "string" ? session.payment_intent : null;
+      const nowIso = new Date().toISOString();
 
-      // Idempotent: only act if we haven't already confirmed this booking.
-      if (booking && booking.confirmation_sent_at === null) {
+      // Send the right confirmation email/SMS for this payment, returning
+      // whether it went out. A deposit gets the deposit-received variant; full
+      // and balance payments get the paid-in-full variant.
+      const notify = async (
+        b: Booking,
+        kind: "full" | "deposit" | "balance"
+      ): Promise<boolean> => {
         let sent = false;
-        if (booking.confirmation_method === "sms" && booking.guest_phone) {
-          sent = await sendSms({
-            to: booking.guest_phone,
-            body: buildConfirmationSms(booking),
-          });
+        // SMS only applies to the final (paid-in-full) confirmations.
+        if (kind !== "deposit" && b.confirmation_method === "sms" && b.guest_phone) {
+          sent = await sendSms({ to: b.guest_phone, body: buildConfirmationSms(b) });
         }
         if (!sent) {
-          const { subject, html } = await buildBookingConfirmation(booking);
-          sent = await sendEmail({
-            to: booking.guest_email,
-            subject,
-            html,
-            fromName: booking.property_name,
-          });
+          const { subject, html } = await buildBookingConfirmation(b, kind);
+          sent = await sendEmail({ to: b.guest_email, subject, html, fromName: b.property_name });
         }
+        await ensureGuestPortal(b.guest_email, supabase);
+        return sent;
+      };
 
-        // Ensure the guest has a permanent portal token (links in later emails).
-        await ensureGuestPortal(booking.guest_email, supabase);
-
-        await supabase
-          .from("bookings")
-          .update({
-            status: "paid",
-            paid_at: new Date().toISOString(),
-            stripe_payment_intent_id:
-              typeof session.payment_intent === "string"
-                ? session.payment_intent
-                : null,
-            confirmation_sent_at: sent ? new Date().toISOString() : null,
-          })
-          .eq("id", booking.id);
+      if (booking && paymentKind === "deposit") {
+        // Idempotent on deposit_paid_at.
+        if (booking.deposit_paid_at === null) {
+          const sent = await notify(booking, "deposit");
+          await supabase
+            .from("bookings")
+            .update({
+              status: "deposit_paid",
+              deposit_paid_at: nowIso,
+              stripe_payment_intent_id: intentId,
+              confirmation_sent_at: sent ? nowIso : null,
+            })
+            .eq("id", booking.id);
+        }
+      } else if (booking && paymentKind === "balance") {
+        // Idempotent on balance_paid_at.
+        if (booking.balance_paid_at === null) {
+          const sent = await notify(booking, "balance");
+          await supabase
+            .from("bookings")
+            .update({
+              status: "paid",
+              balance_paid_at: nowIso,
+              paid_at: booking.paid_at ?? nowIso,
+              confirmation_sent_at: sent ? nowIso : booking.confirmation_sent_at,
+            })
+            .eq("id", booking.id);
+        }
+      } else if (booking) {
+        // Full payment. Idempotent on confirmation_sent_at.
+        if (booking.confirmation_sent_at === null) {
+          const sent = await notify(booking, "full");
+          await supabase
+            .from("bookings")
+            .update({
+              status: "paid",
+              paid_at: nowIso,
+              stripe_payment_intent_id: intentId,
+              confirmation_sent_at: sent ? nowIso : null,
+            })
+            .eq("id", booking.id);
+        }
       }
     }
   }

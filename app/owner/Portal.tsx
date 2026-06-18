@@ -9,8 +9,9 @@ import { OfferForm, type FormMode, type OfferInitial } from "./OfferForm";
 import { CalendarTab } from "./CalendarTab";
 import { SettingsTab } from "./SettingsTab";
 import { MessagesTab, type StartBooking } from "./MessagesTab";
+import { PoliciesTab } from "./PoliciesTab";
 
-type Tab = "properties" | "calendar" | "bookings" | "offers" | "messages" | "settings";
+type Tab = "properties" | "calendar" | "bookings" | "offers" | "messages" | "policies" | "settings";
 
 type Overlay =
   | { kind: "none" }
@@ -23,6 +24,8 @@ function centsToAmount(cents: number): string {
 
 function statusLabel(b: Booking): { text: string; cls: string } {
   if (b.status === "paid") return { text: "Paid", cls: "op-paid" };
+  if (b.status === "deposit_paid") return { text: "Deposit paid · balance due", cls: "op-open" };
+  if (b.status === "forfeited") return { text: "Forfeited", cls: "op-muted" };
   if (b.status === "requested") return { text: "Requested", cls: "op-open" };
   if (b.status === "declined") return { text: "Declined", cls: "op-muted" };
   if (b.status === "cancelled") return { text: "Removed", cls: "op-muted" };
@@ -440,6 +443,9 @@ export function Portal({ ownerName, handle: initialHandle }: { ownerName: string
         />
       )}
 
+      {/* GLOBAL POLICIES */}
+      {tab === "policies" && <PoliciesTab />}
+
       {/* SETTINGS */}
       {tab === "settings" && <SettingsTab onHandleChange={setHandle} />}
 
@@ -495,6 +501,7 @@ function Shell({
     { id: "bookings", label: "Booking activity" },
     { id: "offers", label: "Offers" },
     { id: "messages", label: "Messages" },
+    { id: "policies", label: "Global Policies" },
     { id: "settings", label: "Settings" },
   ];
   return (
