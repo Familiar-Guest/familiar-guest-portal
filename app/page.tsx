@@ -17,39 +17,10 @@ function Check() {
   );
 }
 
-/* Familiar Guest key+heart logo mark */
+/* Familiar Guest key+heart logo mark (the original artwork, cropped) */
 function HomeMark() {
-  return (
-    <svg viewBox="0 0 60 100" fill="none" aria-hidden="true">
-      {/*
-        Drawing order matters: shaft + bits go first (behind the head circle).
-        The head circle (white fill) then covers the shaft inside the ring,
-        making it look like one unified key shape rather than a circle + line.
-      */}
-
-      {/* Shaft — drawn behind head so it appears to emerge from the bottom */}
-      <line x1="28" y1="40" x2="28" y2="95" stroke="#0F4D45" strokeWidth="7" strokeLinecap="square" />
-      {/* Upper bit (longer) */}
-      <line x1="31.5" y1="69" x2="46" y2="69" stroke="#0F4D45" strokeWidth="7" strokeLinecap="square" />
-      {/* Lower bit (shorter) */}
-      <line x1="31.5" y1="82" x2="39" y2="82" stroke="#0F4D45" strokeWidth="7" strokeLinecap="square" />
-
-      {/* Head circle — white fill covers shaft/bits inside, giving hollow interior */}
-      <circle cx="28" cy="40" r="18" stroke="#0F4D45" strokeWidth="3.5" fill="white" />
-
-      {/* Heart — large, fills most of the head interior */}
-      <path
-        d="M28 52 C28 52 11 43 11 34 C11 27 16 22 22 23.5 C24.5 24.5 27 27.5 28 30 C29 27.5 31.5 24.5 34 23.5 C40 22 45 27 45 34 C45 43 28 52 28 52 Z"
-        fill="#D9663F"
-      />
-
-      {/* Ring — small angled ellipse at top */}
-      <ellipse cx="30" cy="8" rx="4.5" ry="6" transform="rotate(-12 30 8)" stroke="#0F4D45" strokeWidth="3.5" />
-
-      {/* Hook/curl — sweeps outward to the right then curves back to meet the head */}
-      <path d="M 33.5 13 C 42 21, 46 30, 42 26" stroke="#0F4D45" strokeWidth="3.5" strokeLinecap="round" />
-    </svg>
-  );
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src="/key-logo.png" alt="Familiar Guest" />;
 }
 
 function SignupCTA({ buttonStyle, label = "Get started free" }: { buttonStyle?: React.CSSProperties; label?: string }) {
