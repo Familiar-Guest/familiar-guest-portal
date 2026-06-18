@@ -24,7 +24,10 @@ export default async function SuccessPage({
 
   return (
     <div className="bk-wrap">
-      <div className="bk-brand">Familiar&nbsp;Guest</div>
+      <a href="/" className="bk-brand">Familiar&nbsp;Guest</a>
+      <nav className="bk-nav">
+        <a href="/guest" className="bk-nav-link">← My stays</a>
+      </nav>
       <div className="bk-card">
         <span className="bk-badge">✓ Payment received</span>
         <h1>You&rsquo;re booked!</h1>

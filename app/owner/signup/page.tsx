@@ -40,7 +40,7 @@ export default function SignupPage() {
 
   return (
     <div className="bk-wrap">
-      <div className="bk-brand">Familiar&nbsp;Guest</div>
+      <a href="/" className="bk-brand">Familiar&nbsp;Guest</a>
       <div className="bk-card" style={{ maxWidth: 440 }}>
         <h1>Create your owner account</h1>
         <p className="bk-lead">

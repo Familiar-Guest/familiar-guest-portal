@@ -28,9 +28,9 @@ export function GuestPortalClient({
   return (
     <div className="op-shell">
       <div className="op-topbar">
-        <span className="bk-brand" style={{ margin: 0 }}>
+        <a href="/" className="bk-brand" style={{ margin: 0 }}>
           Familiar&nbsp;Guest
-        </span>
+        </a>
         <div className="op-topright">
           <span className="op-hi">{email}</span>
         </div>

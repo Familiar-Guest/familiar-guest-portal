@@ -37,7 +37,7 @@ export default function GuestLoginPage() {
 
   return (
     <div className="bk-wrap">
-      <div className="bk-brand">Familiar&nbsp;Guest</div>
+      <a href="/" className="bk-brand">Familiar&nbsp;Guest</a>
       <div className="bk-card" style={{ maxWidth: 400 }}>
         <h1>See your stays</h1>
         <p className="bk-lead">

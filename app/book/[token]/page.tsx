@@ -41,7 +41,14 @@ export default async function BookingPage({
 
   return (
     <div className="bk-wrap">
-      <div className="bk-brand">Familiar&nbsp;Guest</div>
+      <a href="/" className="bk-brand">Familiar&nbsp;Guest</a>
+      <nav className="bk-nav">
+        {session ? (
+          <a href="/owner" className="bk-nav-link">← Owner portal</a>
+        ) : (
+          <a href="/guest" className="bk-nav-link">← My stays</a>
+        )}
+      </nav>
       <div className="bk-card">
         {isPaid && <span className="bk-badge">✓ Booking confirmed</span>}
         {isDepositPaid && <span className="bk-badge">Deposit paid</span>}

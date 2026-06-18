@@ -546,9 +546,9 @@ function Shell({
   return (
     <div className="op-shell">
       <div className="op-topbar">
-        <span className="bk-brand" style={{ margin: 0 }}>
+        <a href="/owner" className="bk-brand" style={{ margin: 0 }}>
           Familiar&nbsp;Guest
-        </span>
+        </a>
         <div className="op-topright">
           <span className="op-hi">Hi, {ownerName}</span>
           <button className="op-link" onClick={onLogout}>

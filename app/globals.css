@@ -282,7 +282,10 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 
 /* ── Booking & owner-offer surfaces ─────────────────────────────── */
 .bk-wrap{min-height:100vh;background:var(--paper);display:flex;flex-direction:column;align-items:center;padding:40px 20px;font-family:var(--body);color:var(--ink)}
-.bk-brand{font-family:var(--display);font-size:20px;color:var(--forest);font-weight:600;margin-bottom:24px}
+.bk-brand{font-family:var(--display);font-size:20px;color:var(--forest);font-weight:600;margin-bottom:10px;display:block}
+.bk-nav{margin-bottom:18px}
+.bk-nav-link{font-size:14px;font-weight:600;color:var(--ink-soft)}
+.bk-nav-link:hover{color:var(--forest)}
 .bk-card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-md);max-width:520px;width:100%;padding:32px}
 .bk-card h1{font-family:var(--display);font-size:26px;color:var(--forest);margin-bottom:8px;line-height:1.15}
 .bk-card .bk-lead{font-size:15px;color:var(--ink-soft);margin-bottom:22px;line-height:1.55}
