@@ -1,7 +1,9 @@
 export type BookingStatus =
   | "requested" // guest asked to book; awaiting owner approval
   | "offer_sent" // approved/owner-sent; pay link active
+  | "deposit_paid" // deposit collected, balance outstanding (holds dates)
   | "paid"
+  | "forfeited" // balance unpaid past the grace window; deposit forfeited
   | "cancelled"
   | "declined"
   | "expired";
@@ -36,6 +38,16 @@ export interface Booking {
   confirmation_sent_at: string | null;
   reminder7_sent_at: string | null;
   checkin_sent_at: string | null;
+  // Deposit/balance payment plan (see owner_policies).
+  payment_plan: "full" | "deposit";
+  deposit_cents: number;
+  balance_cents: number;
+  deposit_paid_at: string | null;
+  balance_paid_at: string | null;
+  balance_due_date: string | null; // YYYY-MM-DD
+  balance_reminder_sent_at: string | null;
+  balance_forfeited_at: string | null;
+  balance_stripe_session_id: string | null;
   created_at: string;
 }
 

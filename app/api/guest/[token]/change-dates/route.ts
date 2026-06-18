@@ -4,8 +4,9 @@ import { getEmailForToken } from "@/lib/guestPortal";
 import { postMessage } from "@/lib/messages";
 import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
 import { findInternalConflict } from "@/lib/offers";
+import { getOwnerPolicies } from "@/lib/policies";
 import { sendEmail, siteUrl } from "@/lib/email";
-import { formatDate, nights } from "@/lib/format";
+import { formatDate, nights, daysUntil } from "@/lib/format";
 import type { Booking, Property } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -77,6 +78,10 @@ export async function POST(
   }
   if (property && nights(check_in, check_out) < (property.min_nights ?? 1))
     return bad(`This place has a ${property.min_nights}-night minimum.`);
+
+  const policy = await getOwnerPolicies(admin, booking.owner_id);
+  if (daysUntil(check_in) < policy.min_days_to_book)
+    return bad(`New dates must be at least ${policy.min_days_to_book} day(s) before check-in.`);
 
   const clash = await findInternalConflict(admin, {
     check_in,

@@ -7,6 +7,8 @@ import type { Booking, Message } from "@/lib/types";
 
 function statusLabel(b: Booking): { text: string; cls: string } {
   if (b.status === "paid") return { text: "Confirmed", cls: "op-paid" };
+  if (b.status === "deposit_paid") return { text: "Deposit paid — balance due", cls: "op-open" };
+  if (b.status === "forfeited") return { text: "Forfeited", cls: "op-muted" };
   if (b.status === "requested") return { text: "Requested — awaiting host", cls: "op-open" };
   if (b.status === "declined") return { text: "Declined", cls: "op-muted" };
   if (b.status === "cancelled") return { text: "Cancelled", cls: "op-muted" };
@@ -63,8 +65,13 @@ function StayCard({ token, booking: b }: { token: string; booking: Booking }) {
   const today = new Date().toISOString().slice(0, 10);
   const isFuture = b.check_in > today;
   const isCancellable =
-    isFuture && b.status !== "cancelled" && b.status !== "declined" && b.status !== "expired";
+    isFuture &&
+    b.status !== "cancelled" &&
+    b.status !== "declined" &&
+    b.status !== "expired" &&
+    b.status !== "forfeited";
   const canPay = b.status === "offer_sent" && !isExpired(b);
+  const balanceDue = b.status === "deposit_paid" && b.balance_cents > 0;
 
   const [showMessages, setShowMessages] = useState(false);
   const [showChange, setShowChange] = useState(false);
@@ -113,6 +120,12 @@ function StayCard({ token, booking: b }: { token: string; booking: Booking }) {
         {canPay && (
           <a className="op-link" href={`/book/${b.token}`}>
             Complete payment →
+          </a>
+        )}
+        {balanceDue && (
+          <a className="op-link" href={`/book/${b.token}`}>
+            Pay balance ({formatMoney(b.balance_cents, b.currency)})
+            {b.balance_due_date ? ` · due ${formatDate(b.balance_due_date)}` : ""} →
           </a>
         )}
         {b.status === "paid" && (

@@ -61,7 +61,7 @@ export async function findInternalConflict(
   let q = supabase
     .from("bookings")
     .select("id,guest_name,check_in,check_out,status,expires_at")
-    .in("status", ["paid", "offer_sent"])
+    .in("status", ["paid", "deposit_paid", "offer_sent"])
     .lt("check_in", check_out)
     .gt("check_out", check_in);
   if (propertyId) q = q.eq("property_id", propertyId);

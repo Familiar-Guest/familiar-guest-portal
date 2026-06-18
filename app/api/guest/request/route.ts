@@ -4,8 +4,9 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getOwner, ensureGuestProfile } from "@/lib/auth";
 import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
 import { findInternalConflict } from "@/lib/offers";
+import { getOwnerPolicies } from "@/lib/policies";
 import { quote } from "@/lib/availability";
-import { nights } from "@/lib/format";
+import { nights, daysUntil } from "@/lib/format";
 import { buildOwnerRequestEmail, sendEmail } from "@/lib/email";
 import type { Booking, Property } from "@/lib/types";
 
@@ -48,6 +49,11 @@ export async function POST(request: NextRequest) {
 
   if (nights(check_in, check_out) < (property.min_nights ?? 1))
     return bad(`This place has a ${property.min_nights}-night minimum.`);
+
+  // Minimum lead time before the stay (owner policy).
+  const policy = await getOwnerPolicies(supabase, property.owner_id);
+  if (daysUntil(check_in) < policy.min_days_to_book)
+    return bad(`This place must be booked at least ${policy.min_days_to_book} day(s) before check-in.`);
 
   const q = quote(property, check_in, check_out);
   if (!q) return bad("This listing isn't bookable right now.");

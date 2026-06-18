@@ -5,6 +5,7 @@ import { getStripe } from "@/lib/stripe";
 import { siteUrl } from "@/lib/email";
 import { formatDate } from "@/lib/format";
 import { isExpired } from "@/lib/offers";
+import { getOwnerPolicies, depositPlanFor } from "@/lib/policies";
 import type { Booking } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
@@ -57,7 +58,7 @@ export async function POST(request: NextRequest) {
       { status: 409 }
     );
   }
-  if (booking.status === "cancelled") {
+  if (booking.status === "cancelled" || booking.status === "forfeited") {
     return NextResponse.json(
       { error: "This booking is no longer available." },
       { status: 409 }
@@ -68,6 +69,39 @@ export async function POST(request: NextRequest) {
       { error: "This offer has expired. Please contact your host." },
       { status: 409 }
     );
+  }
+
+  // Decide what this payment covers: a balance on a deposit-paid booking, a
+  // deposit on an eligible new booking, or the full amount.
+  let amountCents: number;
+  let paymentKind: "full" | "deposit" | "balance";
+  let label: string;
+  // Extra fields persisted before redirecting to Stripe (deposit plan details).
+  const planFields: Record<string, unknown> = {};
+
+  if (booking.status === "deposit_paid") {
+    if (booking.balance_cents <= 0 || booking.balance_paid_at) {
+      return NextResponse.json({ error: "There's no balance due on this booking." }, { status: 409 });
+    }
+    amountCents = booking.balance_cents;
+    paymentKind = "balance";
+    label = "balance";
+  } else {
+    const policy = await getOwnerPolicies(supabase, booking.owner_id);
+    const plan = depositPlanFor(policy, booking.amount_cents, booking.check_in);
+    if (plan.plan === "deposit") {
+      amountCents = plan.depositCents;
+      paymentKind = "deposit";
+      label = "deposit";
+      planFields.payment_plan = "deposit";
+      planFields.deposit_cents = plan.depositCents;
+      planFields.balance_cents = plan.balanceCents;
+      planFields.balance_due_date = plan.balanceDueDate;
+    } else {
+      amountCents = booking.amount_cents;
+      paymentKind = "full";
+      label = "stay";
+    }
   }
 
   try {
@@ -82,9 +116,9 @@ export async function POST(request: NextRequest) {
           quantity: 1,
           price_data: {
             currency: booking.currency,
-            unit_amount: booking.amount_cents,
+            unit_amount: amountCents,
             product_data: {
-              name: `${booking.property_name} — stay`,
+              name: `${booking.property_name} — ${label}`,
               description: `${formatDate(booking.check_in)} → ${formatDate(
                 booking.check_out
               )}`,
@@ -92,9 +126,9 @@ export async function POST(request: NextRequest) {
           },
         },
       ],
-      metadata: { booking_id: booking.id, token: booking.token },
+      metadata: { booking_id: booking.id, token: booking.token, payment_kind: paymentKind },
       payment_intent_data: {
-        metadata: { booking_id: booking.id, token: booking.token },
+        metadata: { booking_id: booking.id, token: booking.token, payment_kind: paymentKind },
       },
       success_url: `${siteUrl()}/book/${booking.token}/success`,
       cancel_url: `${siteUrl()}/book/${booking.token}`,
@@ -103,7 +137,12 @@ export async function POST(request: NextRequest) {
     await supabase
       .from("bookings")
       .update({
-        stripe_session_id: checkoutSession.id,
+        ...planFields,
+        // The balance session id is tracked separately so it doesn't clobber the
+        // original (deposit) session id.
+        ...(paymentKind === "balance"
+          ? { balance_stripe_session_id: checkoutSession.id }
+          : { stripe_session_id: checkoutSession.id }),
         guest_user_id: guestUser.id,
         guest_phone: phone,
         confirmation_method: method,
