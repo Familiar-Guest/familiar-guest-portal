@@ -35,7 +35,7 @@ nav.scrolled{background:rgba(246,241,232,.86);backdrop-filter:blur(12px);border-
 .nav-in{max-width:var(--maxw);margin:0 auto;padding:18px 28px;display:flex;align-items:center;justify-content:space-between}
 .logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:21px;letter-spacing:-.01em}
 .logo .mark{display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.logo .mark img{height:34px;width:auto;display:block}
+.logo .mark img{height:51px;width:auto;display:block}
 .nav-links{display:flex;align-items:center;gap:34px;font-size:15px;font-weight:500}
 .nav-links a.txt{color:var(--ink-soft);transition:color .2s}
 .nav-links a.txt:hover{color:var(--ink)}
