@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BrandMark } from "../../BrandMark";
 import { OAuthButtons } from "../../owner/OAuthButtons";
 import { PasswordField } from "../../PasswordField";
 
@@ -40,7 +41,7 @@ export default function GuestSignupPage() {
 
   return (
     <div className="bk-wrap">
-      <a href="/" className="bk-brand">Familiar&nbsp;Guest</a>
+      <BrandMark />
       <div className="bk-card" style={{ maxWidth: 420 }}>
         <h1>Create your guest account</h1>
         <p className="bk-lead">

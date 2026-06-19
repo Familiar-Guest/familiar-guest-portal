@@ -11,6 +11,7 @@ import { SettingsTab } from "./SettingsTab";
 import { MessagesTab, type StartBooking } from "./MessagesTab";
 import { PoliciesTab } from "./PoliciesTab";
 import { OnboardingChecklist } from "./OnboardingChecklist";
+import { BrandMark } from "../BrandMark";
 
 type Tab = "properties" | "calendar" | "bookings" | "offers" | "messages" | "policies" | "settings";
 
@@ -546,9 +547,7 @@ function Shell({
   return (
     <div className="op-shell">
       <div className="op-topbar">
-        <a href="/owner" className="bk-brand" style={{ margin: 0 }}>
-          Familiar&nbsp;Guest
-        </a>
+        <BrandMark href="/owner" style={{ margin: 0 }} />
         <div className="op-topright">
           <span className="op-hi">Hi, {ownerName}</span>
           <button className="op-link" onClick={onLogout}>

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { OAuthButtons } from "../OAuthButtons";
 import { PasswordField } from "../../PasswordField";
+import { BrandMark } from "../../BrandMark";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -32,7 +33,7 @@ export default function LoginPage() {
 
   return (
     <div className="bk-wrap">
-      <a href="/" className="bk-brand">Familiar&nbsp;Guest</a>
+      <BrandMark />
       <div className="bk-card" style={{ maxWidth: 400 }}>
         <h1>Owner sign in</h1>
         <p className="bk-lead">Welcome back. Sign in to manage your properties and bookings.</p>

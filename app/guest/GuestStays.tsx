@@ -5,6 +5,7 @@ import { formatDate, formatMoney } from "@/lib/format";
 import { isExpired } from "@/lib/offers";
 import type { Booking } from "@/lib/types";
 import { MonthCalendar, type CalendarBar } from "@/app/owner/MonthCalendar";
+import { BrandMark } from "@/app/BrandMark";
 
 function statusLabel(b: Booking): { text: string; cls: string } {
   if (b.status === "paid") return { text: "Confirmed", cls: "op-paid" };
@@ -55,9 +56,7 @@ export function GuestStays({
   return (
     <div className="op-shell">
       <div className="op-topbar">
-        <a href="/guest" className="bk-brand" style={{ margin: 0 }}>
-          Familiar&nbsp;Guest
-        </a>
+        <BrandMark href="/guest" style={{ margin: 0 }} />
         <div className="op-topright">
           <span className="op-hi">{email}</span>
           <button className="op-link" onClick={logout}>

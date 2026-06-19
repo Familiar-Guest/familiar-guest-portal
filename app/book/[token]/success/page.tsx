@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandMark } from "@/app/BrandMark";
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatDate } from "@/lib/format";
@@ -24,7 +25,7 @@ export default async function SuccessPage({
 
   return (
     <div className="bk-wrap">
-      <a href="/" className="bk-brand">Familiar&nbsp;Guest</a>
+      <BrandMark />
       <nav className="bk-nav">
         <a href="/guest" className="bk-nav-link">← My stays</a>
       </nav>

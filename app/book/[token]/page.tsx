@@ -6,6 +6,7 @@ import { formatDate, formatMoney, nights } from "@/lib/format";
 import { isExpired, expiryDate } from "@/lib/offers";
 import type { Booking } from "@/lib/types";
 import { PayButton } from "./PayButton";
+import { BrandMark } from "@/app/BrandMark";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -41,7 +42,7 @@ export default async function BookingPage({
 
   return (
     <div className="bk-wrap">
-      <a href="/" className="bk-brand">Familiar&nbsp;Guest</a>
+      <BrandMark />
       <nav className="bk-nav">
         {session ? (
           <a href="/owner" className="bk-nav-link">← Owner portal</a>

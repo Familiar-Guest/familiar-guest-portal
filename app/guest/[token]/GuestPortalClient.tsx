@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
+import { BrandMark } from "@/app/BrandMark";
 import { formatDate, formatMoney } from "@/lib/format";
 import { isExpired } from "@/lib/offers";
 import type { Booking, Message } from "@/lib/types";
@@ -28,9 +29,7 @@ export function GuestPortalClient({
   return (
     <div className="op-shell">
       <div className="op-topbar">
-        <a href="/" className="bk-brand" style={{ margin: 0 }}>
-          Familiar&nbsp;Guest
-        </a>
+        <BrandMark style={{ margin: 0 }} />
         <div className="op-topright">
           <span className="op-hi">{email}</span>
         </div>

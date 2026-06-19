@@ -4,6 +4,7 @@ import { useState } from "react";
 import { OAuthButtons } from "../OAuthButtons";
 import { PasswordField } from "../../PasswordField";
 import { PhoneField } from "../../PhoneField";
+import { BrandMark } from "../../BrandMark";
 
 export default function SignupPage() {
   const [form, setForm] = useState({
@@ -40,7 +41,7 @@ export default function SignupPage() {
 
   return (
     <div className="bk-wrap">
-      <a href="/" className="bk-brand">Familiar&nbsp;Guest</a>
+      <BrandMark />
       <div className="bk-card" style={{ maxWidth: 440 }}>
         <h1>Create your owner account</h1>
         <p className="bk-lead">

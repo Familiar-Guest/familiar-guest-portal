@@ -33,7 +33,7 @@ h1,h2,h3{font-family:var(--display);font-weight:500;line-height:1.08;letter-spac
 nav{position:sticky;top:0;z-index:50;transition:background .3s,box-shadow .3s,border-color .3s;border-bottom:1px solid transparent}
 nav.scrolled{background:rgba(246,241,232,.86);backdrop-filter:blur(12px);border-color:var(--line)}
 .nav-in{max-width:var(--maxw);margin:0 auto;padding:18px 28px;display:flex;align-items:center;justify-content:space-between}
-.logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:600;font-size:21px;letter-spacing:-.01em}
+.logo{display:flex;align-items:center;gap:10px;font-family:var(--body);font-weight:700;font-size:21px;letter-spacing:-.01em}
 .logo .mark{display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .logo .mark img{height:51px;width:auto;display:block}
 .nav-links{display:flex;align-items:center;gap:34px;font-size:15px;font-weight:500}
@@ -288,7 +288,8 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 
 /* ── Booking & owner-offer surfaces ─────────────────────────────── */
 .bk-wrap{min-height:100vh;background:var(--paper);display:flex;flex-direction:column;align-items:center;padding:40px 20px;font-family:var(--body);color:var(--ink)}
-.bk-brand{font-family:var(--display);font-size:20px;color:var(--forest);font-weight:600;margin-bottom:10px;display:block}
+.bk-brand{font-family:var(--body);font-size:20px;font-weight:700;color:var(--forest);margin-bottom:10px;display:flex;align-items:center;gap:8px;text-decoration:none}
+.bk-brand img{height:32px;width:auto;display:block;flex-shrink:0}
 .bk-nav{margin-bottom:18px}
 .bk-nav-link{font-size:14px;font-weight:600;color:var(--ink-soft)}
 .bk-nav-link:hover{color:var(--forest)}
