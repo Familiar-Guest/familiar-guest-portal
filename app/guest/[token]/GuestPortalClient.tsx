@@ -71,14 +71,16 @@ function StayCard({ token, booking: b }: { token: string; booking: Booking }) {
     b.status !== "forfeited";
   const canPay = b.status === "offer_sent" && !isExpired(b);
   const balanceDue = b.status === "deposit_paid" && b.balance_cents > 0;
+  const hasPendingChange = Boolean(b.requested_check_in && b.date_change_requested_at);
 
   const [showMessages, setShowMessages] = useState(false);
   const [showChange, setShowChange] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [cancelNote, setCancelNote] = useState<string | null>(null);
 
   async function cancel() {
-    if (!window.confirm(`Cancel your stay at ${b.property_name}?`)) return;
+    if (!window.confirm(`Cancel your stay at ${b.property_name}? This cannot be undone.`)) return;
     setBusy(true);
     setError(null);
     const res = await fetch(`/api/guest/${token}/cancel`, {
@@ -88,11 +90,25 @@ function StayCard({ token, booking: b }: { token: string; booking: Booking }) {
     });
     const data = await res.json().catch(() => ({}));
     setBusy(false);
-    if (!res.ok) {
-      setError(data.error ?? "Could not cancel.");
-      return;
+    if (!res.ok) { setError(data.error ?? "Could not cancel."); return; }
+    const refund = data.refund;
+    if (refund?.cents > 0) {
+      setCancelNote(`Booking cancelled. Refund due per your host's policy: ${formatMoney(refund.cents, b.currency)} (${refund.pct}%). Your host will process this.`);
+    } else {
+      setCancelNote("Booking cancelled. No refund is due per your host's cancellation policy.");
     }
-    window.location.reload();
+  }
+
+  if (cancelNote) {
+    return (
+      <li className="op-item" style={{ flexDirection: "column", gap: 8 }}>
+        <div className="op-main">
+          <div className="op-title">{b.property_name}</div>
+          <div className="op-meta">{formatDate(b.check_in)} → {formatDate(b.check_out)}</div>
+        </div>
+        <div className="bk-ok" style={{ marginTop: 0 }}>{cancelNote}</div>
+      </li>
+    );
   }
 
   return (
@@ -104,6 +120,11 @@ function StayCard({ token, booking: b }: { token: string; booking: Booking }) {
             {formatDate(b.check_in)} → {formatDate(b.check_out)} ·{" "}
             {formatMoney(b.amount_cents, b.currency)}
           </div>
+          {hasPendingChange && (
+            <div className="op-meta" style={{ color: "var(--amber-text)", marginTop: 3 }}>
+              ⏳ Date change requested: {formatDate(b.requested_check_in!)} → {formatDate(b.requested_check_out!)} — awaiting host approval
+            </div>
+          )}
         </div>
         <span className={`op-status ${s.cls}`}>{s.text}</span>
       </div>
@@ -135,14 +156,14 @@ function StayCard({ token, booking: b }: { token: string; booking: Booking }) {
         <button className="op-link" onClick={() => setShowMessages((v) => !v)}>
           {showMessages ? "Hide messages" : "Message host"}
         </button>
-        {isCancellable && (
+        {isCancellable && !hasPendingChange && (
           <button className="op-link" onClick={() => setShowChange((v) => !v)}>
             {showChange ? "Cancel change" : "Change dates"}
           </button>
         )}
         {isCancellable && (
           <button className="op-link op-danger" onClick={cancel} disabled={busy}>
-            Cancel booking
+            {busy ? "Cancelling…" : "Cancel booking"}
           </button>
         )}
       </div>
@@ -171,6 +192,7 @@ function ChangeDates({
   const [checkOut, setCheckOut] = useState(b.check_out);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [sent, setSent] = useState(false);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -183,15 +205,22 @@ function ChangeDates({
     });
     const data = await res.json().catch(() => ({}));
     setBusy(false);
-    if (!res.ok) {
-      setError(data.error ?? "Could not change the dates.");
-      return;
-    }
-    onDone();
+    if (!res.ok) { setError(data.error ?? "Could not request the date change."); return; }
+    setSent(true);
+    setTimeout(onDone, 1800);
   }
+
+  if (sent) return (
+    <div className="bk-ok" style={{ marginTop: 0 }}>
+      Date change request sent — your host will review and respond. Your current dates are held until then.
+    </div>
+  );
 
   return (
     <form onSubmit={submit} className="guest-info" style={{ marginTop: 4 }}>
+      <p style={{ fontSize: 13, color: "var(--ink-soft)", marginBottom: 10 }}>
+        Request new dates — your host will approve or decline. Your current booking is kept until they respond.
+      </p>
       <div className="bk-grid2">
         <div className="bk-field">
           <label htmlFor={`ci-${b.id}`}>New check-in</label>
@@ -202,11 +231,8 @@ function ChangeDates({
           <input id={`co-${b.id}`} type="date" value={checkOut} onChange={(e) => setCheckOut(e.target.value)} required />
         </div>
       </div>
-      <p className="bk-note" style={{ textAlign: "left" }}>
-        Changes are subject to availability and your host&apos;s policy. Your host is notified.
-      </p>
-      <button className="bk-btn" type="submit" disabled={busy}>
-        {busy ? "Requesting…" : "Request new dates"}
+      <button className="bk-btn" type="submit" disabled={busy} style={{ marginTop: 4 }}>
+        {busy ? "Sending…" : "Request new dates"}
       </button>
       {error && <div className="bk-error">{error}</div>}
     </form>

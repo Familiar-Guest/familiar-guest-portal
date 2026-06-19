@@ -323,48 +323,51 @@ export function Portal({
             <ul className="op-list">
               {bookings.map((b) => {
                 const s = statusLabel(b);
+                const hasPendingChange = Boolean(b.requested_check_in && b.date_change_requested_at);
                 return (
-                  <li key={b.id} className="op-item">
-                    <div className="op-main">
-                      <div className="op-title">
-                        {b.property_name}
-                        {b.kind === "rebook" && <span className="op-tag">Rebook</span>}
+                  <li key={b.id} className="op-item" style={{ flexDirection: "column", alignItems: "stretch", gap: 8 }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
+                      <div className="op-main">
+                        <div className="op-title">
+                          {b.property_name}
+                          {b.kind === "rebook" && <span className="op-tag">Rebook</span>}
+                          {hasPendingChange && (
+                            <span className="op-tag" style={{ background: "var(--amber-tint)", color: "var(--amber-text)", border: "1px solid var(--amber-border)" }}>
+                              Date change requested
+                            </span>
+                          )}
+                        </div>
+                        <div className="op-meta">
+                          {b.guest_name} · {formatDate(b.check_in)} → {formatDate(b.check_out)} ·{" "}
+                          {formatMoney(b.amount_cents, b.currency)}
+                        </div>
+                        {hasPendingChange && (
+                          <div className="op-meta" style={{ color: "var(--amber-text)", marginTop: 2 }}>
+                            Requested: {formatDate(b.requested_check_in!)} → {formatDate(b.requested_check_out!)}
+                          </div>
+                        )}
                       </div>
-                      <div className="op-meta">
-                        {b.guest_name} · {formatDate(b.check_in)} → {formatDate(b.check_out)} ·{" "}
-                        {formatMoney(b.amount_cents, b.currency)}
+                      <div className="op-side">
+                        <span className={`op-status ${s.cls}`}>{s.text}</span>
+                        <div className="op-actions">
+                          <a className="op-link" href={`/book/${b.token}`} target="_blank" rel="noreferrer">View</a>
+                          {b.status === "paid" && (
+                            <button className="op-link" onClick={() => setOverlay({ kind: "offer", mode: "rebook", initial: rebookInitial(b) })}>
+                              Rebook
+                            </button>
+                          )}
+                          {b.status !== "cancelled" && (
+                            <button className="op-link op-copy-btn" onClick={() => copyLink(b.token)} title="Copy payment link" aria-label="Copy payment link">
+                              <CopyIcon />{copied === b.token ? "Copied!" : "Copy link"}
+                            </button>
+                          )}
+                          <button className="op-link" onClick={() => openMessages(b)}>Message</button>
+                        </div>
                       </div>
                     </div>
-                    <div className="op-side">
-                      <span className={`op-status ${s.cls}`}>{s.text}</span>
-                      <div className="op-actions">
-                        <a className="op-link" href={`/book/${b.token}`} target="_blank" rel="noreferrer">
-                          View
-                        </a>
-                        {b.status === "paid" && (
-                          <button
-                            className="op-link"
-                            onClick={() =>
-                              setOverlay({
-                                kind: "offer",
-                                mode: "rebook",
-                                initial: rebookInitial(b),
-                              })
-                            }
-                          >
-                            Rebook
-                          </button>
-                        )}
-                        {b.status !== "cancelled" && (
-                          <button className="op-link op-copy-btn" onClick={() => copyLink(b.token)} title="Copy payment link" aria-label="Copy payment link">
-                            <CopyIcon />{copied === b.token ? "Copied!" : "Copy link"}
-                          </button>
-                        )}
-                        <button className="op-link" onClick={() => openMessages(b)}>
-                          Message
-                        </button>
-                      </div>
-                    </div>
+                    {hasPendingChange && (
+                      <DateChangeDecision bookingId={b.id} onDone={load} />
+                    )}
                   </li>
                 );
               })}
@@ -572,6 +575,46 @@ function Shell({
       ) : (
         <div className="op-panel">{children}</div>
       )}
+    </div>
+  );
+}
+
+function DateChangeDecision({ bookingId, onDone }: { bookingId: string; onDone: () => void }) {
+  const [busy, setBusy] = useState<"approve" | "decline" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  async function decide(action: "approve" | "decline") {
+    setBusy(action);
+    setError(null);
+    const res = await fetch(`/api/owner/bookings/${bookingId}/${action}-change`, { method: "POST" });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      setError(data.error ?? `Could not ${action} the change.`);
+    } else {
+      onDone();
+    }
+    setBusy(null);
+  }
+
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", padding: "8px 0 2px" }}>
+      <span style={{ fontSize: 13, color: "var(--ink-soft)" }}>Respond to date change request:</span>
+      <button
+        className="bk-btn"
+        style={{ padding: "6px 16px", fontSize: 13, background: "var(--teal)" }}
+        onClick={() => decide("approve")}
+        disabled={busy !== null}
+      >
+        {busy === "approve" ? "Approving…" : "Approve"}
+      </button>
+      <button
+        className="op-link op-danger"
+        onClick={() => decide("decline")}
+        disabled={busy !== null}
+      >
+        {busy === "decline" ? "Declining…" : "Decline"}
+      </button>
+      {error && <span style={{ fontSize: 13, color: "var(--amber-text)" }}>{error}</span>}
     </div>
   );
 }

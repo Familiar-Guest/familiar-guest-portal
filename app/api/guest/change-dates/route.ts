@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getEmailForToken } from "@/lib/guestPortal";
+import { getOwner } from "@/lib/auth";
 import { postMessage } from "@/lib/messages";
 import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
 import { findInternalConflict } from "@/lib/offers";
@@ -17,40 +17,28 @@ function bad(error: string, status = 400) {
   return NextResponse.json({ error }, { status });
 }
 
-/**
- * Guest-initiated date change on a stay that hasn't started yet. Re-validates
- * availability (internal bookings + the property's Airbnb calendar) and the
- * minimum-night rule, then recomputes the total from the stored nightly rate.
- * The owner is notified to reconcile any payment difference on paid bookings.
- */
-export async function POST(
-  request: NextRequest,
-  { params }: { params: Promise<{ token: string }> }
-) {
-  const { token } = await params;
+/** Authenticated-session version of guest date-change request (mirrors /api/guest/[token]/change-dates).
+ *  Dates are NOT updated immediately — the request is stored for owner approval. */
+export async function POST(request: NextRequest) {
+  const session = await getOwner();
+  if (!session) return bad("Not signed in.", 401);
+
   let body: Record<string, unknown>;
-  try {
-    body = await request.json();
-  } catch {
-    return bad("Invalid request.");
-  }
+  try { body = await request.json(); } catch { return bad("Invalid request."); }
+
   const bookingId = String(body.booking_id ?? "").trim();
   const check_in = String(body.check_in ?? "").trim();
   const check_out = String(body.check_out ?? "").trim();
   if (!bookingId) return bad("Missing booking.");
-  if (!DATE_RE.test(check_in) || !DATE_RE.test(check_out))
-    return bad("Choose valid dates.");
+  if (!DATE_RE.test(check_in) || !DATE_RE.test(check_out)) return bad("Choose valid dates.");
   if (check_out <= check_in) return bad("Check-out must be after check-in.");
 
   const admin = createAdminClient();
-  const email = await getEmailForToken(token, admin);
-  if (!email) return bad("This link is no longer valid.", 404);
-
   const { data } = await admin
     .from("bookings")
     .select("*")
     .eq("id", bookingId)
-    .eq("guest_email", email)
+    .eq("guest_email", session.email)
     .maybeSingle();
   const booking = data as Booking | null;
   if (!booking) return bad("Booking not found.", 404);
@@ -59,21 +47,15 @@ export async function POST(
 
   const today = new Date().toISOString().slice(0, 10);
   if (booking.check_in <= today)
-    return bad("This stay has already started and can't be changed here. Message your host instead.", 409);
+    return bad("This stay has already started. Message your host instead.", 409);
 
-  const oldCheckIn = booking.check_in;
-  const oldCheckOut = booking.check_out;
-  if (oldCheckIn === check_in && oldCheckOut === check_out)
-    return bad("Those are the same dates.");
+  if (booking.check_in === check_in && booking.check_out === check_out)
+    return bad("Those are the same as your current dates.");
 
-  // Minimum-night rule + availability against the property's calendars.
   let property: Property | null = null;
   if (booking.property_id) {
     const { data: prop } = await admin
-      .from("properties")
-      .select("*")
-      .eq("id", booking.property_id)
-      .maybeSingle();
+      .from("properties").select("*").eq("id", booking.property_id).maybeSingle();
     property = prop as Property | null;
   }
   if (property && nights(check_in, check_out) < (property.min_nights ?? 1))
@@ -84,10 +66,7 @@ export async function POST(
     return bad(`New dates must be at least ${policy.min_days_to_book} day(s) before check-in.`);
 
   const clash = await findInternalConflict(admin, {
-    check_in,
-    check_out,
-    excludeId: bookingId,
-    propertyId: booking.property_id,
+    check_in, check_out, excludeId: bookingId, propertyId: booking.property_id,
   });
   if (clash) return bad("Sorry, those dates aren't available.", 409);
 
@@ -97,8 +76,6 @@ export async function POST(
       return bad("Sorry, those dates aren't available.", 409);
   }
 
-  // Store the requested dates — do NOT update check_in/check_out yet.
-  // The owner must approve before dates are confirmed.
   const { error } = await admin
     .from("bookings")
     .update({
@@ -107,13 +84,13 @@ export async function POST(
       date_change_requested_at: new Date().toISOString(),
     })
     .eq("id", bookingId)
-    .eq("guest_email", email);
+    .eq("guest_email", session.email);
   if (error) {
-    console.error("guest change-dates failed", error);
+    console.error("guest change-dates (auth) failed", error);
     return bad("Could not submit the date change. Please try again.", 500);
   }
 
-  const summary = `${formatDate(oldCheckIn)} → ${formatDate(oldCheckOut)} → requested ${formatDate(check_in)} → ${formatDate(check_out)}`;
+  const summary = `${formatDate(booking.check_in)} → ${formatDate(booking.check_out)} → requested ${formatDate(check_in)} → ${formatDate(check_out)}`;
 
   await postMessage(admin, {
     booking,

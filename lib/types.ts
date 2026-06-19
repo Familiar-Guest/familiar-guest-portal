@@ -48,6 +48,10 @@ export interface Booking {
   balance_reminder_sent_at: string | null;
   balance_forfeited_at: string | null;
   balance_stripe_session_id: string | null;
+  // Pending guest date-change request — null means no request is pending.
+  requested_check_in: string | null;
+  requested_check_out: string | null;
+  date_change_requested_at: string | null;
   created_at: string;
 }
 
