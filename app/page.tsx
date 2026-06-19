@@ -616,37 +616,63 @@ export default function Home() {
       <section className="block" id="storefront" style={{ paddingTop: 0 }}>
         <div className="wrap">
           <div className="offer-spot">
+            {/* Faithful mini-render of the actual sf-* storefront design */}
             <div className="offer-visual">
-              <div className="mock">
-                <div className="mock-head">
-                  <span className="mock-dot"></span>
-                  <span className="mock-dot"></span>
-                  <span className="mock-dot"></span>
-                  <span className="mock-title">famguest.com/owner/casa-vista</span>
-                </div>
-                <div className="mock-body">
-                  <span className="mock-pill">
-                    <svg viewBox="0 0 24 24" fill="none">
-                      <path d="M9 12l2 2 4-4" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" />
-                      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="2" />
+              <div className="sf-preview">
+                {/* Teal masthead — matches sf-head exactly */}
+                <div className="sf-preview-head">
+                  <div className="sf-preview-brand">famguest.com/owner/casa-sol</div>
+                  <div className="sf-preview-badge">
+                    <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                      <rect x="3" y="11" width="18" height="11" rx="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" />
                     </svg>
-                    Permanent link
-                  </span>
-                  <div className="store-mini">
-                    <span className="store-mini-thumb" style={{ background: "linear-gradient(135deg,#2f6f57,#5fa37e)" }}></span>
-                    <div className="store-mini-info">
-                      <span className="store-mini-name">Casa Vista</span>
-                      <span className="store-mini-meta">Todos Santos · $240 / night</span>
-                    </div>
+                    Verified owner &middot; Secure payment
                   </div>
-                  <div className="store-mini">
-                    <span className="store-mini-thumb" style={{ background: "linear-gradient(135deg,#5fa37e,#cdb893)" }}></span>
-                    <div className="store-mini-info">
-                      <span className="store-mini-name">Casa Luna</span>
-                      <span className="store-mini-meta">La Paz · $180 / night</span>
+                  <div className="sf-preview-title">Casa Sol Rentals</div>
+                  <div className="sf-preview-sub">Book directly — no platform fees, payment held in escrow.</div>
+                </div>
+
+                {/* Property grid — matches sf-grid / sf-card exactly */}
+                <div className="sf-preview-body">
+                  <div className="sf-preview-count">2 properties available</div>
+                  <div className="sf-preview-grid">
+
+                    <div className="sf-preview-card">
+                      <div className="sf-preview-photo" style={{ background: "linear-gradient(135deg,#1a6a4a 0%,#5fa37e 60%,#a0c890 100%)" }}>
+                        <span className="sf-preview-pill">Book direct</span>
+                      </div>
+                      <div className="sf-preview-info">
+                        <div className="sf-preview-loc">Todos Santos, BCS</div>
+                        <div className="sf-preview-name">Villa Azul</div>
+                        <div className="sf-preview-desc">Hilltop retreat with panoramic ocean views, private pool.</div>
+                        <div className="sf-preview-footer">
+                          <span><strong>$280</strong><span className="sf-preview-per">/night</span></span>
+                          <span className="sf-preview-cta">View &amp; book →</span>
+                        </div>
+                      </div>
                     </div>
+
+                    <div className="sf-preview-card">
+                      <div className="sf-preview-photo" style={{ background: "linear-gradient(135deg,#2d5a8e 0%,#5b8db0 55%,#a8c4d8 100%)" }}>
+                        <span className="sf-preview-pill">Book direct</span>
+                      </div>
+                      <div className="sf-preview-info">
+                        <div className="sf-preview-loc">La Paz, BCS</div>
+                        <div className="sf-preview-name">Casa Palmas</div>
+                        <div className="sf-preview-desc">Steps from the malecón, sleeps 6, rooftop terrace.</div>
+                        <div className="sf-preview-footer">
+                          <span><strong>$195</strong><span className="sf-preview-per">/night</span></span>
+                          <span className="sf-preview-cta">View &amp; book →</span>
+                        </div>
+                      </div>
+                    </div>
+
                   </div>
-                  <div className="mock-cta">Browse &amp; book</div>
+                </div>
+
+                {/* Footer strip — matches sf-foot */}
+                <div className="sf-preview-foot">
+                  Powered by <strong>Familiar Guest</strong>
                 </div>
               </div>
             </div>
