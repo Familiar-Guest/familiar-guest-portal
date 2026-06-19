@@ -88,7 +88,14 @@ export function SettingsTab({ onHandleChange, onPublicNameChange }: { onHandleCh
         {handle && (
           <div className="op-share" style={{ marginBottom: 18 }}>
             <span>Your listings page:</span>
-            <code>famguest.com/owner/{handle}</code>
+            <a
+              className="op-url"
+              href={`/owner/${handle}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              famguest.com/owner/{handle}
+            </a>
             <button
               type="button"
               className="op-link op-copy-btn"

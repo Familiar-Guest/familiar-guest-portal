@@ -433,7 +433,8 @@ input[type="password"]::-webkit-textfield-decoration-container { display: none }
 .ph-publish input{margin-top:2px}
 /* share-url banner */
 .op-share{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:18px;font-size:14px}
-.op-share code{font-family:var(--body);font-weight:600;color:var(--forest)}
+.op-share .op-url{font-family:var(--body);font-weight:600;color:var(--forest);text-decoration:underline;text-underline-offset:3px;text-decoration-color:var(--seaglass)}
+.op-share .op-url:hover{text-decoration-color:var(--forest)}
 .op-subhead{font-family:var(--display);font-size:16px;color:var(--ink);margin:0 0 10px}
 
 /* ── Public storefront ──────────────────────────────────────────── */

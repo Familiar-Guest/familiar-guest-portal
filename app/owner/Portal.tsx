@@ -244,14 +244,13 @@ export function Portal({
           {shareDisplay && (
             <div className="op-share">
               <span>Your listings page:</span>
-              <code>{shareDisplay}</code>
+              <a className="op-url" href={`/owner/${handle}`} target="_blank" rel="noreferrer">
+                {shareDisplay}
+              </a>
               <button className="op-link op-copy-btn" onClick={copyShare} title="Copy link" aria-label="Copy listings page link">
                 <CopyIcon />
                 {shareCopied ? "Copied!" : "Copy"}
               </button>
-              <a className="op-link" href={`/owner/${handle}`} target="_blank" rel="noreferrer">
-                Preview
-              </a>
             </div>
           )}
           {loading && <p className="op-empty">Loading…</p>}
