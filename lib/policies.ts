@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { addDays, daysUntil } from "./format";
+import type { Booking } from "./types";
 
 /** Owner-global rental policies. Mirrors the owner_policies table. */
 export interface OwnerPolicy {
@@ -61,6 +62,29 @@ export function parsePolicyInput(
   if (value.refund_50_days > value.refund_100_days)
     return { error: "The 50% refund window can't be longer than the 100% window." };
   return { value };
+}
+
+/**
+ * Merge per-booking policy overrides with the owner's global policy.
+ * Any field set on the booking takes precedence; null falls back to the owner default.
+ * `min_days_to_book` is not per-booking (it governs public requests, not owner invites).
+ */
+export function effectivePolicy(booking: Booking, ownerPolicy: OwnerPolicy): OwnerPolicy {
+  return {
+    min_days_to_book: ownerPolicy.min_days_to_book,
+    checkin_email_days:
+      booking.policy_checkin_email_days ?? ownerPolicy.checkin_email_days,
+    deposit_required_days:
+      booking.policy_deposit_required_days ?? ownerPolicy.deposit_required_days,
+    full_payment_due_days:
+      booking.policy_full_payment_due_days ?? ownerPolicy.full_payment_due_days,
+    deposit_pct:
+      booking.policy_deposit_pct ?? ownerPolicy.deposit_pct,
+    refund_100_days:
+      booking.policy_refund_100_days ?? ownerPolicy.refund_100_days,
+    refund_50_days:
+      booking.policy_refund_50_days ?? ownerPolicy.refund_50_days,
+  };
 }
 
 export interface DepositPlan {

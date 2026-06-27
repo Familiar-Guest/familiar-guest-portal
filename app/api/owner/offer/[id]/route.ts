@@ -85,6 +85,19 @@ export async function PATCH(
   const amount_cents =
     nightly_rate_cents * nights(check_in, check_out) + cleaning_fee_cents;
 
+  function parsePolicy(key: string): number | null {
+    const v = Number(body[key]);
+    return Number.isFinite(v) && v >= 0 ? Math.round(v) : null;
+  }
+  const policyFields = {
+    policy_checkin_email_days:    parsePolicy("policy_checkin_email_days"),
+    policy_deposit_required_days: parsePolicy("policy_deposit_required_days"),
+    policy_full_payment_due_days: parsePolicy("policy_full_payment_due_days"),
+    policy_refund_100_days:       parsePolicy("policy_refund_100_days"),
+    policy_refund_50_days:        parsePolicy("policy_refund_50_days"),
+    policy_deposit_pct:           parsePolicy("policy_deposit_pct"),
+  };
+
   if (!force) {
     const clash = await findInternalConflict(supabase, {
       check_in,
@@ -137,6 +150,7 @@ export async function PATCH(
     nightly_rate_cents,
     cleaning_fee_cents,
     checkin_instructions,
+    ...policyFields,
   };
   if (!isPaid) {
     updates.status = "offer_sent";

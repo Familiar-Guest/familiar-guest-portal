@@ -4,7 +4,7 @@ import { getEmailForToken } from "@/lib/guestPortal";
 import { postMessage } from "@/lib/messages";
 import { sendEmail, siteUrl } from "@/lib/email";
 import { formatDate, formatMoney } from "@/lib/format";
-import { getOwnerPolicies, computeRefund } from "@/lib/policies";
+import { getOwnerPolicies, computeRefund, effectivePolicy } from "@/lib/policies";
 import type { Booking } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -63,8 +63,9 @@ export async function POST(
     return bad("Could not cancel the booking. Please try again.", 500);
   }
 
-  // Refund owed per the owner's policy (computed, not auto-issued).
-  const policy = await getOwnerPolicies(admin, booking.owner_id);
+  // Refund owed per the booking's effective policy (per-booking override or global).
+  const ownerPolicy = await getOwnerPolicies(admin, booking.owner_id);
+  const policy = effectivePolicy(booking, ownerPolicy);
   const refund = computeRefund(policy, booking);
   const refundLine =
     refund.cents > 0

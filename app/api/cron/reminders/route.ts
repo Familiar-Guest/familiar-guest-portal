@@ -12,6 +12,7 @@ import { daysUntil, formatDate, formatMoney } from "@/lib/format";
 import {
   getOwnerPolicies,
   forfeitDeadline,
+  effectivePolicy,
   DEFAULT_POLICY,
   type OwnerPolicy,
 } from "@/lib/policies";
@@ -150,7 +151,7 @@ export async function GET(request: NextRequest) {
 
   for (const b of bookings) {
     const days = daysUntil(b.check_in);
-    const policy = await policyFor(b.owner_id);
+    const policy = effectivePolicy(b, await policyFor(b.owner_id));
 
     // ── Deposit-paid bookings: balance reminders + forfeiture ───────────────
     if (b.status === "deposit_paid" && b.balance_due_date && b.balance_paid_at === null) {

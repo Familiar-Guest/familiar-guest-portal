@@ -5,7 +5,7 @@ import { getStripe } from "@/lib/stripe";
 import { siteUrl } from "@/lib/email";
 import { formatDate } from "@/lib/format";
 import { isExpired } from "@/lib/offers";
-import { getOwnerPolicies, depositPlanFor } from "@/lib/policies";
+import { getOwnerPolicies, depositPlanFor, effectivePolicy } from "@/lib/policies";
 import type { Booking } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
@@ -87,7 +87,8 @@ export async function POST(request: NextRequest) {
     paymentKind = "balance";
     label = "balance";
   } else {
-    const policy = await getOwnerPolicies(supabase, booking.owner_id);
+    const ownerPolicy = await getOwnerPolicies(supabase, booking.owner_id);
+    const policy = effectivePolicy(booking, ownerPolicy);
     const plan = depositPlanFor(policy, booking.amount_cents, booking.check_in);
     if (plan.plan === "deposit") {
       amountCents = plan.depositCents;

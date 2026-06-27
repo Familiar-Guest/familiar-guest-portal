@@ -25,6 +25,13 @@ export interface OfferInitial {
   nightly_rate?: string;
   cleaning_fee?: string;
   paid?: boolean; // editing an already-paid booking
+  // Per-booking policy overrides
+  policy_checkin_email_days?: string;
+  policy_deposit_required_days?: string;
+  policy_full_payment_due_days?: string;
+  policy_refund_100_days?: string;
+  policy_refund_50_days?: string;
+  policy_deposit_pct?: string;
 }
 
 interface Conflict {
@@ -74,6 +81,13 @@ export function OfferForm({
       initial?.nightly_rate ?? centsToStr(initialProperty?.nightly_rate_cents),
     cleaning_fee:
       initial?.cleaning_fee ?? centsToStr(initialProperty?.cleaning_fee_cents),
+    // Per-booking policy overrides (seeded from global policies on mount)
+    policy_checkin_email_days:    initial?.policy_checkin_email_days    ?? "",
+    policy_deposit_required_days: initial?.policy_deposit_required_days ?? "",
+    policy_full_payment_due_days: initial?.policy_full_payment_due_days ?? "",
+    policy_refund_100_days:       initial?.policy_refund_100_days       ?? "",
+    policy_refund_50_days:        initial?.policy_refund_50_days        ?? "",
+    policy_deposit_pct:           initial?.policy_deposit_pct           ?? "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -95,6 +109,27 @@ export function OfferForm({
       .then((d) => { if (d.busy) setBusyRanges(d.busy); })
       .catch(() => {});
   }, [form.property_id, initial?.id]);
+
+  // Seed policy fields from global policies (only for fields not already set from an existing booking).
+  useEffect(() => {
+    fetch("/api/owner/policies")
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.policy) return;
+        const p = d.policy;
+        setForm((f) => ({
+          ...f,
+          policy_checkin_email_days:    f.policy_checkin_email_days    || String(p.checkin_email_days),
+          policy_deposit_required_days: f.policy_deposit_required_days || String(p.deposit_required_days),
+          policy_full_payment_due_days: f.policy_full_payment_due_days || String(p.full_payment_due_days),
+          policy_refund_100_days:       f.policy_refund_100_days       || String(p.refund_100_days),
+          policy_refund_50_days:        f.policy_refund_50_days        || String(p.refund_50_days),
+          policy_deposit_pct:           f.policy_deposit_pct           || String(p.deposit_pct),
+        }));
+      })
+      .catch(() => {});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // run once on mount
 
   const selectedProperty = properties.find((p) => p.id === form.property_id);
   const currency = (selectedProperty?.currency ?? "usd").toUpperCase();
@@ -367,6 +402,53 @@ export function OfferForm({
             )}
           </div>
         )}
+
+        <div style={{ borderTop: "1px solid var(--line)", paddingTop: 18, marginTop: 18 }}>
+          <p style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)", marginBottom: 4 }}>
+            Booking terms
+          </p>
+          <p className="bk-note" style={{ textAlign: "left", marginBottom: 12 }}>
+            Defaults from your Global Policies — adjust for this offer if needed. All values are days before check-in.
+          </p>
+          <div className="bk-grid2">
+            <div className="bk-field">
+              <label htmlFor="p_checkin_email">Send check-in email</label>
+              <input id="p_checkin_email" type="number" min="0" step="1"
+                value={form.policy_checkin_email_days}
+                onChange={(e) => set("policy_checkin_email_days", e.target.value)} />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="p_deposit_req">Deposit required</label>
+              <input id="p_deposit_req" type="number" min="0" step="1"
+                value={form.policy_deposit_required_days}
+                onChange={(e) => set("policy_deposit_required_days", e.target.value)} />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="p_full_pay">Full payment due</label>
+              <input id="p_full_pay" type="number" min="0" step="1"
+                value={form.policy_full_payment_due_days}
+                onChange={(e) => set("policy_full_payment_due_days", e.target.value)} />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="p_deposit_pct">Deposit %</label>
+              <input id="p_deposit_pct" type="number" min="0" max="100" step="1"
+                value={form.policy_deposit_pct}
+                onChange={(e) => set("policy_deposit_pct", e.target.value)} />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="p_ref100">100% refund window</label>
+              <input id="p_ref100" type="number" min="0" step="1"
+                value={form.policy_refund_100_days}
+                onChange={(e) => set("policy_refund_100_days", e.target.value)} />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="p_ref50">50% refund window</label>
+              <input id="p_ref50" type="number" min="0" step="1"
+                value={form.policy_refund_50_days}
+                onChange={(e) => set("policy_refund_50_days", e.target.value)} />
+            </div>
+          </div>
+        </div>
 
         {conflict && (
           <div className="bk-error">

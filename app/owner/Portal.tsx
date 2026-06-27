@@ -556,6 +556,10 @@ export function Portal({
   );
 }
 
+function strOrUndef(v: number | null | undefined): string | undefined {
+  return v != null ? String(v) : undefined;
+}
+
 function editInitial(b: Booking): OfferInitial {
   return {
     id: b.id,
@@ -568,6 +572,12 @@ function editInitial(b: Booking): OfferInitial {
     nightly_rate: b.nightly_rate_cents != null ? centsToAmount(b.nightly_rate_cents) : "",
     cleaning_fee: b.cleaning_fee_cents ? centsToAmount(b.cleaning_fee_cents) : "",
     paid: b.status === "paid",
+    policy_checkin_email_days:    strOrUndef(b.policy_checkin_email_days),
+    policy_deposit_required_days: strOrUndef(b.policy_deposit_required_days),
+    policy_full_payment_due_days: strOrUndef(b.policy_full_payment_due_days),
+    policy_refund_100_days:       strOrUndef(b.policy_refund_100_days),
+    policy_refund_50_days:        strOrUndef(b.policy_refund_50_days),
+    policy_deposit_pct:           strOrUndef(b.policy_deposit_pct),
   };
 }
 

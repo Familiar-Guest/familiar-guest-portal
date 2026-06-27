@@ -56,6 +56,13 @@ export interface Booking {
   owner_unpaid_1day_sent_at: string | null;
   owner_unpaid_checkin_sent_at: string | null;
   owner_unpaid_after_sent_at: string | null;
+  // Per-booking policy overrides (null = use owner's global policy).
+  policy_checkin_email_days: number | null;
+  policy_deposit_required_days: number | null;
+  policy_full_payment_due_days: number | null;
+  policy_refund_100_days: number | null;
+  policy_refund_50_days: number | null;
+  policy_deposit_pct: number | null;
   created_at: string;
 }
 
