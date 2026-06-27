@@ -1,12 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Property } from "@/lib/types";
 import { formatMoney, nights } from "@/lib/format";
+import { DateRangePicker } from "@/app/components/DateRangePicker";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
-/** Cents → a plain editable amount string ("250.00" → "250"). Empty when unset/zero. */
+/** Cents → a plain editable amount string. Empty when unset/zero. */
 function centsToStr(cents: number | null | undefined): string {
   return cents != null && cents > 0 ? String(cents / 100) : "";
 }
@@ -39,6 +40,8 @@ interface Result {
   booking_url: string;
   email_sent: boolean;
 }
+
+interface BusyRange { start: string; end: string }
 
 const TITLES: Record<FormMode, string> = {
   create: "Send a stay offer",
@@ -76,11 +79,22 @@ export function OfferForm({
   const [error, setError] = useState<string | null>(null);
   const [conflict, setConflict] = useState<Conflict | null>(null);
   const [result, setResult] = useState<Result | null>(null);
+  const [busyRanges, setBusyRanges] = useState<BusyRange[]>([]);
   // Once the owner edits a pricing field, stop overwriting it when the selected
   // property changes (the property's defaults seed the field, then back off).
   const [pricingTouched, setPricingTouched] = useState(
     Boolean(initial?.nightly_rate || initial?.cleaning_fee)
   );
+
+  // Fetch busy ranges for the selected property so the calendar can gray them out.
+  useEffect(() => {
+    if (!form.property_id) return;
+    const exclude = initial?.id ? `?exclude=${initial.id}` : "";
+    fetch(`/api/owner/property/${form.property_id}/availability${exclude}`)
+      .then((r) => r.json())
+      .then((d) => { if (d.busy) setBusyRanges(d.busy); })
+      .catch(() => {});
+  }, [form.property_id, initial?.id]);
 
   const selectedProperty = properties.find((p) => p.id === form.property_id);
   const currency = (selectedProperty?.currency ?? "usd").toUpperCase();
@@ -120,6 +134,7 @@ export function OfferForm({
   const cleaningCents = Math.round((Number(form.cleaning_fee) || 0) * 100);
   const totalCents =
     stayNights > 0 ? nightlyCents * stayNights + cleaningCents : 0;
+  const isFreeStay = stayNights > 0 && totalCents === 0;
 
   async function submit(force: boolean) {
     setLoading(true);
@@ -131,7 +146,7 @@ export function OfferForm({
     const method = isEdit ? "PATCH" : "POST";
     const payload = {
       ...form,
-      nightly_rate: Number(form.nightly_rate),
+      nightly_rate: Number(form.nightly_rate) || 0,
       cleaning_fee: Number(form.cleaning_fee) || 0,
       kind: mode === "rebook" ? "rebook" : "offer",
       force,
@@ -159,6 +174,7 @@ export function OfferForm({
   }
 
   if (result) {
+    const isFreeOffer = result.booking_url && !result.booking_url.includes("pay");
     return (
       <div className="bk-card">
         <span className="bk-badge">
@@ -174,12 +190,12 @@ export function OfferForm({
               ? `We emailed ${form.guest_email} the updated booking details.`
               : `The booking was updated, but the change email could not be sent — let your guest know directly.`
             : result.email_sent
-            ? `An email with the payment link was sent to ${form.guest_email}.`
-            : `The offer was saved, but the email could not be sent. Share the payment link below directly.`}
+            ? `An invitation email was sent to ${form.guest_email}.`
+            : `The offer was saved, but the email could not be sent. Share the link below directly.`}
         </p>
         {!isPaidEdit && (
           <div className="bk-field">
-            <label>Payment link</label>
+            <label>Offer link</label>
             <div className="bk-ok">{result.booking_url}</div>
           </div>
         )}
@@ -201,6 +217,7 @@ export function OfferForm({
     : "";
 
   const noProperties = properties.length === 0;
+  const today = new Date().toISOString().slice(0, 10);
 
   return (
     <div className="bk-card">
@@ -212,7 +229,7 @@ export function OfferForm({
           ? "Pick the new dates and price — guest details are pre-filled. They'll get an email with a link to pay."
           : mode === "edit"
           ? "Update the details. Saving re-sends the offer email and resets the 7-day hold."
-          : "Set the dates and price for your guest. They'll get an email with a link to pay — no account needed."}
+          : "Set the dates and price for your guest. They'll get an email with a link to confirm — no account needed."}
         {mode === "create" &&
           " As soon as you send this, we'll block these dates on this property so no one else can book them."}
       </p>
@@ -269,39 +286,33 @@ export function OfferForm({
             />
           </div>
         </div>
-        <div className="bk-grid2">
-          <div className="bk-field">
-            <label htmlFor="check_in">Check-in</label>
-            <input
-              id="check_in"
-              type="date"
-              value={form.check_in}
-              onChange={(e) => set("check_in", e.target.value)}
-              required
-            />
-          </div>
-          <div className="bk-field">
-            <label htmlFor="check_out">Check-out</label>
-            <input
-              id="check_out"
-              type="date"
-              value={form.check_out}
-              onChange={(e) => set("check_out", e.target.value)}
-              required
-            />
-          </div>
+
+        <div className="bk-field">
+          <label>Dates</label>
+          <DateRangePicker
+            checkIn={form.check_in}
+            checkOut={form.check_out}
+            onCheckIn={(d) => set("check_in", d)}
+            onCheckOut={(d) => set("check_out", d)}
+            busy={busyRanges}
+            minDate={today}
+          />
+          {/* Hidden required inputs so the form validates dates are set */}
+          <input type="hidden" value={form.check_in} required />
+          <input type="hidden" value={form.check_out} required />
         </div>
+
         <div className="bk-grid2">
           <div className="bk-field">
             <label htmlFor="nightly_rate">Nightly rate ({currency})</label>
             <input
               id="nightly_rate"
               type="number"
-              min="1"
+              min="0"
               step="0.01"
               value={form.nightly_rate}
               onChange={(e) => setPricing("nightly_rate", e.target.value)}
-              required
+              placeholder="0"
             />
           </div>
           <div className="bk-field">
@@ -320,31 +331,43 @@ export function OfferForm({
           </div>
         </div>
 
-        {stayNights > 0 && nightlyCents > 0 && (
+        {stayNights > 0 && (
           <div className="bk-summary" style={{ margin: "0 0 18px" }}>
-            <div className="bk-row">
-              <span className="bk-label">
-                {formatMoney(nightlyCents, currency)} × {stayNights}{" "}
-                {stayNights === 1 ? "night" : "nights"}
-              </span>
-              <span className="bk-val">
-                {formatMoney(nightlyCents * stayNights, currency)}
-              </span>
-            </div>
-            {cleaningCents > 0 && (
+            {isFreeStay ? (
               <div className="bk-row">
-                <span className="bk-label">Cleaning fee</span>
-                <span className="bk-val">
-                  {formatMoney(cleaningCents, currency)}
-                </span>
+                <span className="bk-label">Complimentary stay</span>
+                <span className="bk-val" style={{ color: "var(--teal)" }}>No charge</span>
               </div>
+            ) : (
+              <>
+                {nightlyCents > 0 && (
+                  <div className="bk-row">
+                    <span className="bk-label">
+                      {formatMoney(nightlyCents, currency)} × {stayNights}{" "}
+                      {stayNights === 1 ? "night" : "nights"}
+                    </span>
+                    <span className="bk-val">
+                      {formatMoney(nightlyCents * stayNights, currency)}
+                    </span>
+                  </div>
+                )}
+                {cleaningCents > 0 && (
+                  <div className="bk-row">
+                    <span className="bk-label">Cleaning fee</span>
+                    <span className="bk-val">
+                      {formatMoney(cleaningCents, currency)}
+                    </span>
+                  </div>
+                )}
+                <div className="bk-row bk-total">
+                  <span className="bk-label">Guest pays</span>
+                  <span className="bk-val">{formatMoney(totalCents, currency)}</span>
+                </div>
+              </>
             )}
-            <div className="bk-row bk-total">
-              <span className="bk-label">Guest pays</span>
-              <span className="bk-val">{formatMoney(totalCents, currency)}</span>
-            </div>
           </div>
         )}
+
         {conflict && (
           <div className="bk-error">
             Heads up — {conflictMsg} You can send the offer anyway.
@@ -361,7 +384,11 @@ export function OfferForm({
         )}
 
         {!conflict && (
-          <button className="bk-btn" type="submit" disabled={loading || noProperties}>
+          <button
+            className="bk-btn"
+            type="submit"
+            disabled={loading || noProperties || !form.check_in || !form.check_out}
+          >
             {loading
               ? "Saving…"
               : isPaidEdit

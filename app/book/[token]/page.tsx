@@ -6,6 +6,7 @@ import { formatDate, formatMoney, nights } from "@/lib/format";
 import { isExpired, expiryDate } from "@/lib/offers";
 import type { Booking } from "@/lib/types";
 import { PayButton } from "./PayButton";
+import { AcceptButton } from "./AcceptButton";
 import { BrandMark } from "@/app/BrandMark";
 
 export const metadata: Metadata = {
@@ -41,7 +42,9 @@ export default async function BookingPage({
   const isForfeited = booking.status === "forfeited";
   const isCancelled = booking.status === "cancelled";
   const expired = booking.status === "expired" || isExpired(booking);
-  const canPay = !isPaid && !isCancelled && !expired && !isForfeited;
+  const isFree = booking.amount_cents === 0;
+  const canPay = !isFree && !isPaid && !isCancelled && !expired && !isForfeited;
+  const canAccept = isFree && !isPaid && !isCancelled && !expired && !isForfeited;
 
   return (
     <div className="bk-wrap">
@@ -71,6 +74,8 @@ export default async function BookingPage({
             ? "This booking is no longer available. Please contact your host."
             : expired
             ? `Sorry ${booking.guest_name}, this offer has expired. Please contact your host to request new dates.`
+            : isFree
+            ? `Hi ${booking.guest_name}, your host is offering you a complimentary stay — no payment required. Accept below to confirm your dates.`
             : `Hi ${booking.guest_name}, your host has set aside these dates for you. Review the details and complete your payment to lock it in.`}
         </p>
 
@@ -171,6 +176,38 @@ export default async function BookingPage({
               href={`/guest/signup?next=/book/${booking.token}`}
             >
               Create account &amp; continue
+            </a>
+            <a
+              className="op-link"
+              style={{ display: "block", textAlign: "center" }}
+              href={`/guest/login?next=/book/${booking.token}`}
+            >
+              I already have an account
+            </a>
+          </div>
+        )}
+
+        {canAccept && session && (
+          <>
+            <AcceptButton token={booking.token} />
+            <p className="bk-note">
+              This is a complimentary stay — no payment is collected.
+            </p>
+          </>
+        )}
+
+        {canAccept && !session && (
+          <div className="bk-authgate">
+            <p className="bk-lead" style={{ marginBottom: 14 }}>
+              Create a free guest account (or sign in) to accept this offer.
+              It keeps all your stays in one place.
+            </p>
+            <a
+              className="bk-btn"
+              style={{ display: "block", textAlign: "center", marginBottom: 10 }}
+              href={`/guest/signup?next=/book/${booking.token}`}
+            >
+              Create account &amp; accept
             </a>
             <a
               className="op-link"

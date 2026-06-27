@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import { formatMoney, nights as nightsBetween } from "@/lib/format";
 import type { CleaningFeeType } from "@/lib/types";
+import { DateRangePicker } from "@/app/components/DateRangePicker";
 
 interface Busy {
   start: string;
@@ -118,16 +119,14 @@ export function ListingBooking({
 
   return (
     <div className="listing-book">
-      <div className="bk-grid2">
-        <div className="bk-field">
-          <label htmlFor="ci">Check-in</label>
-          <input id="ci" type="date" min={todayIso()} value={checkIn} onChange={(e) => setCheckIn(e.target.value)} />
-        </div>
-        <div className="bk-field">
-          <label htmlFor="co">Check-out</label>
-          <input id="co" type="date" min={checkIn || todayIso()} value={checkOut} onChange={(e) => setCheckOut(e.target.value)} />
-        </div>
-      </div>
+      <DateRangePicker
+        checkIn={checkIn}
+        checkOut={checkOut}
+        onCheckIn={setCheckIn}
+        onCheckOut={setCheckOut}
+        busy={busy}
+        minDate={todayIso()}
+      />
 
       {calc && "error" in calc && <p className="listing-hint">{calc.error}</p>}
 
@@ -158,20 +157,6 @@ export function ListingBooking({
         the dates, then you pay securely — nothing is charged now.
       </p>
       {error && <div className="bk-error">{error}</div>}
-
-      {busy.length > 0 && (
-        <details className="listing-busy">
-          <summary>Unavailable dates</summary>
-          <ul>
-            {busy
-              .filter((b) => b.end >= todayIso())
-              .slice(0, 30)
-              .map((b, i) => (
-                <li key={i}>{b.start} → {b.end}</li>
-              ))}
-          </ul>
-        </details>
-      )}
     </div>
   );
 }

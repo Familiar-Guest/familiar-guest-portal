@@ -80,8 +80,11 @@ function summaryTable(b: Booking): string {
   const n = nights(b.check_in, b.check_out);
   const row = (label: string, value: string) =>
     `<tr><td style="padding:7px 0;color:#8a7e72;font-size:14px;">${label}</td><td style="padding:7px 0;text-align:right;font-size:14px;color:${INK};font-weight:600;">${value}</td></tr>`;
+  const isFree = b.amount_cents === 0;
   const priceRows =
-    b.nightly_rate_cents != null
+    isFree
+      ? ""
+      : b.nightly_rate_cents != null
       ? row(
           `${formatMoney(b.nightly_rate_cents, b.currency)} × ${n} ${
             n === 1 ? "night" : "nights"
@@ -92,13 +95,16 @@ function summaryTable(b: Booking): string {
           ? row("Cleaning fee", formatMoney(b.cleaning_fee_cents, b.currency))
           : "")
       : "";
+  const totalRow = isFree
+    ? row("Total", `<span style="color:#14635A;font-weight:700;">Complimentary — no charge</span>`)
+    : row("Total", formatMoney(b.amount_cents, b.currency));
   return `<table width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0;border-top:1px solid ${LINE};border-bottom:1px solid ${LINE};">
     ${row("Property", b.property_name)}
     ${row("Check-in", formatDate(b.check_in))}
     ${row("Check-out", formatDate(b.check_out))}
     ${row("Nights", String(n))}
     ${priceRows}
-    ${row("Total", formatMoney(b.amount_cents, b.currency))}
+    ${totalRow}
   </table>`;
 }
 
@@ -135,11 +141,13 @@ function contactSection(contact?: OwnerContact | null): string {
   return `<div style="margin:18px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:14px;line-height:1.55;">${contactBlock(contact!)}</div>`;
 }
 
-/** 1. Offer — sent when the owner creates the booking. Contains the pay link.
+/** 1. Offer — sent when the owner creates the booking. Contains the pay/accept link.
  *  Handles both a fresh offer and a one-click rebook (same pipeline).
- *  Pass `propertyUrl` to hyperlink the property name so guests can view photos. */
+ *  Pass `propertyUrl` to hyperlink the property name so guests can view photos.
+ *  $0 (complimentary) bookings get an "Accept your invitation" CTA instead of payment. */
 export function buildOfferEmail(b: Booking, contact?: OwnerContact | null, propertyUrl?: string | null): { subject: string; html: string } {
   const isRebook = b.kind === "rebook";
+  const isFree = b.amount_cents === 0;
   const propNameHtml = propertyUrl
     ? `<a href="${propertyUrl}" style="color:${FOREST};text-decoration:underline;">${b.property_name}</a>`
     : b.property_name;
@@ -148,30 +156,45 @@ export function buildOfferEmail(b: Booking, contact?: OwnerContact | null, prope
         const rawExpiry = expiryDate(b.expires_at);
         // Never tell the guest dates are held past the check-in day itself.
         const displayExpiry = rawExpiry > b.check_in ? b.check_in : rawExpiry;
-        const msg = rawExpiry > b.check_in
+        const msg = isFree
+          ? `Please accept by <strong>${formatDate(displayExpiry)}</strong> to confirm your dates.`
+          : rawExpiry > b.check_in
           ? `Payment is due by your check-in date, <strong>${formatDate(displayExpiry)}</strong>.`
           : `These dates are held for you until <strong>${formatDate(displayExpiry)}</strong>. After that they may be released.`;
         return p(`<span style="font-size:13px;color:#8a7e72;">${msg}</span>`);
       })()
     : "";
-  const lead = isRebook
+
+  const lead = isFree
+    ? `Hi ${b.guest_name}, your host is offering you a complimentary stay at ${propNameHtml}. Review the details below and accept to confirm your dates — no payment needed.`
+    : isRebook
     ? `Hi ${b.guest_name}, great to have you back! Your host has lined up these dates at ${propNameHtml}. Review the details below and complete your payment to lock it in.`
     : `Hi ${b.guest_name}, your host has set aside these dates for you. Review the details below and complete your payment to lock it in.`;
+
+  const ctaLabel = isFree ? "Accept your invitation" : "Review & complete payment";
+  const footerNote = isFree
+    ? `<span style="font-size:13px;color:#8a7e72;">No payment is required. You'll need a free guest account to accept.</span>`
+    : `<span style="font-size:13px;color:#8a7e72;">Your payment is processed securely. You don't need an account.</span>`;
+
   const contactHtml = contactSection(contact);
   const inner =
     heading(
-      isRebook
+      isFree
+        ? `You're invited to stay at ${propNameHtml}`
+        : isRebook
         ? `Ready to book ${propNameHtml} again?`
         : `You're invited to book ${propNameHtml}`
     ) +
     p(lead) +
     contactHtml +
     summaryTable(b) +
-    button(bookingUrl(b.token), "Review & complete payment") +
+    button(bookingUrl(b.token), ctaLabel) +
     expiryLine +
-    p(`<span style="font-size:13px;color:#8a7e72;">Your payment is processed securely. You don't need an account.</span>`);
+    p(footerNote);
   return {
-    subject: isRebook
+    subject: isFree
+      ? `You're invited to stay at ${b.property_name}`
+      : isRebook
       ? `Your dates at ${b.property_name} are ready`
       : `Complete your booking for ${b.property_name}`,
     html: layout(inner),

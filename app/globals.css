@@ -332,6 +332,25 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 .bk-ok{background:var(--seaglass-tint);border:1px solid var(--seaglass-tint-border);border-radius:var(--radius-sm);padding:12px 14px;font-size:14px;color:var(--teal);margin-top:14px;word-break:break-all}
 @media(max-width:480px){.bk-grid2{grid-template-columns:1fr}}
 
+/* ── DateRangePicker ────────────────────────────────────────────── */
+.drp{width:100%;margin-bottom:6px}
+.drp-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.drp-month{font-size:14px;font-weight:600;color:var(--ink)}
+.drp-arrow{background:none;border:1px solid var(--line);border-radius:var(--radius-sm);width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--forest);cursor:pointer;line-height:1}
+.drp-arrow:hover:not(:disabled){background:var(--seaglass-tint)}
+.drp-arrow:disabled{opacity:.3;cursor:default}
+.drp-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.drp-dow{text-align:center;font-size:11px;font-weight:600;color:var(--ink-soft);padding:4px 0}
+.drp-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border:none;background:none;font-size:13px;border-radius:var(--radius-sm);cursor:pointer;color:var(--ink);font-family:var(--body);transition:background .1s}
+.drp-day:hover:not(:disabled){background:var(--seaglass-tint);color:var(--teal)}
+.drp-day.drp-sel{background:var(--forest)!important;color:#fff!important;font-weight:700}
+.drp-day.drp-range{background:rgba(15,77,69,.10);color:var(--ink)}
+.drp-day.drp-busy{background:#f0ede8;color:#b5afa6;text-decoration:line-through;cursor:not-allowed}
+.drp-day.drp-past{color:#c8c2ba;cursor:not-allowed}
+.drp-day.drp-conflict{color:#c8c2ba;cursor:not-allowed}
+.drp-day:disabled{pointer-events:none}
+.drp-hint{font-size:12px;color:var(--ink-soft);text-align:center;margin-top:8px;min-height:16px}
+
 /* ── Owner portal ───────────────────────────────────────────────── */
 .op-wrap{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-md);max-width:760px;width:100%;padding:28px}
 .op-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:18px}

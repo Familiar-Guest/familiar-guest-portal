@@ -18,13 +18,16 @@ export interface BusyRange {
 export async function computeBusyRanges(
   supabase: SupabaseClient,
   propertyId: string,
-  airbnbIcalUrl: string | null
+  airbnbIcalUrl: string | null,
+  excludeBookingId?: string
 ): Promise<BusyRange[]> {
-  const { data } = await supabase
+  let q = supabase
     .from("bookings")
     .select("*")
     .eq("property_id", propertyId)
     .in("status", ["paid", "offer_sent"]);
+  if (excludeBookingId) q = q.neq("id", excludeBookingId);
+  const { data } = await q;
   const bookings = (data ?? []) as Booking[];
 
   const ranges: BusyRange[] = [];

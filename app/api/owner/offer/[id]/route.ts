@@ -72,8 +72,8 @@ export async function PATCH(
   if (check_out <= check_in) return bad("Check-out must be after check-in.");
 
   const nightly_rate = Number(body.nightly_rate);
-  if (!Number.isFinite(nightly_rate) || nightly_rate <= 0)
-    return bad("Enter a nightly rate greater than zero.");
+  if (!Number.isFinite(nightly_rate) || nightly_rate < 0)
+    return bad("Enter a valid nightly rate (0 for a complimentary stay).");
   const nightly_rate_cents = Math.round(nightly_rate * 100);
 
   const cleaning_raw = Number(body.cleaning_fee);
