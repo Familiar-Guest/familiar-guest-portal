@@ -8,6 +8,7 @@ import { getOwnerContact } from "@/lib/owner";
 import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { findInternalConflict } from "@/lib/offers";
 import { getOwnerPolicies, effectivePolicy } from "@/lib/policies";
+import { CURRENCIES } from "@/lib/properties";
 import { nights } from "@/lib/format";
 import type { Booking, OfferKind, Property } from "@/lib/types";
 
@@ -69,6 +70,12 @@ export async function POST(request: NextRequest) {
       ? Math.round(cleaning_raw * 100)
       : property.cleaning_fee_cents;
 
+  // Currency: defaults to the property's, but the owner can override per-offer.
+  const currency = String(body.currency ?? "").trim().toLowerCase();
+  if (currency && !CURRENCIES.includes(currency))
+    return bad("Unsupported currency.");
+  const offerCurrency = currency || property.currency;
+
   const amount_cents =
     nightly_rate_cents * nights(check_in, check_out) + cleaning_fee_cents;
 
@@ -118,7 +125,7 @@ export async function POST(request: NextRequest) {
       property_name: property.name,
       check_in,
       check_out,
-      currency: property.currency,
+      currency: offerCurrency,
       amount_cents,
       nightly_rate_cents,
       cleaning_fee_cents,

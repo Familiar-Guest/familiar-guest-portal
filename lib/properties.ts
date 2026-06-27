@@ -1,4 +1,4 @@
-const CURRENCIES = ["usd", "cad", "mxn", "eur"];
+export const CURRENCIES = ["usd", "cad", "mxn", "eur"];
 const CLEANING_FEE_TYPES = ["standard", "daily", "alt1", "alt2"];
 
 export type PropertyInput = {

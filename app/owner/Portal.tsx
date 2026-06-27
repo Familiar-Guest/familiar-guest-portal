@@ -596,6 +596,7 @@ function editInitial(b: Booking): OfferInitial {
     check_out: b.check_out,
     nightly_rate: b.nightly_rate_cents != null ? centsToAmount(b.nightly_rate_cents) : "",
     cleaning_fee: b.cleaning_fee_cents ? centsToAmount(b.cleaning_fee_cents) : "",
+    currency: b.currency,
     paid: b.status === "paid",
     policy_checkin_email_days:    strOrUndef(b.policy_checkin_email_days),
     policy_deposit_required_days: strOrUndef(b.policy_deposit_required_days),
@@ -613,6 +614,7 @@ function rebookInitial(b: Booking): OfferInitial {
     guest_email: b.guest_email,
     nightly_rate: b.nightly_rate_cents != null ? centsToAmount(b.nightly_rate_cents) : "",
     cleaning_fee: b.cleaning_fee_cents ? centsToAmount(b.cleaning_fee_cents) : "",
+    currency: b.currency,
   };
 }
 

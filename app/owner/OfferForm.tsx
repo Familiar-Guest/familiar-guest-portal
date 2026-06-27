@@ -24,6 +24,7 @@ export interface OfferInitial {
   check_out?: string;
   nightly_rate?: string;
   cleaning_fee?: string;
+  currency?: string;
   paid?: boolean; // editing an already-paid booking
   // Per-booking policy overrides
   policy_checkin_email_days?: string;
@@ -81,6 +82,7 @@ export function OfferForm({
       initial?.nightly_rate ?? centsToStr(initialProperty?.nightly_rate_cents),
     cleaning_fee:
       initial?.cleaning_fee ?? centsToStr(initialProperty?.cleaning_fee_cents),
+    currency: initial?.currency ?? initialProperty?.currency ?? "usd",
     // Per-booking policy overrides (seeded from global policies on mount)
     policy_checkin_email_days:    initial?.policy_checkin_email_days    ?? "",
     policy_deposit_required_days: initial?.policy_deposit_required_days ?? "",
@@ -94,10 +96,11 @@ export function OfferForm({
   const [conflict, setConflict] = useState<Conflict | null>(null);
   const [result, setResult] = useState<Result | null>(null);
   const [busyRanges, setBusyRanges] = useState<BusyRange[]>([]);
-  // Once the owner edits a pricing field, stop overwriting it when the selected
-  // property changes (the property's defaults seed the field, then back off).
+  // Once the owner edits a pricing field (rate, cleaning fee, or currency), stop
+  // overwriting it when the selected property changes (the property's defaults
+  // seed the field, then back off).
   const [pricingTouched, setPricingTouched] = useState(
-    Boolean(initial?.nightly_rate || initial?.cleaning_fee)
+    Boolean(initial?.nightly_rate || initial?.cleaning_fee || initial?.currency)
   );
 
   // Fetch busy ranges for the selected property so the calendar can gray them out.
@@ -132,7 +135,7 @@ export function OfferForm({
   }, []); // run once on mount
 
   const selectedProperty = properties.find((p) => p.id === form.property_id);
-  const currency = (selectedProperty?.currency ?? "usd").toUpperCase();
+  const currency = form.currency.toUpperCase();
   const isPaidEdit = mode === "edit" && Boolean(initial?.paid);
 
   function set<K extends keyof typeof form>(key: K, value: string) {
@@ -150,10 +153,11 @@ export function OfferForm({
       cleaning_fee: pricingTouched
         ? f.cleaning_fee
         : centsToStr(p?.cleaning_fee_cents),
+      currency: pricingTouched ? f.currency : p?.currency ?? f.currency,
     }));
   }
 
-  function setPricing(key: "nightly_rate" | "cleaning_fee", value: string) {
+  function setPricing(key: "nightly_rate" | "cleaning_fee" | "currency", value: string) {
     setPricingTouched(true);
     set(key, value);
   }
@@ -335,6 +339,24 @@ export function OfferForm({
           {/* Hidden required inputs so the form validates dates are set */}
           <input type="hidden" value={form.check_in} required />
           <input type="hidden" value={form.check_out} required />
+        </div>
+
+        <div className="bk-field">
+          <label htmlFor="offer_currency">Currency</label>
+          <select
+            id="offer_currency"
+            value={form.currency}
+            onChange={(e) => setPricing("currency", e.target.value)}
+            disabled={isPaidEdit}
+          >
+            <option value="usd">USD — US Dollar</option>
+            <option value="cad">CAD — Canadian Dollar</option>
+            <option value="mxn">MXN — Mexican Peso</option>
+            <option value="eur">EUR — Euro</option>
+          </select>
+          <p className="bk-note" style={{ textAlign: "left", marginTop: 5 }}>
+            Defaults to the property&rsquo;s currency — change it for this offer if needed. The guest pays in this currency.
+          </p>
         </div>
 
         <div className="bk-grid2">

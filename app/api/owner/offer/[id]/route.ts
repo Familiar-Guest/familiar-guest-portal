@@ -13,6 +13,7 @@ import { getOwnerContact } from "@/lib/owner";
 import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { findInternalConflict, isActiveOffer } from "@/lib/offers";
 import { getOwnerPolicies, effectivePolicy, computeRefund } from "@/lib/policies";
+import { CURRENCIES } from "@/lib/properties";
 import { nights, formatMoney } from "@/lib/format";
 import type { Booking, Property } from "@/lib/types";
 
@@ -81,6 +82,13 @@ export async function PATCH(
     Number.isFinite(cleaning_raw) && cleaning_raw >= 0
       ? Math.round(cleaning_raw * 100)
       : current.cleaning_fee_cents ?? 0;
+
+  // Currency override (unpaid offers only — a paid booking keeps the currency it
+  // was charged in). Falls back to the booking's existing currency.
+  const currencyInput = String(body.currency ?? "").trim().toLowerCase();
+  if (currencyInput && !CURRENCIES.includes(currencyInput))
+    return bad("Unsupported currency.");
+  const offerCurrency = currencyInput || current.currency;
 
   const amount_cents =
     nightly_rate_cents * nights(check_in, check_out) + cleaning_fee_cents;
@@ -155,6 +163,7 @@ export async function PATCH(
   if (!isPaid) {
     updates.status = "offer_sent";
     updates.expires_at = `${check_in}T23:59:59.999Z`;
+    updates.currency = offerCurrency;
   }
 
   const { data, error } = await supabase
