@@ -160,6 +160,7 @@ export function PropertyForm({
               <option value="usd">USD — US Dollar</option>
               <option value="cad">CAD — Canadian Dollar</option>
               <option value="mxn">MXN — Mexican Peso</option>
+              <option value="eur">EUR — Euro</option>
             </select>
             <p className="bk-note" style={{ textAlign: "left", marginTop: 5 }}>
               Guests pay in this currency. US-based owners receive USD in their bank account — Stripe converts at the live rate.
