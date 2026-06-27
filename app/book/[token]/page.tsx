@@ -153,8 +153,8 @@ export default async function BookingPage({
                   {" "}
                   {(() => {
                     const rawExpiry = expiryDate(booking.expires_at!);
-                    const displayExpiry = rawExpiry > booking.check_in ? booking.check_in : rawExpiry;
-                    return rawExpiry > booking.check_in
+                    const displayExpiry = rawExpiry >= booking.check_in ? booking.check_in : rawExpiry;
+                    return rawExpiry >= booking.check_in
                       ? <>Payment is due by your check-in date, <strong>{formatDate(displayExpiry)}</strong>.</>
                       : <>These dates are held for you until <strong>{formatDate(displayExpiry)}</strong>.</>;
                   })()}

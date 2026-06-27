@@ -2,7 +2,6 @@
 
 import { useRef, useState } from "react";
 import type { Property } from "@/lib/types";
-import { RichTextEditor } from "./RichTextEditor";
 
 export function PropertyForm({
   initial,
@@ -28,7 +27,6 @@ export function PropertyForm({
     gps_lat: initial?.gps_lat != null ? String(initial.gps_lat) : "",
     gps_lng: initial?.gps_lng != null ? String(initial.gps_lng) : "",
     airbnb_ical_url: initial?.airbnb_ical_url ?? "",
-    checkin_instructions: initial?.checkin_instructions ?? "",
     // Structured check-in + address fields that populate the guest emails.
     address: initial?.address ?? "",
     check_in_time: initial?.check_in_time ?? "3:00 PM",
@@ -292,15 +290,6 @@ export function PropertyForm({
             </div>
           </div>
 
-          <div className="bk-field">
-            <label htmlFor="ci">Additional check-in notes <span style={{ fontWeight: 400 }}>(optional)</span></label>
-            <RichTextEditor
-              id="ci"
-              value={form.checkin_instructions}
-              onChange={(html) => set("checkin_instructions", html)}
-              minHeight={90}
-            />
-          </div>
         </div>
 
         <label className="ph-publish">

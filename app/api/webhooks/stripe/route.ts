@@ -3,7 +3,7 @@ import type Stripe from "stripe";
 import { getStripe } from "@/lib/stripe";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { buildBookingConfirmation, sendEmail } from "@/lib/email";
-import { ensureGuestPortal } from "@/lib/guestPortal";
+import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { buildConfirmationSms, sendSms } from "@/lib/sms";
 import type { Booking } from "@/lib/types";
 
@@ -56,16 +56,16 @@ export async function POST(request: NextRequest) {
         b: Booking,
         kind: "full" | "deposit" | "balance"
       ): Promise<boolean> => {
+        const portalToken = await ensureGuestPortal(b.guest_email, supabase);
         let sent = false;
         // SMS only applies to the final (paid-in-full) confirmations.
         if (kind !== "deposit" && b.confirmation_method === "sms" && b.guest_phone) {
           sent = await sendSms({ to: b.guest_phone, body: buildConfirmationSms(b) });
         }
         if (!sent) {
-          const { subject, html } = await buildBookingConfirmation(b, kind);
+          const { subject, html } = await buildBookingConfirmation(b, kind, guestPortalUrl(portalToken));
           sent = await sendEmail({ to: b.guest_email, subject, html, fromName: b.property_name });
         }
-        await ensureGuestPortal(b.guest_email, supabase);
         return sent;
       };
 

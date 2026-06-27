@@ -11,7 +11,7 @@ import {
 } from "@/lib/email";
 import { getOwnerContact } from "@/lib/owner";
 import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
-import { findInternalConflict, offerExpiresAt, isActiveOffer } from "@/lib/offers";
+import { findInternalConflict, isActiveOffer } from "@/lib/offers";
 import { getOwnerPolicies, computeRefund } from "@/lib/policies";
 import { nights, formatMoney } from "@/lib/format";
 import type { Booking, Property } from "@/lib/types";
@@ -154,7 +154,7 @@ export async function PATCH(
   };
   if (!isPaid) {
     updates.status = "offer_sent";
-    updates.expires_at = offerExpiresAt();
+    updates.expires_at = `${check_in}T23:59:59.999Z`;
   }
 
   const { data, error } = await supabase

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatMoney } from "@/lib/format";
+import { slugify } from "@/lib/properties";
 import type { Property } from "@/lib/types";
 
 interface OwnerRow {
@@ -25,7 +26,36 @@ async function load(handle: string): Promise<{ owner: OwnerRow; properties: Prop
     .eq("owner_id", owner.id)
     .eq("is_listed", true)
     .order("created_at", { ascending: true });
-  return { owner, properties: (data ?? []) as Property[] };
+
+  const properties = (data ?? []) as Property[];
+
+  // Backfill any properties that were created before the slug column was wired up.
+  // This runs at most once per affected property — after the first visit the slug
+  // is persisted and subsequent loads skip this block entirely.
+  const noSlug = properties.filter((p) => !p.slug);
+  if (noSlug.length > 0) {
+    // Fetch ALL owner properties (listed + unlisted) so the taken set is complete.
+    // Using only the listed subset misses draft properties and causes silent
+    // unique-constraint failures, leaving p.slug set locally but absent from DB.
+    const { data: allSlugRows } = await admin
+      .from("properties")
+      .select("slug")
+      .eq("owner_id", owner.id);
+    const taken = new Set(
+      ((allSlugRows ?? []) as { slug: string | null }[])
+        .map((r) => r.slug)
+        .filter(Boolean) as string[]
+    );
+    for (const p of noSlug) {
+      let slug = slugify(p.name);
+      while (taken.has(slug)) slug = `${slugify(p.name)}-${Math.floor(Math.random() * 9000 + 1000)}`;
+      taken.add(slug);
+      const { error } = await admin.from("properties").update({ slug }).eq("id", p.id);
+      if (!error) p.slug = slug;
+    }
+  }
+
+  return { owner, properties };
 }
 
 export async function generateMetadata({
@@ -76,7 +106,7 @@ export default async function StorefrontPage({
               {properties.length === 1 ? "1 property" : `${properties.length} properties`}
             </p>
             <div className="sf-grid">
-              {properties.map((p) => (
+              {properties.filter((p) => p.slug).map((p) => (
                 <a key={p.id} className="sf-card" href={`/owner/${handle}/${p.slug}`}>
                   <div className="sf-photo">
                     {p.photos[0] ? (

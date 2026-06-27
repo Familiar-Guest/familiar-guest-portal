@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getOwner } from "@/lib/auth";
 import { buildBookingConfirmation, sendEmail } from "@/lib/email";
-import { ensureGuestPortal } from "@/lib/guestPortal";
+import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { isExpired } from "@/lib/offers";
 import type { Booking } from "@/lib/types";
 
@@ -77,16 +77,15 @@ export async function POST(
     })
     .eq("id", booking.id);
 
-  // Send confirmation email and ensure guest portal exists.
+  const portalToken = await ensureGuestPortal(booking.guest_email, supabase);
   const updatedBooking = { ...booking, status: "paid" as const, paid_at: nowIso, guest_user_id: guestUser.id };
-  const { subject, html } = await buildBookingConfirmation(updatedBooking, "full");
+  const { subject, html } = await buildBookingConfirmation(updatedBooking, "full", guestPortalUrl(portalToken));
   const sent = await sendEmail({
     to: booking.guest_email,
     subject,
     html,
     fromName: booking.property_name,
   });
-  await ensureGuestPortal(booking.guest_email, supabase);
 
   if (sent) {
     await supabase

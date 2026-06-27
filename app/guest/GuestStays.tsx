@@ -194,13 +194,6 @@ function StayRow({ booking: b, coverPhoto }: { booking: Booking; coverPhoto?: st
         <span className={`op-status ${s.cls}`}>{s.text}</span>
       </div>
 
-      {b.status === "paid" && b.checkin_instructions && (
-        <div className="guest-info">
-          <strong>Check-in details</strong>
-          <div style={{ whiteSpace: "pre-wrap", marginTop: 4 }}>{b.checkin_instructions}</div>
-        </div>
-      )}
-
       <div className="op-actions" style={{ justifyContent: "flex-start", flexWrap: "wrap" }}>
         {canPay && <a className="op-link" href={`/book/${b.token}`}>Complete payment →</a>}
         {b.status === "deposit_paid" && (

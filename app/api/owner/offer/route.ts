@@ -6,7 +6,7 @@ import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
 import { buildOfferEmail, sendEmail, bookingUrl, siteUrl } from "@/lib/email";
 import { getOwnerContact } from "@/lib/owner";
 import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
-import { findInternalConflict, offerExpiresAt } from "@/lib/offers";
+import { findInternalConflict } from "@/lib/offers";
 import { nights } from "@/lib/format";
 import type { Booking, OfferKind, Property } from "@/lib/types";
 
@@ -45,9 +45,7 @@ export async function POST(request: NextRequest) {
   const check_in = String(body.check_in ?? "").trim();
   const check_out = String(body.check_out ?? "").trim();
   const checkin_instructions =
-    String(body.checkin_instructions ?? "").trim() ||
-    property.checkin_instructions ||
-    null;
+    String(body.checkin_instructions ?? "").trim() || null;
   const kind: OfferKind = KINDS.includes(body.kind as OfferKind)
     ? (body.kind as OfferKind)
     : "offer";
@@ -125,7 +123,7 @@ export async function POST(request: NextRequest) {
       cleaning_fee_cents,
       checkin_instructions,
       kind,
-      expires_at: offerExpiresAt(),
+      expires_at: `${check_in}T23:59:59.999Z`,
       ...policyFields,
     })
     .select()

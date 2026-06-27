@@ -154,11 +154,10 @@ export function buildOfferEmail(b: Booking, contact?: OwnerContact | null, prope
   const expiryLine = b.expires_at
     ? (() => {
         const rawExpiry = expiryDate(b.expires_at);
-        // Never tell the guest dates are held past the check-in day itself.
-        const displayExpiry = rawExpiry > b.check_in ? b.check_in : rawExpiry;
+        const displayExpiry = rawExpiry >= b.check_in ? b.check_in : rawExpiry;
         const msg = isFree
           ? `Please accept by <strong>${formatDate(displayExpiry)}</strong> to confirm your dates.`
-          : rawExpiry > b.check_in
+          : rawExpiry >= b.check_in
           ? `Payment is due by your check-in date, <strong>${formatDate(displayExpiry)}</strong>.`
           : `These dates are held for you until <strong>${formatDate(displayExpiry)}</strong>. After that they may be released.`;
         return p(`<span style="font-size:13px;color:#8a7e72;">${msg}</span>`);
@@ -303,7 +302,8 @@ type PaymentKind = "full" | "deposit" | "balance";
  */
 export async function buildBookingConfirmation(
   b: Booking,
-  kind: PaymentKind = "full"
+  kind: PaymentKind = "full",
+  portalUrl?: string | null
 ): Promise<{ subject: string; html: string }> {
   const { property, ownerName } = await loadBookingContext(b);
   const admin = createAdminClient();
@@ -321,7 +321,7 @@ export async function buildBookingConfirmation(
     latitude: property?.gps_lat ?? null,
     longitude: property?.gps_lng ?? null,
     isRepeatGuest: await isRepeatGuest(b),
-    bookingUrl: bookingUrl(b.token),
+    bookingUrl: portalUrl ?? bookingUrl(b.token),
     paymentTitle: kind === "deposit" ? "Payment schedule & policy" : "Payment & policy",
     paymentRows: paymentRows(b, kind),
     policyLines: policyLines(b, policy, kind),
@@ -385,20 +385,6 @@ export function buildOwnerRequestEmail(b: Booking): {
   };
 }
 
-/** Collapse owner rich-text (per-booking note) down to plain text for a table row. */
-function stripHtml(html: string): string {
-  return html
-    .replace(/<br\s*\/?>/gi, "\n")
-    .replace(/<\/(p|div|li|h[1-6])>/gi, "\n")
-    .replace(/<[^>]+>/g, "")
-    .replace(/&nbsp;/g, " ")
-    .replace(/&amp;/g, "&")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/\n{2,}/g, "\n")
-    .trim();
-}
-
 /**
  * 4. Check-in — 2 days before check-in. Driven by the property's structured
  * check-in fields (entry instructions, wifi, parking, house rules), rendered
@@ -418,10 +404,6 @@ export async function buildCheckinForBooking(
   add("Wifi", property?.wifi);
   add("Parking", property?.parking);
   add("House rules", property?.house_rules);
-
-  // Any per-booking note the owner customized at offer time (rich text → plain).
-  const note = b.checkin_instructions ? stripHtml(b.checkin_instructions) : "";
-  if (note) instructions.push({ label: "Notes", value: note });
 
   if (instructions.length === 0) {
     instructions.push({
