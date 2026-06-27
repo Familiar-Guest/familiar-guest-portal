@@ -190,10 +190,19 @@ export function Portal({
     load();
   }
 
+  const requests = bookings.filter((b) => b.status === "requested");
+  const pendingOffers = bookings.filter(
+    (b) => b.status === "offer_sent" && !isExpired(b)
+  );
+  const expiredOffers = bookings.filter(
+    (b) => b.status === "expired" || (b.status === "offer_sent" && isExpired(b))
+  );
+  const attentionCount = requests.length + pendingOffers.length;
+
   // ---- Overlays take over the whole surface ----
   if (overlay.kind === "property") {
     return (
-      <Shell ownerName={ownerName} onLogout={logout} tab={tab} setTab={setTab} hideNav>
+      <Shell ownerName={ownerName} onLogout={logout} tab={tab} setTab={setTab} alertCount={attentionCount} hideNav>
         <PropertyForm
           initial={overlay.initial}
           onDone={() => closeOverlay(true)}
@@ -204,7 +213,7 @@ export function Portal({
   }
   if (overlay.kind === "offer") {
     return (
-      <Shell ownerName={ownerName} onLogout={logout} tab={tab} setTab={setTab} hideNav>
+      <Shell ownerName={ownerName} onLogout={logout} tab={tab} setTab={setTab} alertCount={attentionCount} hideNav>
         <OfferForm
           mode={overlay.mode}
           properties={properties}
@@ -216,13 +225,8 @@ export function Portal({
     );
   }
 
-  const offers = bookings.filter(
-    (b) => b.status === "offer_sent" || b.status === "expired"
-  );
-  const requests = bookings.filter((b) => b.status === "requested");
-
   return (
-    <Shell ownerName={ownerName} onLogout={logout} tab={tab} setTab={setTab}>
+    <Shell ownerName={ownerName} onLogout={logout} tab={tab} setTab={setTab} alertCount={attentionCount}>
       <OnboardingChecklist
         publicName={publicName}
         propertyCount={properties.length}
@@ -232,6 +236,38 @@ export function Portal({
       {/* PROPERTIES */}
       {tab === "properties" && (
         <div>
+          {attentionCount > 0 && (
+            <div className="op-attention">
+              <div className="op-attention-head">
+                <span className="op-attention-title">
+                  {attentionCount} item{attentionCount !== 1 ? "s" : ""} need{attentionCount === 1 ? "s" : ""} your attention
+                </span>
+                <button className="op-link" onClick={() => setTab("offers")}>
+                  Go to Offers →
+                </button>
+              </div>
+              <ul className="op-attention-list">
+                {requests.map((b) => (
+                  <li key={b.id} className="op-attention-item">
+                    <span>
+                      <strong>{b.guest_name}</strong> requested {b.property_name} ({formatDate(b.check_in)} → {formatDate(b.check_out)}) — approve or decline
+                    </span>
+                  </li>
+                ))}
+                {pendingOffers.map((b) => {
+                  const left = b.expires_at ? daysUntil(expiryDate(b.expires_at)) : null;
+                  const expiry = left === null ? "" : left <= 0 ? " · expires today" : left === 1 ? " · expires tomorrow" : ` · ${left} days left`;
+                  return (
+                    <li key={b.id} className="op-attention-item">
+                      <span>
+                        <strong>{b.guest_name}</strong> offer at {b.property_name} awaiting payment{expiry}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          )}
           <div className="op-head">
             <div>
               <h2 className="op-h2">Properties</h2>
@@ -421,33 +457,35 @@ export function Portal({
             </>
           )}
           {loading && <p className="op-empty">Loading…</p>}
-          {!loading && offers.length === 0 && requests.length === 0 && (
+          {!loading && pendingOffers.length === 0 && expiredOffers.length === 0 && requests.length === 0 && (
             <div className="op-empty">No open offers. Create one with <strong>+ New offer</strong>.</div>
           )}
-          {offers.length > 0 && (
-            <ul className="op-list">
-              {offers.map((b) => {
-                const s = statusLabel(b);
-                const canEdit = b.status !== "paid";
-                return (
-                  <li key={b.id} className="op-item">
-                    <div className="op-main">
-                      <div className="op-title">
-                        {b.property_name}
-                        {b.kind === "rebook" && <span className="op-tag">Rebook</span>}
+          {pendingOffers.length > 0 && (
+            <>
+              <h3 className="op-subhead" style={{ marginTop: requests.length > 0 ? 18 : 0 }}>
+                Awaiting guest ({pendingOffers.length})
+              </h3>
+              <ul className="op-list">
+                {pendingOffers.map((b) => {
+                  const s = statusLabel(b);
+                  return (
+                    <li key={b.id} className="op-item op-item-live">
+                      <div className="op-main">
+                        <div className="op-title">
+                          {b.property_name}
+                          {b.kind === "rebook" && <span className="op-tag">Rebook</span>}
+                        </div>
+                        <div className="op-meta">
+                          {b.guest_name} · {formatDate(b.check_in)} → {formatDate(b.check_out)} ·{" "}
+                          {b.amount_cents === 0 ? "Complimentary" : formatMoney(b.amount_cents, b.currency)}
+                        </div>
                       </div>
-                      <div className="op-meta">
-                        {b.guest_name} · {formatDate(b.check_in)} → {formatDate(b.check_out)} ·{" "}
-                        {formatMoney(b.amount_cents, b.currency)}
-                      </div>
-                    </div>
-                    <div className="op-side">
-                      <span className={`op-status ${s.cls}`}>{s.text}</span>
-                      <div className="op-actions">
-                        <button className="op-link" onClick={() => copyLink(b.token)}>
-                          {copied === b.token ? "Copied!" : "Copy link"}
-                        </button>
-                        {canEdit && (
+                      <div className="op-side">
+                        <span className={`op-status ${s.cls}`}>{s.text}</span>
+                        <div className="op-actions">
+                          <button className="op-link" onClick={() => copyLink(b.token)}>
+                            {copied === b.token ? "Copied!" : "Copy link"}
+                          </button>
                           <button
                             className="op-link"
                             onClick={() =>
@@ -456,18 +494,41 @@ export function Portal({
                           >
                             Edit
                           </button>
-                        )}
-                        {canEdit && (
                           <button className="op-link op-danger" onClick={() => removeOffer(b)}>
                             Remove
                           </button>
-                        )}
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
+          )}
+          {expiredOffers.length > 0 && (
+            <>
+              <h3 className="op-subhead" style={{ marginTop: 20, color: "var(--ink-soft)", fontSize: 14 }}>
+                Expired
+              </h3>
+              <ul className="op-list">
+                {expiredOffers.map((b) => (
+                  <li key={b.id} className="op-item" style={{ opacity: 0.6 }}>
+                    <div className="op-main">
+                      <div className="op-title">{b.property_name}</div>
+                      <div className="op-meta">
+                        {b.guest_name} · {formatDate(b.check_in)} → {formatDate(b.check_out)}
+                      </div>
+                    </div>
+                    <div className="op-side">
+                      <span className="op-status op-muted">Expired</span>
+                      <div className="op-actions">
+                        <button className="op-link" onClick={() => removeOffer(b)}>Remove</button>
                       </div>
                     </div>
                   </li>
-                );
-              })}
-            </ul>
+                ))}
+              </ul>
+            </>
           )}
         </div>
       )}
@@ -525,6 +586,7 @@ function Shell({
   onLogout,
   tab,
   setTab,
+  alertCount = 0,
   hideNav,
   children,
 }: {
@@ -532,6 +594,7 @@ function Shell({
   onLogout: () => void;
   tab: Tab;
   setTab: (t: Tab) => void;
+  alertCount?: number;
   hideNav?: boolean;
   children: React.ReactNode;
 }) {
@@ -564,6 +627,9 @@ function Shell({
               onClick={() => setTab(t.id)}
             >
               {t.label}
+              {t.id === "offers" && alertCount > 0 && (
+                <span className="op-tab-count">{alertCount}</span>
+              )}
             </button>
           ))}
         </nav>

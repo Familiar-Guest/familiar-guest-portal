@@ -386,6 +386,14 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 .op-tab{flex:1;min-width:110px;background:none;border:none;padding:10px 14px;border-radius:var(--radius-sm);font-family:var(--body);font-size:14px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:background .15s,color .15s}
 .op-tab:hover{color:var(--ink)}
 .op-tab-on,.op-tab-on:hover{background:var(--card);color:var(--forest)}
+.op-tab-count{display:inline-flex;align-items:center;justify-content:center;background:var(--coral);color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 6px;margin-left:5px;line-height:1.4;vertical-align:middle}
+.op-attention{background:var(--amber-tint);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:20px}
+.op-attention-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+.op-attention-title{font-size:14px;font-weight:700;color:var(--amber-text)}
+.op-attention-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+.op-attention-item{font-size:13px;color:var(--ink);display:flex;align-items:baseline;gap:6px}
+.op-attention-item::before{content:"•";color:var(--coral);flex-shrink:0}
+.op-item-live{border-left:3px solid var(--coral);padding-left:11px;margin-left:-14px}
 .op-panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-md);padding:26px}
 .op-formwrap{display:flex;justify-content:center}
 .op-h2{font-family:var(--display);font-size:22px;color:var(--forest);margin:0}
