@@ -547,6 +547,29 @@ export default function Home() {
                 </p>
               </div>
             </div>
+            <div className="feat">
+              <div className="ic">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.8" />
+                  <path d="M3 12h18" stroke="currentColor" strokeWidth="1.8" />
+                  <path
+                    d="M12 3c2.6 2.6 2.6 15.4 0 18M12 3c-2.6 2.6-2.6 15.4 0 18"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
+              <div>
+                <h3>Multi-currency pricing</h3>
+                <p>
+                  Price each property — or any single offer — in USD, CAD, MXN,
+                  or EUR. Guests pay in their currency; you get paid in yours,
+                  with FX passed through at cost.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

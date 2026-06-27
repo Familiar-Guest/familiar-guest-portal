@@ -464,8 +464,8 @@ input[type="password"]::-webkit-textfield-decoration-container { display: none }
 .cf-options{display:flex;flex-direction:column;gap:8px}
 .cf-option{display:flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:var(--ink);background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:10px 12px;cursor:pointer}
 .cf-option input[type="radio"]{width:auto;flex-shrink:0}
-.cf-option span{flex:1}
-.cf-option input[type="number"]{width:110px;flex:none}
+.cf-option span{flex:1;margin-right:14px}
+.cf-option input[type="number"]{width:80px;flex:none}
 /* property photo uploader */
 .ph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-bottom:10px}
 .ph-thumb{position:relative;aspect-ratio:4/3;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--line)}
