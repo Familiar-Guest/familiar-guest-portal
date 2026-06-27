@@ -386,6 +386,8 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 .op-tab{flex:1;min-width:110px;background:none;border:none;padding:10px 14px;border-radius:var(--radius-sm);font-family:var(--body);font-size:14px;font-weight:600;color:var(--ink-soft);cursor:pointer;transition:background .15s,color .15s}
 .op-tab:hover{color:var(--ink)}
 .op-tab-on,.op-tab-on:hover{background:var(--card);color:var(--forest)}
+.op-formback{padding:10px 24px 4px;border-bottom:1px solid var(--line)}
+.op-formback .op-link{font-size:14px}
 .op-tab-count{display:inline-flex;align-items:center;justify-content:center;background:var(--coral);color:#fff;font-size:10px;font-weight:700;border-radius:10px;padding:1px 6px;margin-left:5px;line-height:1.4;vertical-align:middle}
 .op-attention{background:var(--amber-tint);border:1px solid var(--amber-border);border-radius:var(--radius-sm);padding:14px 16px;margin-bottom:20px}
 .op-attention-head{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}

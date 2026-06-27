@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { formatDate, formatMoney, daysUntil } from "@/lib/format";
 import { isExpired, expiryDate } from "@/lib/offers";
 import type { Booking, Property } from "@/lib/types";
@@ -64,6 +64,7 @@ export function Portal({
   const [policiesConfigured, setPoliciesConfigured] = useState(false);
   const [loading, setLoading] = useState(true);
   const [overlay, setOverlay] = useState<Overlay>({ kind: "none" });
+  const overlayOpenRef = useRef(false);
   const [copied, setCopied] = useState<string | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
   const [messageBooking, setMessageBooking] = useState<StartBooking | null>(null);
@@ -97,10 +98,34 @@ export function Portal({
     load();
   }, [load]);
 
+  /** Open an overlay and push a browser-history entry so the browser back
+   *  button closes the overlay rather than exiting the site. */
+  function openOverlay(o: Overlay) {
+    if (o.kind !== "none") {
+      window.history.pushState({ overlayOpen: true }, "");
+      overlayOpenRef.current = true;
+    }
+    setOverlay(o);
+  }
+
   function closeOverlay(reload: boolean) {
+    overlayOpenRef.current = false;
     setOverlay({ kind: "none" });
     if (reload) load();
   }
+
+  // Listen for the browser back button — if an overlay is open, close it instead
+  // of letting the browser navigate away from the portal.
+  useEffect(() => {
+    function onPopState() {
+      if (overlayOpenRef.current) {
+        overlayOpenRef.current = false;
+        setOverlay({ kind: "none" });
+      }
+    }
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
 
   async function logout() {
     await fetch("/api/owner/logout", { method: "POST" });
@@ -147,7 +172,7 @@ export function Portal({
   }
 
   function editBooking(b: Booking) {
-    setOverlay({ kind: "offer", mode: "edit", initial: editInitial(b) });
+    openOverlay({ kind: "offer", mode: "edit", initial: editInitial(b) });
   }
 
   async function decideRequest(b: Booking, action: "approve" | "decline") {
@@ -202,7 +227,7 @@ export function Portal({
   // ---- Overlays take over the whole surface ----
   if (overlay.kind === "property") {
     return (
-      <Shell ownerName={ownerName} onLogout={logout} tab={tab} setTab={setTab} alertCount={attentionCount} hideNav>
+      <Shell ownerName={ownerName} onLogout={logout} tab={tab} setTab={setTab} alertCount={attentionCount} hideNav onBack={() => closeOverlay(false)}>
         <PropertyForm
           initial={overlay.initial}
           onDone={() => closeOverlay(true)}
@@ -213,7 +238,7 @@ export function Portal({
   }
   if (overlay.kind === "offer") {
     return (
-      <Shell ownerName={ownerName} onLogout={logout} tab={tab} setTab={setTab} alertCount={attentionCount} hideNav>
+      <Shell ownerName={ownerName} onLogout={logout} tab={tab} setTab={setTab} alertCount={attentionCount} hideNav onBack={() => closeOverlay(false)}>
         <OfferForm
           mode={overlay.mode}
           properties={properties}
@@ -273,7 +298,7 @@ export function Portal({
               <h2 className="op-h2">Properties</h2>
               <p className="op-sub">Set up your places and link each one&rsquo;s Airbnb calendar.</p>
             </div>
-            <button className="bk-btn op-new" onClick={() => setOverlay({ kind: "property" })}>
+            <button className="bk-btn op-new" onClick={() => openOverlay({ kind: "property" })}>
               + Add property
             </button>
           </div>
@@ -314,11 +339,11 @@ export function Portal({
                   <div className="op-actions">
                     <button
                       className="op-link"
-                      onClick={() => setOverlay({ kind: "offer", mode: "create", initial: { property_id: p.id } })}
+                      onClick={() => openOverlay({ kind: "offer", mode: "create", initial: { property_id: p.id } })}
                     >
                       Invite guest
                     </button>
-                    <button className="op-link" onClick={() => setOverlay({ kind: "property", initial: p })}>
+                    <button className="op-link" onClick={() => openOverlay({ kind: "property", initial: p })}>
                       Edit
                     </button>
                     <button className="op-link op-danger" onClick={() => removeProperty(p)}>
@@ -388,7 +413,7 @@ export function Portal({
                         <div className="op-actions">
                           <a className="op-link" href={`/book/${b.token}`} target="_blank" rel="noreferrer">View</a>
                           {b.status === "paid" && (
-                            <button className="op-link" onClick={() => setOverlay({ kind: "offer", mode: "rebook", initial: rebookInitial(b) })}>
+                            <button className="op-link" onClick={() => openOverlay({ kind: "offer", mode: "rebook", initial: rebookInitial(b) })}>
                               Rebook
                             </button>
                           )}
@@ -422,7 +447,7 @@ export function Portal({
             </div>
             <button
               className="bk-btn op-new"
-              onClick={() => setOverlay({ kind: "offer", mode: "create" })}
+              onClick={() => openOverlay({ kind: "offer", mode: "create" })}
             >
               + New offer
             </button>
@@ -489,7 +514,7 @@ export function Portal({
                           <button
                             className="op-link"
                             onClick={() =>
-                              setOverlay({ kind: "offer", mode: "edit", initial: editInitial(b) })
+                              openOverlay({ kind: "offer", mode: "edit", initial: editInitial(b) })
                             }
                           >
                             Edit
@@ -598,6 +623,7 @@ function Shell({
   setTab,
   alertCount = 0,
   hideNav,
+  onBack,
   children,
 }: {
   ownerName: string;
@@ -606,6 +632,7 @@ function Shell({
   setTab: (t: Tab) => void;
   alertCount?: number;
   hideNav?: boolean;
+  onBack?: () => void;
   children: React.ReactNode;
 }) {
   const tabs: { id: Tab; label: string }[] = [
@@ -643,6 +670,13 @@ function Shell({
             </button>
           ))}
         </nav>
+      )}
+      {hideNav && onBack && (
+        <div className="op-formback">
+          <button type="button" className="op-link" onClick={onBack}>
+            ← Back to portal
+          </button>
+        </div>
       )}
       {hideNav ? (
         <div className="op-formwrap">{children}</div>

@@ -157,12 +157,15 @@ export function PropertyForm({
             <input id="location" value={form.location} onChange={(e) => set("location", e.target.value)} />
           </div>
           <div className="bk-field">
-            <label htmlFor="currency">Payout currency</label>
+            <label htmlFor="currency">Pricing currency</label>
             <select id="currency" value={form.currency} onChange={(e) => set("currency", e.target.value)}>
-              <option value="usd">USD</option>
-              <option value="cad">CAD</option>
-              <option value="mxn">MXN</option>
+              <option value="usd">USD — US Dollar</option>
+              <option value="cad">CAD — Canadian Dollar</option>
+              <option value="mxn">MXN — Mexican Peso</option>
             </select>
+            <p className="bk-note" style={{ textAlign: "left", marginTop: 5 }}>
+              Guests pay in this currency. US-based owners receive USD in their bank account — Stripe converts at the live rate.
+            </p>
           </div>
         </div>
 
