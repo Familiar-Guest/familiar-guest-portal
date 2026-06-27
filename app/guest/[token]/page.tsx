@@ -41,12 +41,26 @@ export default async function GuestTokenPortal({
     .eq("guest_email", email)
     .order("check_in", { ascending: true });
 
+  const bookings = (data ?? []) as Booking[];
+
+  // Fetch the first (cover) photo for each unique property so the portal can
+  // show a thumbnail next to the property name.
+  const propertyIds = [...new Set(bookings.map((b) => b.property_id).filter(Boolean))] as string[];
+  const { data: propData } = propertyIds.length
+    ? await admin.from("properties").select("id, photos").in("id", propertyIds)
+    : { data: [] };
+  const coverPhotos: Record<string, string> = {};
+  for (const p of (propData ?? []) as { id: string; photos: string[] }[]) {
+    if (p.photos?.[0]) coverPhotos[p.id] = p.photos[0];
+  }
+
   return (
     <div className="bk-wrap op-wrap-page">
       <GuestPortalClient
         token={token}
         email={email}
-        bookings={(data ?? []) as Booking[]}
+        bookings={bookings}
+        coverPhotos={coverPhotos}
       />
     </div>
   );

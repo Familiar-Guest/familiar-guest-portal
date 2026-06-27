@@ -6,7 +6,7 @@ import type { OwnerPolicy } from "@/lib/policies";
 // Day-count fields share the "days before rental date" framing, shown once as a
 // section heading rather than repeated on every label.
 const DAY_FIELDS: { key: keyof OwnerPolicy; label: string }[] = [
-  { key: "min_days_to_book", label: "Minimum to book" },
+  { key: "min_days_to_book", label: "Minimum to book (does not apply to invite offers)" },
   { key: "checkin_email_days", label: "Send check-in email" },
   { key: "deposit_required_days", label: "Deposit required (min)" },
   { key: "full_payment_due_days", label: "Full payment due" },

@@ -24,9 +24,11 @@ type View = "calendar" | "list";
 export function GuestStays({
   email,
   bookings,
+  coverPhotos = {},
 }: {
   email: string;
   bookings: Booking[];
+  coverPhotos?: Record<string, string>;
 }) {
   const [view, setView] = useState<View>("calendar");
 
@@ -108,7 +110,7 @@ export function GuestStays({
         {bookings.length > 0 && view === "list" && (
           <ul className="op-list">
             {bookings.map((b) => (
-              <StayRow key={b.id} booking={b} />
+              <StayRow key={b.id} booking={b} coverPhoto={b.property_id ? coverPhotos[b.property_id] : undefined} />
             ))}
           </ul>
         )}
@@ -117,7 +119,7 @@ export function GuestStays({
   );
 }
 
-function StayRow({ booking: b }: { booking: Booking }): JSX.Element {
+function StayRow({ booking: b, coverPhoto }: { booking: Booking; coverPhoto?: string }): JSX.Element {
   const s = statusLabel(b);
   const today = new Date().toISOString().slice(0, 10);
   const isFuture = b.check_in > today;
@@ -172,7 +174,14 @@ function StayRow({ booking: b }: { booking: Booking }): JSX.Element {
       <div style={{ display: "flex", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
         <div className="op-main">
           <div className="op-title">{b.property_name}</div>
-          <div className="op-meta">
+          {coverPhoto && (
+            <img
+              src={coverPhoto}
+              alt={b.property_name}
+              style={{ width: 96, height: 64, objectFit: "cover", borderRadius: 6, display: "block", marginTop: 6 }}
+            />
+          )}
+          <div className="op-meta" style={{ marginTop: coverPhoto ? 6 : 0 }}>
             {formatDate(b.check_in)} → {formatDate(b.check_out)} ·{" "}
             {formatMoney(b.amount_cents, b.currency)}
           </div>

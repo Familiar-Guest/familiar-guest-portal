@@ -52,6 +52,10 @@ export interface Booking {
   requested_check_in: string | null;
   requested_check_out: string | null;
   date_change_requested_at: string | null;
+  // Owner notifications when an invite offer approaches check-in without payment.
+  owner_unpaid_1day_sent_at: string | null;
+  owner_unpaid_checkin_sent_at: string | null;
+  owner_unpaid_after_sent_at: string | null;
   created_at: string;
 }
 

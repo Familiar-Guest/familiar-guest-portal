@@ -21,10 +21,12 @@ export function GuestPortalClient({
   token,
   email,
   bookings,
+  coverPhotos = {},
 }: {
   token: string;
   email: string;
   bookings: Booking[];
+  coverPhotos?: Record<string, string>;
 }) {
   return (
     <div className="op-shell">
@@ -50,7 +52,7 @@ export function GuestPortalClient({
         {bookings.length > 0 && (
           <ul className="op-list">
             {bookings.map((b) => (
-              <StayCard key={b.id} token={token} booking={b} />
+              <StayCard key={b.id} token={token} booking={b} coverPhoto={b.property_id ? coverPhotos[b.property_id] : undefined} />
             ))}
           </ul>
         )}
@@ -59,7 +61,7 @@ export function GuestPortalClient({
   );
 }
 
-function StayCard({ token, booking: b }: { token: string; booking: Booking }) {
+function StayCard({ token, booking: b, coverPhoto }: { token: string; booking: Booking; coverPhoto?: string }) {
   const s = statusLabel(b);
   const today = new Date().toISOString().slice(0, 10);
   const isFuture = b.check_in > today;
@@ -116,7 +118,14 @@ function StayCard({ token, booking: b }: { token: string; booking: Booking }) {
       <div style={{ display: "flex", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
         <div className="op-main">
           <div className="op-title">{b.property_name}</div>
-          <div className="op-meta">
+          {coverPhoto && (
+            <img
+              src={coverPhoto}
+              alt={b.property_name}
+              style={{ width: 96, height: 64, objectFit: "cover", borderRadius: 6, display: "block", marginTop: 6 }}
+            />
+          )}
+          <div className="op-meta" style={{ marginTop: coverPhoto ? 6 : 0 }}>
             {formatDate(b.check_in)} → {formatDate(b.check_out)} ·{" "}
             {formatMoney(b.amount_cents, b.currency)}
           </div>

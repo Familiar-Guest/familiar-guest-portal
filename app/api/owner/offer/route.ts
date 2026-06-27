@@ -3,9 +3,9 @@ import { randomBytes } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getOwner } from "@/lib/auth";
 import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
-import { buildOfferEmail, sendEmail, bookingUrl } from "@/lib/email";
+import { buildOfferEmail, sendEmail, bookingUrl, siteUrl } from "@/lib/email";
 import { getOwnerContact } from "@/lib/owner";
-import { ensureGuestPortal } from "@/lib/guestPortal";
+import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { findInternalConflict, offerExpiresAt } from "@/lib/offers";
 import { nights } from "@/lib/format";
 import type { Booking, OfferKind, Property } from "@/lib/types";
@@ -126,8 +126,20 @@ export async function POST(request: NextRequest) {
   // booking/portal links go out.
   await ensureGuestPortal(booking.guest_email, supabase);
 
+  // Build a link to the property listing page if the property is publicly listed.
+  const { data: ownerRow } = await supabase
+    .from("owners")
+    .select("handle")
+    .eq("id", owner.id)
+    .maybeSingle();
+  const handle = (ownerRow as { handle: string | null } | null)?.handle;
+  const propertyUrl =
+    handle && property.slug && property.is_listed
+      ? `${siteUrl()}/owner/${handle}/${property.slug}`
+      : null;
+
   const contact = await getOwnerContact(supabase, owner.id);
-  const { subject, html } = buildOfferEmail(booking, contact);
+  const { subject, html } = buildOfferEmail(booking, contact, propertyUrl);
   const sent = await sendEmail({
     to: booking.guest_email,
     subject,

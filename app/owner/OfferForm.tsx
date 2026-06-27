@@ -3,7 +3,6 @@
 import { useState } from "react";
 import type { Property } from "@/lib/types";
 import { formatMoney, nights } from "@/lib/format";
-import { RichTextEditor } from "./RichTextEditor";
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -24,7 +23,6 @@ export interface OfferInitial {
   check_out?: string;
   nightly_rate?: string;
   cleaning_fee?: string;
-  checkin_instructions?: string;
   paid?: boolean; // editing an already-paid booking
 }
 
@@ -73,20 +71,13 @@ export function OfferForm({
       initial?.nightly_rate ?? centsToStr(initialProperty?.nightly_rate_cents),
     cleaning_fee:
       initial?.cleaning_fee ?? centsToStr(initialProperty?.cleaning_fee_cents),
-    checkin_instructions:
-      initial?.checkin_instructions ??
-      initialProperty?.checkin_instructions ??
-      "",
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [conflict, setConflict] = useState<Conflict | null>(null);
   const [result, setResult] = useState<Result | null>(null);
-  // Once the owner edits a field, stop overwriting it when the selected
+  // Once the owner edits a pricing field, stop overwriting it when the selected
   // property changes (the property's defaults seed the field, then back off).
-  const [instructionsTouched, setInstructionsTouched] = useState(
-    Boolean(initial?.checkin_instructions)
-  );
   const [pricingTouched, setPricingTouched] = useState(
     Boolean(initial?.nightly_rate || initial?.cleaning_fee)
   );
@@ -104,9 +95,6 @@ export function OfferForm({
     setForm((f) => ({
       ...f,
       property_id: id,
-      checkin_instructions: instructionsTouched
-        ? f.checkin_instructions
-        : p?.checkin_instructions ?? "",
       nightly_rate: pricingTouched
         ? f.nightly_rate
         : centsToStr(p?.nightly_rate_cents),
@@ -114,11 +102,6 @@ export function OfferForm({
         ? f.cleaning_fee
         : centsToStr(p?.cleaning_fee_cents),
     }));
-  }
-
-  function setInstructions(value: string) {
-    setInstructionsTouched(true);
-    set("checkin_instructions", value);
   }
 
   function setPricing(key: "nightly_rate" | "cleaning_fee", value: string) {
@@ -362,22 +345,6 @@ export function OfferForm({
             </div>
           </div>
         )}
-        <div className="bk-field">
-          <label htmlFor="checkin_instructions">
-            Check-in notes{" "}
-            <span style={{ fontWeight: 400 }}>
-              (optional, for this guest — added to the check-in email alongside the
-              property&apos;s check-in details)
-            </span>
-          </label>
-          <RichTextEditor
-            id="checkin_instructions"
-            value={form.checkin_instructions}
-            onChange={(html) => setInstructions(html)}
-            minHeight={100}
-          />
-        </div>
-
         {conflict && (
           <div className="bk-error">
             Heads up — {conflictMsg} You can send the offer anyway.

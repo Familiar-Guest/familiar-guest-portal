@@ -32,6 +32,9 @@ export default async function BookingPage({
   if (!booking) notFound();
 
   const session = await getOwner();
+  // Show "Owner portal" only when the logged-in user is the owner of THIS booking.
+  // A user who is both owner and guest should see "My stays" when viewing their own stay.
+  const isBookingOwner = session !== null && booking.owner_id === session.id;
   const n = nights(booking.check_in, booking.check_out);
   const isPaid = booking.status === "paid";
   const isDepositPaid = booking.status === "deposit_paid";
@@ -44,7 +47,7 @@ export default async function BookingPage({
     <div className="bk-wrap">
       <BrandMark />
       <nav className="bk-nav">
-        {session ? (
+        {isBookingOwner ? (
           <a href="/owner" className="bk-nav-link">← Owner portal</a>
         ) : (
           <a href="/guest" className="bk-nav-link">← My stays</a>
@@ -143,8 +146,13 @@ export default async function BookingPage({
               {booking.expires_at && !isDepositPaid && (
                 <>
                   {" "}
-                  These dates are held for you until{" "}
-                  <strong>{formatDate(expiryDate(booking.expires_at))}</strong>.
+                  {(() => {
+                    const rawExpiry = expiryDate(booking.expires_at!);
+                    const displayExpiry = rawExpiry > booking.check_in ? booking.check_in : rawExpiry;
+                    return rawExpiry > booking.check_in
+                      ? <>Payment is due by your check-in date, <strong>{formatDate(displayExpiry)}</strong>.</>
+                      : <>These dates are held for you until <strong>{formatDate(displayExpiry)}</strong>.</>;
+                  })()}
                 </>
               )}
             </p>

@@ -23,9 +23,21 @@ export default async function GuestPage() {
     .or(`guest_email.eq.${session.email},guest_user_id.eq.${session.id}`)
     .order("check_in", { ascending: true });
 
+  const bookings = (data ?? []) as Booking[];
+
+  // Fetch the first (cover) photo for each unique property.
+  const propertyIds = [...new Set(bookings.map((b) => b.property_id).filter(Boolean))] as string[];
+  const { data: propData } = propertyIds.length
+    ? await admin.from("properties").select("id, photos").in("id", propertyIds)
+    : { data: [] };
+  const coverPhotos: Record<string, string> = {};
+  for (const p of (propData ?? []) as { id: string; photos: string[] }[]) {
+    if (p.photos?.[0]) coverPhotos[p.id] = p.photos[0];
+  }
+
   return (
     <div className="bk-wrap op-wrap-page">
-      <GuestStays email={session.email} bookings={(data ?? []) as Booking[]} />
+      <GuestStays email={session.email} bookings={bookings} coverPhotos={coverPhotos} />
     </div>
   );
 }

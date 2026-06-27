@@ -10,6 +10,7 @@ import {
   bookingUrl,
 } from "@/lib/email";
 import { getOwnerContact } from "@/lib/owner";
+import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { findInternalConflict, offerExpiresAt, isActiveOffer } from "@/lib/offers";
 import { getOwnerPolicies, computeRefund } from "@/lib/policies";
 import { nights, formatMoney } from "@/lib/format";
@@ -158,10 +159,15 @@ export async function PATCH(
   const booking = data as Booking;
   const contact = await getOwnerContact(supabase, owner.id);
 
+  // Look up the guest portal token so "View your booking" in the change email
+  // lands on the guest's personal stays portal, not just the payment page.
+  const portalToken = await ensureGuestPortal(booking.guest_email, supabase);
+  const portalUrl = guestPortalUrl(portalToken);
+
   // A paid booking that's edited gets a change notice (it already paid — no pay
   // link). An unpaid offer re-sends the offer email with the live pay link.
   const { subject, html } = isPaid
-    ? buildChangeEmail(booking, oldCheckIn, oldCheckOut)
+    ? buildChangeEmail(booking, oldCheckIn, oldCheckOut, portalUrl)
     : buildOfferEmail(booking, contact);
   const sent = await sendEmail({
     to: booking.guest_email,

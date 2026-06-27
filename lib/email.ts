@@ -136,25 +136,33 @@ function contactSection(contact?: OwnerContact | null): string {
 }
 
 /** 1. Offer — sent when the owner creates the booking. Contains the pay link.
- *  Handles both a fresh offer and a one-click rebook (same pipeline). */
-export function buildOfferEmail(b: Booking, contact?: OwnerContact | null): { subject: string; html: string } {
+ *  Handles both a fresh offer and a one-click rebook (same pipeline).
+ *  Pass `propertyUrl` to hyperlink the property name so guests can view photos. */
+export function buildOfferEmail(b: Booking, contact?: OwnerContact | null, propertyUrl?: string | null): { subject: string; html: string } {
   const isRebook = b.kind === "rebook";
+  const propNameHtml = propertyUrl
+    ? `<a href="${propertyUrl}" style="color:${FOREST};text-decoration:underline;">${b.property_name}</a>`
+    : b.property_name;
   const expiryLine = b.expires_at
-    ? p(
-        `<span style="font-size:13px;color:#8a7e72;">These dates are held for you until <strong>${formatDate(
-          expiryDate(b.expires_at)
-        )}</strong>. After that they may be released.</span>`
-      )
+    ? (() => {
+        const rawExpiry = expiryDate(b.expires_at);
+        // Never tell the guest dates are held past the check-in day itself.
+        const displayExpiry = rawExpiry > b.check_in ? b.check_in : rawExpiry;
+        const msg = rawExpiry > b.check_in
+          ? `Payment is due by your check-in date, <strong>${formatDate(displayExpiry)}</strong>.`
+          : `These dates are held for you until <strong>${formatDate(displayExpiry)}</strong>. After that they may be released.`;
+        return p(`<span style="font-size:13px;color:#8a7e72;">${msg}</span>`);
+      })()
     : "";
   const lead = isRebook
-    ? `Hi ${b.guest_name}, great to have you back! Your host has lined up these dates at ${b.property_name}. Review the details below and complete your payment to lock it in.`
+    ? `Hi ${b.guest_name}, great to have you back! Your host has lined up these dates at ${propNameHtml}. Review the details below and complete your payment to lock it in.`
     : `Hi ${b.guest_name}, your host has set aside these dates for you. Review the details below and complete your payment to lock it in.`;
   const contactHtml = contactSection(contact);
   const inner =
     heading(
       isRebook
-        ? `Ready to book ${b.property_name} again?`
-        : `You're invited to book ${b.property_name}`
+        ? `Ready to book ${propNameHtml} again?`
+        : `You're invited to book ${propNameHtml}`
     ) +
     p(lead) +
     contactHtml +
@@ -297,8 +305,8 @@ export async function buildBookingConfirmation(
   });
 }
 
-/** 3. Reminder — 7 days before check-in. */
-export function buildReminderEmail(b: Booking): {
+/** 3. Reminder — 7 days before check-in. Pass `portalUrl` to send guest to their stays portal. */
+export function buildReminderEmail(b: Booking, portalUrl?: string | null): {
   subject: string;
   html: string;
 } {
@@ -307,7 +315,7 @@ export function buildReminderEmail(b: Booking): {
     p(`Hi ${b.guest_name}, just a friendly reminder that your stay at ${b.property_name} begins on ${formatDate(b.check_in)}.`) +
     summaryTable(b) +
     p(`We'll send your check-in details two days before you arrive.`) +
-    button(bookingUrl(b.token), "View your booking");
+    button(portalUrl ?? bookingUrl(b.token), "View your booking");
   return {
     subject: `One week until your stay at ${b.property_name}`,
     html: layout(inner),
@@ -412,11 +420,12 @@ export async function buildCheckinForBooking(
   });
 }
 
-/** 5. Change — sent when an owner changes the dates of an existing booking. */
+/** 5. Change — sent when an owner changes the dates of an existing booking. Pass `portalUrl` to send guest to their stays portal. */
 export function buildChangeEmail(
   b: Booking,
   oldCheckIn: string,
-  oldCheckOut: string
+  oldCheckOut: string,
+  portalUrl?: string | null
 ): { subject: string; html: string } {
   const datesChanged = oldCheckIn !== b.check_in || oldCheckOut !== b.check_out;
   const changeNote = datesChanged
@@ -433,7 +442,7 @@ export function buildChangeEmail(
     changeNote +
     summaryTable(b) +
     p(`If anything doesn't look right, just reply to this email.`) +
-    button(bookingUrl(b.token), "View your booking");
+    button(portalUrl ?? bookingUrl(b.token), "View your booking");
   return {
     subject: `Updated: your stay at ${b.property_name}`,
     html: layout(inner),
