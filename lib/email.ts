@@ -6,7 +6,7 @@ import { hasContact, type OwnerContact } from "./welcome";
 import { createAdminClient } from "./supabase/admin";
 import { buildBookingEmail } from "./emails/bookingEmail";
 import { buildCheckInEmail, type CheckInInstruction } from "./emails/checkInEmail";
-import { getOwnerPolicies, type OwnerPolicy } from "./policies";
+import { getOwnerPolicies, guestBookingTerms, type OwnerPolicy } from "./policies";
 
 const FOREST = "#14543F";
 const CLAY = "#C0673E";
@@ -141,11 +141,29 @@ function contactSection(contact?: OwnerContact | null): string {
   return `<div style="margin:18px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:14px;line-height:1.55;">${contactBlock(contact!)}</div>`;
 }
 
+/** Guest-facing booking terms (payment schedule + cancellation), as a list block. */
+function termsSection(lines: string[]): string {
+  if (lines.length === 0) return "";
+  const items = lines
+    .map((l) => `<li style="margin:0 0 6px;">${l}</li>`)
+    .join("");
+  return `<div style="margin:18px 0;padding:16px 18px;background:${PAPER};border:1px solid ${LINE};border-radius:10px;font-size:13px;line-height:1.55;color:${INK};">
+    <strong style="display:block;margin-bottom:8px;">Booking terms</strong>
+    <ul style="margin:0;padding-left:18px;">${items}</ul>
+  </div>`;
+}
+
 /** 1. Offer — sent when the owner creates the booking. Contains the pay/accept link.
  *  Handles both a fresh offer and a one-click rebook (same pipeline).
  *  Pass `propertyUrl` to hyperlink the property name so guests can view photos.
+ *  Pass the booking's effective `policy` to show the guest the booking terms.
  *  $0 (complimentary) bookings get an "Accept your invitation" CTA instead of payment. */
-export function buildOfferEmail(b: Booking, contact?: OwnerContact | null, propertyUrl?: string | null): { subject: string; html: string } {
+export function buildOfferEmail(
+  b: Booking,
+  contact?: OwnerContact | null,
+  propertyUrl?: string | null,
+  policy?: OwnerPolicy | null
+): { subject: string; html: string } {
   const isRebook = b.kind === "rebook";
   const isFree = b.amount_cents === 0;
   const propNameHtml = propertyUrl
@@ -176,6 +194,7 @@ export function buildOfferEmail(b: Booking, contact?: OwnerContact | null, prope
     : `<span style="font-size:13px;color:#8a7e72;">Your payment is processed securely. You don't need an account.</span>`;
 
   const contactHtml = contactSection(contact);
+  const termsHtml = policy ? termsSection(guestBookingTerms(b, policy)) : "";
   const inner =
     heading(
       isFree
@@ -187,6 +206,7 @@ export function buildOfferEmail(b: Booking, contact?: OwnerContact | null, prope
     p(lead) +
     contactHtml +
     summaryTable(b) +
+    termsHtml +
     button(bookingUrl(b.token), ctaLabel) +
     expiryLine +
     p(footerNote);

@@ -1,5 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { addDays, daysUntil } from "./format";
+import { addDays, daysUntil, formatDate, formatMoney } from "./format";
 import type { Booking } from "./types";
 
 /** Owner-global rental policies. Mirrors the owner_policies table. */
@@ -151,6 +151,87 @@ export function paidAmountCents(b: {
   if (b.status === "paid") return b.amount_cents;
   if (b.status === "deposit_paid") return b.deposit_cents;
   return 0;
+}
+
+/**
+ * Guest-facing booking terms (payment schedule + cancellation policy) as plain
+ * text lines, derived from the booking's effective policy. State-aware: a paid
+ * or deposit-paid booking reflects what's already been collected; an unpaid
+ * offer shows the schedule the guest will follow when they pay.
+ */
+export function guestBookingTerms(
+  b: Booking,
+  policy: OwnerPolicy,
+  now: Date = new Date()
+): string[] {
+  const lines: string[] = [];
+  const money = (c: number) => formatMoney(c, b.currency);
+
+  if (b.amount_cents === 0) {
+    lines.push("Complimentary stay — no payment is required.");
+    return lines;
+  }
+
+  // ── Payment schedule ──────────────────────────────────────────────────────
+  if (b.status === "paid") {
+    lines.push(`Paid in full: ${money(b.amount_cents)}.`);
+  } else if (b.status === "deposit_paid") {
+    lines.push(`Deposit paid: ${money(b.deposit_cents)}.`);
+    if (b.balance_cents > 0) {
+      lines.push(
+        b.balance_due_date
+          ? `Remaining balance of ${money(b.balance_cents)} due by ${formatDate(b.balance_due_date)}.`
+          : `Remaining balance of ${money(b.balance_cents)} due before check-in.`
+      );
+    }
+  } else {
+    // Unpaid offer — show the schedule that will apply when the guest pays.
+    const plan = depositPlanFor(policy, b.amount_cents, b.check_in, now);
+    if (plan.plan === "deposit") {
+      lines.push(
+        `A ${policy.deposit_pct}% deposit (${money(plan.depositCents)}) reserves your dates now.`
+      );
+      lines.push(
+        plan.balanceDueDate
+          ? `Remaining balance of ${money(plan.balanceCents)} is due by ${formatDate(plan.balanceDueDate)} (${policy.full_payment_due_days} days before check-in).`
+          : `Remaining balance of ${money(plan.balanceCents)} is due before check-in.`
+      );
+    } else {
+      lines.push(`Full payment of ${money(b.amount_cents)} confirms your booking.`);
+    }
+  }
+
+  // ── Cancellation policy ───────────────────────────────────────────────────
+  lines.push(
+    `Cancellation: full refund if cancelled ${policy.refund_100_days}+ days before check-in; ` +
+      `${policy.refund_50_days}–${policy.refund_100_days} days before, 50%; after that, no refund.`
+  );
+
+  return lines;
+}
+
+/**
+ * Build a map of booking id → guest-facing terms for a set of bookings,
+ * caching each owner's policy so the table is hit once per owner. Used by the
+ * guest portal pages to render terms per reservation.
+ */
+export async function buildTermsMap(
+  admin: SupabaseClient,
+  bookings: Booking[],
+  now: Date = new Date()
+): Promise<Record<string, string[]>> {
+  const cache = new Map<string, OwnerPolicy>();
+  const map: Record<string, string[]> = {};
+  for (const b of bookings) {
+    const key = b.owner_id ?? "";
+    let ownerPolicy = cache.get(key);
+    if (!ownerPolicy) {
+      ownerPolicy = await getOwnerPolicies(admin, b.owner_id);
+      cache.set(key, ownerPolicy);
+    }
+    map[b.id] = guestBookingTerms(b, effectivePolicy(b, ownerPolicy), now);
+  }
+  return map;
 }
 
 /** The refund owed on cancellation: percentage tier + amount in cents. */

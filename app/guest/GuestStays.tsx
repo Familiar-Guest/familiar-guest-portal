@@ -25,10 +25,12 @@ export function GuestStays({
   email,
   bookings,
   coverPhotos = {},
+  terms = {},
 }: {
   email: string;
   bookings: Booking[];
   coverPhotos?: Record<string, string>;
+  terms?: Record<string, string[]>;
 }) {
   const [view, setView] = useState<View>("calendar");
 
@@ -110,7 +112,7 @@ export function GuestStays({
         {bookings.length > 0 && view === "list" && (
           <ul className="op-list">
             {bookings.map((b) => (
-              <StayRow key={b.id} booking={b} coverPhoto={b.property_id ? coverPhotos[b.property_id] : undefined} />
+              <StayRow key={b.id} booking={b} coverPhoto={b.property_id ? coverPhotos[b.property_id] : undefined} terms={terms[b.id]} />
             ))}
           </ul>
         )}
@@ -119,11 +121,14 @@ export function GuestStays({
   );
 }
 
-function StayRow({ booking: b, coverPhoto }: { booking: Booking; coverPhoto?: string }): JSX.Element {
+function StayRow({ booking: b, coverPhoto, terms }: { booking: Booking; coverPhoto?: string; terms?: string[] }): JSX.Element {
   const s = statusLabel(b);
   const today = new Date().toISOString().slice(0, 10);
   const isFuture = b.check_in > today;
   const canPay = b.status === "offer_sent" && !isExpired(b);
+  // Terms are only meaningful for live reservations, not lapsed/cancelled ones.
+  const showTerms =
+    b.status === "deposit_paid" || b.status === "paid" || canPay;
   const isCancellable =
     isFuture &&
     b.status !== "cancelled" &&
@@ -193,6 +198,17 @@ function StayRow({ booking: b, coverPhoto }: { booking: Booking; coverPhoto?: st
         </div>
         <span className={`op-status ${s.cls}`}>{s.text}</span>
       </div>
+
+      {showTerms && terms && terms.length > 0 && (
+        <div className="guest-info">
+          <strong>Booking terms</strong>
+          <ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>
+            {terms.map((t, i) => (
+              <li key={i} style={{ marginBottom: 4 }}>{t}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="op-actions" style={{ justifyContent: "flex-start", flexWrap: "wrap" }}>
         {canPay && <a className="op-link" href={`/book/${b.token}`}>Complete payment →</a>}

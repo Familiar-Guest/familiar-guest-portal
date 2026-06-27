@@ -7,6 +7,7 @@ import { buildOfferEmail, sendEmail, bookingUrl, siteUrl } from "@/lib/email";
 import { getOwnerContact } from "@/lib/owner";
 import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { findInternalConflict } from "@/lib/offers";
+import { getOwnerPolicies, effectivePolicy } from "@/lib/policies";
 import { nights } from "@/lib/format";
 import type { Booking, OfferKind, Property } from "@/lib/types";
 
@@ -152,7 +153,9 @@ export async function POST(request: NextRequest) {
       : null;
 
   const contact = await getOwnerContact(supabase, owner.id);
-  const { subject, html } = buildOfferEmail(booking, contact, propertyUrl);
+  const ownerPolicy = await getOwnerPolicies(supabase, owner.id);
+  const policy = effectivePolicy(booking, ownerPolicy);
+  const { subject, html } = buildOfferEmail(booking, contact, propertyUrl, policy);
   const sent = await sendEmail({
     to: booking.guest_email,
     subject,

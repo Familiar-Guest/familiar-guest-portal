@@ -22,11 +22,13 @@ export function GuestPortalClient({
   email,
   bookings,
   coverPhotos = {},
+  terms = {},
 }: {
   token: string;
   email: string;
   bookings: Booking[];
   coverPhotos?: Record<string, string>;
+  terms?: Record<string, string[]>;
 }) {
   return (
     <div className="op-shell">
@@ -52,7 +54,7 @@ export function GuestPortalClient({
         {bookings.length > 0 && (
           <ul className="op-list">
             {bookings.map((b) => (
-              <StayCard key={b.id} token={token} booking={b} coverPhoto={b.property_id ? coverPhotos[b.property_id] : undefined} />
+              <StayCard key={b.id} token={token} booking={b} coverPhoto={b.property_id ? coverPhotos[b.property_id] : undefined} terms={terms[b.id]} />
             ))}
           </ul>
         )}
@@ -61,7 +63,7 @@ export function GuestPortalClient({
   );
 }
 
-function StayCard({ token, booking: b, coverPhoto }: { token: string; booking: Booking; coverPhoto?: string }) {
+function StayCard({ token, booking: b, coverPhoto, terms }: { token: string; booking: Booking; coverPhoto?: string; terms?: string[] }) {
   const s = statusLabel(b);
   const today = new Date().toISOString().slice(0, 10);
   const isFuture = b.check_in > today;
@@ -74,6 +76,9 @@ function StayCard({ token, booking: b, coverPhoto }: { token: string; booking: B
   const canPay = b.status === "offer_sent" && !isExpired(b);
   const balanceDue = b.status === "deposit_paid" && b.balance_cents > 0;
   const hasPendingChange = Boolean(b.requested_check_in && b.date_change_requested_at);
+  // Terms are only meaningful for live reservations, not lapsed/cancelled ones.
+  const showTerms =
+    b.status === "deposit_paid" || b.status === "paid" || canPay;
 
   const [showMessages, setShowMessages] = useState(false);
   const [showChange, setShowChange] = useState(false);
@@ -137,6 +142,17 @@ function StayCard({ token, booking: b, coverPhoto }: { token: string; booking: B
         </div>
         <span className={`op-status ${s.cls}`}>{s.text}</span>
       </div>
+
+      {showTerms && terms && terms.length > 0 && (
+        <div className="guest-info">
+          <strong>Booking terms</strong>
+          <ul style={{ margin: "4px 0 0", paddingLeft: 18 }}>
+            {terms.map((t, i) => (
+              <li key={i} style={{ marginBottom: 4 }}>{t}</li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       <div className="op-actions" style={{ justifyContent: "flex-start", flexWrap: "wrap" }}>
         {canPay && (

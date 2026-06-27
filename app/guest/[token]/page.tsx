@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getEmailForToken } from "@/lib/guestPortal";
+import { buildTermsMap } from "@/lib/policies";
 import { GuestPortalClient } from "./GuestPortalClient";
 import type { Booking } from "@/lib/types";
 
@@ -54,6 +55,8 @@ export default async function GuestTokenPortal({
     if (p.photos?.[0]) coverPhotos[p.id] = p.photos[0];
   }
 
+  const terms = await buildTermsMap(admin, bookings);
+
   return (
     <div className="bk-wrap op-wrap-page">
       <GuestPortalClient
@@ -61,6 +64,7 @@ export default async function GuestTokenPortal({
         email={email}
         bookings={bookings}
         coverPhotos={coverPhotos}
+        terms={terms}
       />
     </div>
   );
