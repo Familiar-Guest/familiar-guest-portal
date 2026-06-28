@@ -1,0 +1,9 @@
+	• Remove check-in notes
+	• In Global Policies, change title 'Minimum to book' to 'Minimum to book (does not apply to invite offers)'.  Make sure minimum days to book does not apply to invite offers. Should accept payment any time.  
+	• Send email to owner when payment for an upcoming booking has not been done within 1 day of the booking. Send an email to the owner if the day is reach and no payment is received. Also send an email to the owner one day after start of the stay and payment not received.  
+	• In the invite email to invited guests, the message 'These dates are held..' showed a date that was beyond the start of the stay.  Day of stay is latest to pay, so adjust the message to never go beyond the start of the stay.
+	• Make the Property name in the invite email to the guest a hyperlink to the property so guests can see photos
+	• View your booking should take the guest to their personal portal (using email address as key) that shows all their stays
+	• For guest portal, Your Stays. Show the cover picture for each property after the property name
+	• Viewing a booking in the guest portal has a breadcrumb for Owner Portal.  Should be Guest portal.  May be mixing because vidacerritos@gmail.com is an owner and a guest.  Ensure user stays in the portal intended.
+	
