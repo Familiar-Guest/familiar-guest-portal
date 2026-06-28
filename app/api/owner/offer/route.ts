@@ -10,6 +10,7 @@ import { findInternalConflict } from "@/lib/offers";
 import { effectivePolicy, policyFromProperty } from "@/lib/policies";
 import { CURRENCIES } from "@/lib/properties";
 import { quoteStay } from "@/lib/pricing";
+import { paymentsGateEnabled } from "@/lib/flags";
 import { nights } from "@/lib/format";
 import type { Booking, OfferKind, Property } from "@/lib/types";
 
@@ -98,8 +99,9 @@ export async function POST(request: NextRequest) {
   const amount_cents = stay_subtotal_cents + cleaning_fee_cents;
 
   // Gate 1: an owner can't collect payment until Stripe identity verification
-  // (KYC) is complete. Complimentary ($0) offers are allowed through.
-  if (amount_cents > 0) {
+  // (KYC) is complete. Complimentary ($0) offers are allowed through. Dormant
+  // until payments are switched on.
+  if (paymentsGateEnabled() && amount_cents > 0) {
     const { data: ownerRow } = await supabase
       .from("owners")
       .select("stripe_charges_enabled")

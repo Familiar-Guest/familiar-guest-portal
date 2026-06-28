@@ -5,6 +5,8 @@ import { postMessage } from "@/lib/messages";
 import { sendEmail, siteUrl } from "@/lib/email";
 import { formatDate, formatMoney } from "@/lib/format";
 import { computeRefund, effectivePolicyForBooking } from "@/lib/policies";
+import { refundBooking } from "@/lib/payouts";
+import { paymentsGateEnabled } from "@/lib/flags";
 import type { Booking } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -53,6 +55,7 @@ export async function POST(request: NextRequest) {
 
   const policy = await effectivePolicyForBooking(admin, booking);
   const refund = computeRefund(policy, booking);
+  if (paymentsGateEnabled() && refund.cents > 0) await refundBooking(admin, booking, refund.cents);
   const refundLine =
     refund.cents > 0
       ? `Refund due per your policy: ${formatMoney(refund.cents, booking.currency)} (${refund.pct}%).`

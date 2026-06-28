@@ -11,6 +11,7 @@ import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { daysUntil, formatDate, formatMoney } from "@/lib/format";
 import { forfeitDeadline, effectivePolicyForBooking } from "@/lib/policies";
 import { releaseBookingPayout } from "@/lib/payouts";
+import { paymentsGateEnabled } from "@/lib/flags";
 import type { Booking } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -236,11 +237,13 @@ export async function GET(request: NextRequest) {
   // connected account. releaseBookingPayout is idempotent (guarded + idempotency
   // key), so re-runs are safe.
   let payouts = 0;
-  for (const b of bookings) {
-    if (b.payout_released_at) continue;
-    if (daysUntil(b.check_in) > 0) continue; // not yet check-in day
-    const res = await releaseBookingPayout(supabase, b);
-    if (res.ok) payouts++;
+  if (paymentsGateEnabled()) {
+    for (const b of bookings) {
+      if (b.payout_released_at) continue;
+      if (daysUntil(b.check_in) > 0) continue; // not yet check-in day
+      const res = await releaseBookingPayout(supabase, b);
+      if (res.ok) payouts++;
+    }
   }
 
   return NextResponse.json({

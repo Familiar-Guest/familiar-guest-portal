@@ -51,12 +51,14 @@ export function CalendarTab({
   onEdit,
   onCancel,
   onRefresh,
+  payoutsEnabled = false,
 }: {
   properties: Property[];
   bookings: Booking[];
   onEdit: (b: Booking) => void;
   onCancel: (b: Booking) => void;
   onRefresh?: () => void;
+  payoutsEnabled?: boolean;
 }) {
   const [releasingId, setReleasingId] = useState<string | null>(null);
   const [releaseErr, setReleaseErr] = useState<string | null>(null);
@@ -301,7 +303,7 @@ export function CalendarTab({
                         <button className="op-link" onClick={() => onEdit(b)}>
                           Edit
                         </button>
-                        {paid && (
+                        {paid && payoutsEnabled && (
                           b.payout_released_at ? (
                             <span className="op-link" style={{ color: "var(--teal)", cursor: "default" }}>
                               Paid out{b.payout_amount_cents != null ? ` · ${formatMoney(b.payout_amount_cents, b.currency)}` : ""}

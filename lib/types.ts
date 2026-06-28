@@ -54,6 +54,10 @@ export interface Booking {
   payout_released_at: string | null;
   payout_amount_cents: number | null;
   payout_error: string | null;
+  // Automated refund on cancellation.
+  refunded_at: string | null;
+  refund_amount_cents: number | null;
+  refund_error: string | null;
   // Pending guest date-change request — null means no request is pending.
   requested_check_in: string | null;
   requested_check_out: string | null;

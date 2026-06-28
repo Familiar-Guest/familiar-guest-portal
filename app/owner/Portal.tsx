@@ -64,6 +64,7 @@ export function Portal({
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [policiesConfigured, setPoliciesConfigured] = useState(false);
   const [kyc, setKyc] = useState<ConnectStatus | null>(null);
+  const [kycEnabled, setKycEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
   const [overlay, setOverlay] = useState<Overlay>({ kind: "none" });
   const overlayOpenRef = useRef(false);
@@ -99,7 +100,7 @@ export function Portal({
       if (bRes.ok) setBookings(bData.bookings ?? []);
       // Policies are "configured" if the owner has saved at least one custom value.
       if (polRes.ok) setPoliciesConfigured(Boolean(polData.has_custom_row));
-      if (kycRes.ok) setKyc(kycData.status ?? null);
+      if (kycRes.ok) { setKyc(kycData.status ?? null); setKycEnabled(Boolean(kycData.enabled)); }
     } finally {
       setLoading(false);
     }
@@ -292,7 +293,7 @@ export function Portal({
         policiesConfigured={policiesConfigured}
         onNavigate={(t) => setTab(t)}
       />
-      {!loading && <PayoutBanner status={kyc} />}
+      {!loading && kycEnabled && <PayoutBanner status={kyc} />}
       {/* PROPERTIES */}
       {tab === "properties" && (
         <div>
@@ -400,6 +401,7 @@ export function Portal({
           onEdit={editBooking}
           onCancel={cancelBooking}
           onRefresh={load}
+          payoutsEnabled={kycEnabled}
         />
       )}
 

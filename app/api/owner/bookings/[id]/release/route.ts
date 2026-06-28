@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getOwner } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { releaseBookingPayout } from "@/lib/payouts";
+import { paymentsGateEnabled } from "@/lib/flags";
 import type { Booking } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -13,6 +14,8 @@ export async function POST(
 ) {
   const owner = await getOwner();
   if (!owner) return NextResponse.json({ error: "Not authorized." }, { status: 401 });
+  if (!paymentsGateEnabled())
+    return NextResponse.json({ error: "Payouts are not enabled yet." }, { status: 400 });
   const { id } = await params;
 
   const admin = createAdminClient();

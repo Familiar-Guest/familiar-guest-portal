@@ -15,6 +15,8 @@ import { findInternalConflict, isActiveOffer } from "@/lib/offers";
 import { effectivePolicyForBooking, computeRefund } from "@/lib/policies";
 import { CURRENCIES } from "@/lib/properties";
 import { quoteStay } from "@/lib/pricing";
+import { refundBooking } from "@/lib/payouts";
+import { paymentsGateEnabled } from "@/lib/flags";
 import { nights, formatMoney } from "@/lib/format";
 import type { Booking, NonStandardRate, Property } from "@/lib/types";
 
@@ -265,10 +267,12 @@ export async function DELETE(
     if (hasMoney) {
       const policy = await effectivePolicyForBooking(supabase, booking);
       const refund = computeRefund(policy, booking);
-      refundNote =
-        refund.cents > 0
-          ? `A refund of ${formatMoney(refund.cents, booking.currency)} (${refund.pct}% of what you paid) will be processed per the cancellation policy.`
-          : undefined;
+      if (refund.cents > 0) {
+        if (paymentsGateEnabled()) await refundBooking(supabase, booking, refund.cents);
+        refundNote = `A refund of ${formatMoney(refund.cents, booking.currency)} (${refund.pct}% of what you paid) ${
+          paymentsGateEnabled() ? "has been issued" : "will be processed"
+        } per the cancellation policy.`;
+      }
     }
     const { subject, html } = buildCancellationEmail(booking, refundNote);
     await sendEmail({

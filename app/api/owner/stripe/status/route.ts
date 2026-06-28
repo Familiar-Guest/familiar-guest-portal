@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getOwner } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getConnectStatus, type ConnectStatus } from "@/lib/stripe";
+import { paymentsGateEnabled } from "@/lib/flags";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -22,6 +23,10 @@ export async function GET() {
   const owner = await getOwner();
   if (!owner) return NextResponse.json({ error: "Not authorized." }, { status: 401 });
 
+  // Payments dormant → report disabled so the portal hides the verification UI.
+  if (!paymentsGateEnabled())
+    return NextResponse.json({ ok: true, enabled: false, status: DISCONNECTED });
+
   const admin = createAdminClient();
   const { data } = await admin
     .from("owners")
@@ -38,7 +43,7 @@ export async function GET() {
   } | null;
 
   if (!row?.stripe_account_id) {
-    return NextResponse.json({ ok: true, status: DISCONNECTED });
+    return NextResponse.json({ ok: true, enabled: true, status: DISCONNECTED });
   }
 
   try {
@@ -51,12 +56,13 @@ export async function GET() {
         stripe_details_submitted: status.details_submitted,
       })
       .eq("id", owner.id);
-    return NextResponse.json({ ok: true, status });
+    return NextResponse.json({ ok: true, enabled: true, status });
   } catch (err) {
     console.error("stripe status refresh failed", err);
     // Fall back to the cached values if Stripe is unreachable.
     return NextResponse.json({
       ok: true,
+      enabled: true,
       status: {
         connected: true,
         charges_enabled: row.stripe_charges_enabled,
