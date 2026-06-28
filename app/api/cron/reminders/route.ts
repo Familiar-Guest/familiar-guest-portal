@@ -9,13 +9,7 @@ import {
 } from "@/lib/email";
 import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { daysUntil, formatDate, formatMoney } from "@/lib/format";
-import {
-  getOwnerPolicies,
-  forfeitDeadline,
-  effectivePolicy,
-  DEFAULT_POLICY,
-  type OwnerPolicy,
-} from "@/lib/policies";
+import { forfeitDeadline, effectivePolicyForBooking } from "@/lib/policies";
 import type { Booking } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -53,17 +47,6 @@ export async function GET(request: NextRequest) {
   }
 
   const bookings = (data ?? []) as Booking[];
-
-  // Cache each owner's policies so we hit the table once per owner.
-  const policyCache = new Map<string, OwnerPolicy>();
-  const policyFor = async (ownerId: string | null): Promise<OwnerPolicy> => {
-    if (!ownerId) return DEFAULT_POLICY;
-    const cached = policyCache.get(ownerId);
-    if (cached) return cached;
-    const p = await getOwnerPolicies(supabase, ownerId);
-    policyCache.set(ownerId, p);
-    return p;
-  };
 
   // ── Owner alerts for unpaid invite offers approaching/passing check-in ──────
   // Separately query offer_sent bookings with check-ins within the alert window
@@ -151,7 +134,7 @@ export async function GET(request: NextRequest) {
 
   for (const b of bookings) {
     const days = daysUntil(b.check_in);
-    const policy = effectivePolicy(b, await policyFor(b.owner_id));
+    const policy = await effectivePolicyForBooking(supabase, b);
 
     // ── Deposit-paid bookings: balance reminders + forfeiture ───────────────
     if (b.status === "deposit_paid" && b.balance_due_date && b.balance_paid_at === null) {

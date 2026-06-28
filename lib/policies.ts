@@ -64,9 +64,59 @@ export function parsePolicyInput(
   return { value };
 }
 
+/** Policy fields that now live on the property (the per-property payment/refund policy). */
+export interface PropertyPolicyFields {
+  deposit_pct: number;
+  deposit_required_days: number;
+  full_payment_due_days: number;
+  refund_100_days: number;
+  refund_50_days: number;
+  checkin_email_days: number;
+}
+
+const PROPERTY_POLICY_COLS =
+  "deposit_pct, deposit_required_days, full_payment_due_days, refund_100_days, refund_50_days, checkin_email_days";
+
+/** Build an OwnerPolicy from a property's per-property policy fields.
+ *  `min_days_to_book` is a global concern (public-request lead time) and is not
+ *  used by the payment/refund consumers that read a property policy. */
+export function policyFromProperty(p: PropertyPolicyFields): OwnerPolicy {
+  return {
+    min_days_to_book: DEFAULT_POLICY.min_days_to_book,
+    checkin_email_days: p.checkin_email_days,
+    deposit_required_days: p.deposit_required_days,
+    full_payment_due_days: p.full_payment_due_days,
+    deposit_pct: p.deposit_pct,
+    refund_100_days: p.refund_100_days,
+    refund_50_days: p.refund_50_days,
+  };
+}
+
 /**
- * Merge per-booking policy overrides with the owner's global policy.
- * Any field set on the booking takes precedence; null falls back to the owner default.
+ * The effective policy for a booking: the property's per-property policy with
+ * any per-booking overrides applied on top. Falls back to the owner's global
+ * default if the property is missing (e.g. deleted after the booking).
+ */
+export async function effectivePolicyForBooking(
+  admin: SupabaseClient,
+  booking: Booking
+): Promise<OwnerPolicy> {
+  let base: OwnerPolicy | null = null;
+  if (booking.property_id) {
+    const { data } = await admin
+      .from("properties")
+      .select(PROPERTY_POLICY_COLS)
+      .eq("id", booking.property_id)
+      .maybeSingle();
+    if (data) base = policyFromProperty(data as PropertyPolicyFields);
+  }
+  if (!base) base = await getOwnerPolicies(admin, booking.owner_id);
+  return effectivePolicy(booking, base);
+}
+
+/**
+ * Merge per-booking policy overrides with a base policy (property or global).
+ * Any field set on the booking takes precedence; null falls back to the base.
  * `min_days_to_book` is not per-booking (it governs public requests, not owner invites).
  */
 export function effectivePolicy(booking: Booking, ownerPolicy: OwnerPolicy): OwnerPolicy {
@@ -220,16 +270,31 @@ export async function buildTermsMap(
   bookings: Booking[],
   now: Date = new Date()
 ): Promise<Record<string, string[]>> {
-  const cache = new Map<string, OwnerPolicy>();
+  const propCache = new Map<string, OwnerPolicy>();
+  const ownerCache = new Map<string, OwnerPolicy>();
   const map: Record<string, string[]> = {};
   for (const b of bookings) {
-    const key = b.owner_id ?? "";
-    let ownerPolicy = cache.get(key);
-    if (!ownerPolicy) {
-      ownerPolicy = await getOwnerPolicies(admin, b.owner_id);
-      cache.set(key, ownerPolicy);
+    let base: OwnerPolicy | null = null;
+    if (b.property_id) {
+      base = propCache.get(b.property_id) ?? null;
+      if (!base) {
+        const { data } = await admin
+          .from("properties")
+          .select(PROPERTY_POLICY_COLS)
+          .eq("id", b.property_id)
+          .maybeSingle();
+        if (data) {
+          base = policyFromProperty(data as PropertyPolicyFields);
+          propCache.set(b.property_id, base);
+        }
+      }
     }
-    map[b.id] = guestBookingTerms(b, effectivePolicy(b, ownerPolicy), now);
+    if (!base) {
+      const key = b.owner_id ?? "";
+      base = ownerCache.get(key) ?? (await getOwnerPolicies(admin, b.owner_id));
+      ownerCache.set(key, base);
+    }
+    map[b.id] = guestBookingTerms(b, effectivePolicy(b, base), now);
   }
   return map;
 }

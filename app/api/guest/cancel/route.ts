@@ -4,7 +4,7 @@ import { getOwner } from "@/lib/auth";
 import { postMessage } from "@/lib/messages";
 import { sendEmail, siteUrl } from "@/lib/email";
 import { formatDate, formatMoney } from "@/lib/format";
-import { getOwnerPolicies, computeRefund, effectivePolicy } from "@/lib/policies";
+import { computeRefund, effectivePolicyForBooking } from "@/lib/policies";
 import type { Booking } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -51,8 +51,7 @@ export async function POST(request: NextRequest) {
     return bad("Could not cancel the booking. Please try again.", 500);
   }
 
-  const ownerPolicy = await getOwnerPolicies(admin, booking.owner_id);
-  const policy = effectivePolicy(booking, ownerPolicy);
+  const policy = await effectivePolicyForBooking(admin, booking);
   const refund = computeRefund(policy, booking);
   const refundLine =
     refund.cents > 0

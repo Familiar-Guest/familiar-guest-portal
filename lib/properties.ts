@@ -1,4 +1,5 @@
 import type { NonStandardRate } from "./types";
+import { DEFAULT_POLICY } from "./policies";
 
 export const CURRENCIES = ["usd", "cad", "mxn", "eur"];
 const CLEANING_FEE_TYPES = ["standard", "daily", "alt1", "alt2"];
@@ -20,6 +21,12 @@ export type PropertyInput = {
   alt_cleaning_fee_2_cents: number;
   min_nights: number;
   nonstandard_rates: NonStandardRate[];
+  deposit_pct: number;
+  deposit_required_days: number;
+  full_payment_due_days: number;
+  refund_100_days: number;
+  refund_50_days: number;
+  checkin_email_days: number;
   is_listed: boolean;
   airbnb_ical_url: string | null;
   checkin_instructions: string | null;
@@ -81,6 +88,24 @@ export function parsePropertyInput(
   if ("error" in nsResult) return { error: nsResult.error };
   const nonstandard_rates = nsResult.value;
 
+  // Payment / refund policy (per-property). deposit_pct 0 = no deposit required.
+  const deposits_required = body.deposits_required === true;
+  let deposit_pct = 0;
+  if (deposits_required) {
+    deposit_pct = Math.round(Number(body.deposit_pct));
+    if (deposit_pct !== 25 && deposit_pct !== 50)
+      return { error: "Deposit must be 25% or 50%." };
+  }
+  const deposit_required_days = intOr(body.deposit_required_days, DEFAULT_POLICY.deposit_required_days);
+  const full_payment_due_days = intOr(body.full_payment_due_days, DEFAULT_POLICY.full_payment_due_days);
+  if (deposits_required && full_payment_due_days > deposit_required_days)
+    return { error: "Full payment must be due on or after the deposit due date (the same or fewer days before check-in)." };
+  const refund_100_days = intOr(body.refund_100_days, DEFAULT_POLICY.refund_100_days);
+  const refund_50_days = intOr(body.refund_50_days, DEFAULT_POLICY.refund_50_days);
+  if (refund_50_days > refund_100_days)
+    return { error: "The 50% refund window can't be longer than the 100% window." };
+  const checkin_email_days = intOr(body.checkin_email_days, DEFAULT_POLICY.checkin_email_days);
+
   if (is_listed && (nightly_rate_cents === null || nightly_rate_cents <= 0))
     return { error: "Set a nightly rate before publishing this listing." };
   if (is_listed && photos.length === 0)
@@ -107,6 +132,12 @@ export function parsePropertyInput(
       alt_cleaning_fee_2_cents,
       min_nights,
       nonstandard_rates,
+      deposit_pct,
+      deposit_required_days,
+      full_payment_due_days,
+      refund_100_days,
+      refund_50_days,
+      checkin_email_days,
       is_listed,
       airbnb_ical_url,
       checkin_instructions,
@@ -204,4 +235,10 @@ function numOrNull(v: unknown): number | null {
   if (v === null || v === undefined || v === "") return null;
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
+}
+
+/** Parse a non-negative integer, falling back to `dflt` for missing/invalid input. */
+function intOr(v: unknown, dflt: number): number {
+  const n = Number(v);
+  return Number.isFinite(n) && n >= 0 ? Math.round(n) : dflt;
 }

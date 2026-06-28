@@ -643,7 +643,7 @@ function Shell({
     { id: "bookings", label: "Booking activity" },
     { id: "offers", label: "Offers" },
     { id: "messages", label: "Messages" },
-    { id: "policies", label: "Global Policies" },
+    { id: "policies", label: "Default Policies" },
     { id: "settings", label: "Settings" },
   ];
   return (

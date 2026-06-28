@@ -131,26 +131,22 @@ export function OfferForm({
       .catch(() => {});
   }, [form.property_id, initial?.id]);
 
-  // Seed policy fields from global policies (only for fields not already set from an existing booking).
+  // Seed policy override fields from the SELECTED PROPERTY (only for fields not
+  // already set from an existing booking being edited). The offer inherits the
+  // property's policy by default; the owner can expand "Booking terms" to override.
   useEffect(() => {
-    fetch("/api/owner/policies")
-      .then((r) => r.json())
-      .then((d) => {
-        if (!d.policy) return;
-        const p = d.policy;
-        setForm((f) => ({
-          ...f,
-          policy_checkin_email_days:    f.policy_checkin_email_days    || String(p.checkin_email_days),
-          policy_deposit_required_days: f.policy_deposit_required_days || String(p.deposit_required_days),
-          policy_full_payment_due_days: f.policy_full_payment_due_days || String(p.full_payment_due_days),
-          policy_refund_100_days:       f.policy_refund_100_days       || String(p.refund_100_days),
-          policy_refund_50_days:        f.policy_refund_50_days        || String(p.refund_50_days),
-          policy_deposit_pct:           f.policy_deposit_pct           || String(p.deposit_pct),
-        }));
-      })
-      .catch(() => {});
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // run once on mount
+    const p = properties.find((x) => x.id === form.property_id);
+    if (!p) return;
+    setForm((f) => ({
+      ...f,
+      policy_checkin_email_days:    f.policy_checkin_email_days    || String(p.checkin_email_days),
+      policy_deposit_required_days: f.policy_deposit_required_days || String(p.deposit_required_days),
+      policy_full_payment_due_days: f.policy_full_payment_due_days || String(p.full_payment_due_days),
+      policy_refund_100_days:       f.policy_refund_100_days       || String(p.refund_100_days),
+      policy_refund_50_days:        f.policy_refund_50_days        || String(p.refund_50_days),
+      policy_deposit_pct:           f.policy_deposit_pct           || String(p.deposit_pct),
+    }));
+  }, [form.property_id, properties]);
 
   const selectedProperty = properties.find((p) => p.id === form.property_id);
   const currency = form.currency.toUpperCase();
@@ -505,13 +501,13 @@ export function OfferForm({
           </div>
         )}
 
-        <div style={{ borderTop: "1px solid var(--line)", paddingTop: 18, marginTop: 18 }}>
-          <p style={{ fontSize: 13, fontWeight: 600, color: "var(--ink)", marginBottom: 4 }}>
-            Booking terms
-          </p>
-          <p className="bk-note" style={{ textAlign: "left", marginBottom: 12 }}>
-            Defaults from your Global Policies — adjust for this offer if needed.{" "}
-            <strong>All values are days before check-in.</strong>
+        <details className="pol-advanced" style={{ marginTop: 18 }}>
+          <summary>
+            Booking terms — using {selectedProperty?.name ?? "the property"}&rsquo;s defaults
+          </summary>
+          <p className="bk-note" style={{ textAlign: "left", margin: "8px 0 12px" }}>
+            Inherited from this property&rsquo;s payment policy — change them just for
+            this offer if needed. <strong>All values are days before check-in.</strong>
           </p>
           <div className="bk-grid2">
             <div className="bk-field">
@@ -551,7 +547,7 @@ export function OfferForm({
                 onChange={(e) => set("policy_refund_50_days", e.target.value)} />
             </div>
           </div>
-        </div>
+        </details>
 
         {conflict && (
           <div className="bk-error">

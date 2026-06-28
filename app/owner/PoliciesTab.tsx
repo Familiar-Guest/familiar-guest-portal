@@ -3,19 +3,22 @@
 import { useEffect, useState } from "react";
 import type { OwnerPolicy } from "@/lib/policies";
 
-// Day-count fields share the "days before rental date" framing, shown once as a
-// section heading rather than repeated on every label.
-const DAY_FIELDS: { key: keyof OwnerPolicy; label: string }[] = [
-  { key: "min_days_to_book", label: "Minimum to book (does not apply to invite offers)" },
-  { key: "checkin_email_days", label: "Send check-in email" },
-  { key: "deposit_required_days", label: "Deposit required (min)" },
-  { key: "full_payment_due_days", label: "Full payment due" },
-  { key: "refund_100_days", label: "100% refund" },
-  { key: "refund_50_days", label: "50% refund" },
-];
+type FormState = {
+  deposits_required: boolean;
+  deposit_pct: string;
+  deposit_required_days: string;
+  full_payment_due_days: string;
+  refund_100_days: string;
+  refund_50_days: string;
+  checkin_email_days: string;
+  min_days_to_book: string;
+};
 
-type FormState = Record<keyof OwnerPolicy, string>;
-
+/**
+ * Global DEFAULT policy. These values seed every NEW property's payment/refund
+ * policy; each property is then edited on its own profile. Changing them here
+ * does not alter existing properties.
+ */
 export function PoliciesTab() {
   const [form, setForm] = useState<FormState | null>(null);
   const [loading, setLoading] = useState(true);
@@ -30,20 +33,21 @@ export function PoliciesTab() {
       if (res.ok && data.policy) {
         const p = data.policy as OwnerPolicy;
         setForm({
-          min_days_to_book: String(p.min_days_to_book),
-          checkin_email_days: String(p.checkin_email_days),
+          deposits_required: p.deposit_pct > 0,
+          deposit_pct: p.deposit_pct ? String(p.deposit_pct) : "25",
           deposit_required_days: String(p.deposit_required_days),
           full_payment_due_days: String(p.full_payment_due_days),
-          deposit_pct: String(p.deposit_pct),
           refund_100_days: String(p.refund_100_days),
           refund_50_days: String(p.refund_50_days),
+          checkin_email_days: String(p.checkin_email_days),
+          min_days_to_book: String(p.min_days_to_book),
         });
       }
       setLoading(false);
     })();
   }, []);
 
-  function set(key: keyof OwnerPolicy, value: string) {
+  function set<K extends keyof FormState>(key: K, value: FormState[K]) {
     setForm((f) => (f ? { ...f, [key]: value } : f));
     setSaved(false);
   }
@@ -54,10 +58,15 @@ export function PoliciesTab() {
     setSaving(true);
     setError(null);
     setSaved(false);
-    const payload: Record<string, number> = {};
-    (Object.keys(form) as (keyof OwnerPolicy)[]).forEach((k) => {
-      payload[k] = Number(form[k]);
-    });
+    const payload = {
+      min_days_to_book: Number(form.min_days_to_book),
+      checkin_email_days: Number(form.checkin_email_days),
+      deposit_required_days: Number(form.deposit_required_days),
+      full_payment_due_days: Number(form.full_payment_due_days),
+      deposit_pct: form.deposits_required ? Number(form.deposit_pct) : 0,
+      refund_100_days: Number(form.refund_100_days),
+      refund_50_days: Number(form.refund_50_days),
+    };
     const res = await fetch("/api/owner/policies", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -78,57 +87,80 @@ export function PoliciesTab() {
     <div>
       <div className="op-head">
         <div>
-          <h2 className="op-h2">Global Policies</h2>
+          <h2 className="op-h2">Default policies</h2>
           <p className="op-sub">
-            These rules apply to <strong>all</strong> your properties and govern how
-            bookings are paid, reminded, and refunded.
+            These are the defaults applied to <strong>new</strong> properties. Edit an
+            individual property to change its payment or refund terms.
           </p>
         </div>
       </div>
 
       <form onSubmit={save}>
-        <h3 className="op-subhead" style={{ marginTop: 0 }}>Days before rental date</h3>
-        <p className="bk-note" style={{ textAlign: "left", marginBottom: 14 }}>
-          Each value below is a number of days before the stay&rsquo;s check-in date.
-        </p>
-        <div className="bk-grid2">
-          {DAY_FIELDS.map(({ key, label }) => (
-            <div className="bk-field" key={key}>
-              <label htmlFor={key}>{label}</label>
-              <input
-                id={key}
-                type="number"
-                min="0"
-                step="1"
-                value={form[key]}
-                onChange={(e) => set(key, e.target.value)}
-              />
+        <div className="bk-field">
+          <label>Payment policy</label>
+          <label className="cf-option" style={{ cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={form.deposits_required}
+              onChange={(e) => set("deposits_required", e.target.checked)}
+            />
+            <span>Require a deposit to reserve</span>
+          </label>
+
+          {form.deposits_required && (
+            <div className="bk-grid2" style={{ marginTop: 10 }}>
+              <div className="bk-field">
+                <label htmlFor="g_dep_pct">Deposit amount</label>
+                <select id="g_dep_pct" value={form.deposit_pct} onChange={(e) => set("deposit_pct", e.target.value)}>
+                  <option value="25">25% of the total</option>
+                  <option value="50">50% of the total</option>
+                </select>
+              </div>
+              <div className="bk-field">
+                <label htmlFor="g_dep_days">Deposit due (days before check-in)</label>
+                <input id="g_dep_days" type="number" min="0" step="1" value={form.deposit_required_days} onChange={(e) => set("deposit_required_days", e.target.value)} />
+                <p className="bk-note" style={{ textAlign: "left", marginTop: 5 }}>
+                  If a guest books closer in than this, they pay in full at booking.
+                </p>
+              </div>
+              <div className="bk-field">
+                <label htmlFor="g_full_days">Full payment due (days before check-in)</label>
+                <input id="g_full_days" type="number" min="0" step="1" value={form.full_payment_due_days} onChange={(e) => set("full_payment_due_days", e.target.value)} />
+                <p className="bk-note" style={{ textAlign: "left", marginTop: 5 }}>
+                  Default 30. Must fall between the deposit due date and check-in.
+                </p>
+              </div>
             </div>
-          ))}
+          )}
         </div>
 
-        <div style={{ marginTop: 18, paddingTop: 18, borderTop: "1px solid var(--line, #E0D6C5)" }}>
-          <div className="bk-field" style={{ maxWidth: 220 }}>
-            <label htmlFor="deposit_pct">Deposit %</label>
-            <input
-              id="deposit_pct"
-              type="number"
-              min="0"
-              max="100"
-              step="1"
-              value={form.deposit_pct}
-              onChange={(e) => set("deposit_pct", e.target.value)}
-            />
-            <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>
-              Percent of the total collected as a deposit when a guest books far enough
-              out (see &ldquo;Deposit required&rdquo; above). The balance is due by
-              &ldquo;Full payment due&rdquo; days before check-in.
-            </p>
+        <details className="pol-advanced">
+          <summary>Advanced: cancellation, reminders &amp; public bookings</summary>
+          <div className="bk-grid2" style={{ marginTop: 10 }}>
+            <div className="bk-field">
+              <label htmlFor="g_ref100">Full refund if cancelled (days before check-in)</label>
+              <input id="g_ref100" type="number" min="0" step="1" value={form.refund_100_days} onChange={(e) => set("refund_100_days", e.target.value)} />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="g_ref50">50% refund if cancelled (days before check-in)</label>
+              <input id="g_ref50" type="number" min="0" step="1" value={form.refund_50_days} onChange={(e) => set("refund_50_days", e.target.value)} />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="g_cie">Send check-in email (days before check-in)</label>
+              <input id="g_cie" type="number" min="0" step="1" value={form.checkin_email_days} onChange={(e) => set("checkin_email_days", e.target.value)} />
+            </div>
+            <div className="bk-field">
+              <label htmlFor="g_minbook">Minimum lead time for public requests (days)</label>
+              <input id="g_minbook" type="number" min="0" step="1" value={form.min_days_to_book} onChange={(e) => set("min_days_to_book", e.target.value)} />
+              <p className="bk-note" style={{ textAlign: "left", marginTop: 5 }}>
+                Does not apply to invite offers.
+              </p>
+            </div>
           </div>
-        </div>
+        </details>
 
         <button className="bk-btn" type="submit" disabled={saving} style={{ marginTop: 20 }}>
-          {saving ? "Saving…" : "Save policies"}
+          {saving ? "Saving…" : "Save defaults"}
         </button>
         {saved && <p className="bk-note">Saved.</p>}
         {error && <div className="bk-error">{error}</div>}

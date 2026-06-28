@@ -6,7 +6,7 @@ import { hasContact, type OwnerContact } from "./welcome";
 import { createAdminClient } from "./supabase/admin";
 import { buildBookingEmail } from "./emails/bookingEmail";
 import { buildCheckInEmail, type CheckInInstruction } from "./emails/checkInEmail";
-import { getOwnerPolicies, guestBookingTerms, type OwnerPolicy } from "./policies";
+import { effectivePolicyForBooking, guestBookingTerms, type OwnerPolicy } from "./policies";
 
 const FOREST = "#14543F";
 const CLAY = "#C0673E";
@@ -333,7 +333,7 @@ export async function buildBookingConfirmation(
 ): Promise<{ subject: string; html: string }> {
   const { property, ownerName } = await loadBookingContext(b);
   const admin = createAdminClient();
-  const policy = await getOwnerPolicies(admin, b.owner_id);
+  const policy = await effectivePolicyForBooking(admin, b);
   return buildBookingEmail({
     guestName: b.guest_name,
     ownerName,

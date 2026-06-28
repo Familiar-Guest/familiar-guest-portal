@@ -12,7 +12,7 @@ import {
 import { getOwnerContact } from "@/lib/owner";
 import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { findInternalConflict, isActiveOffer } from "@/lib/offers";
-import { getOwnerPolicies, effectivePolicy, computeRefund } from "@/lib/policies";
+import { effectivePolicyForBooking, computeRefund } from "@/lib/policies";
 import { CURRENCIES } from "@/lib/properties";
 import { quoteStay } from "@/lib/pricing";
 import { nights, formatMoney } from "@/lib/format";
@@ -213,8 +213,7 @@ export async function PATCH(
 
   // A paid booking that's edited gets a change notice (it already paid — no pay
   // link). An unpaid offer re-sends the offer email with the live pay link.
-  const ownerPolicy = await getOwnerPolicies(supabase, owner.id);
-  const policy = effectivePolicy(booking, ownerPolicy);
+  const policy = await effectivePolicyForBooking(supabase, booking);
   const { subject, html } = isPaid
     ? buildChangeEmail(booking, oldCheckIn, oldCheckOut, portalUrl)
     : buildOfferEmail(booking, contact, null, policy);
@@ -266,7 +265,7 @@ export async function DELETE(
   if (wasActive) {
     let refundNote: string | undefined;
     if (hasMoney) {
-      const policy = await getOwnerPolicies(supabase, owner.id);
+      const policy = await effectivePolicyForBooking(supabase, booking);
       const refund = computeRefund(policy, booking);
       refundNote =
         refund.cents > 0

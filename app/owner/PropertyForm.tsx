@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Property } from "@/lib/types";
 import { MAX_NONSTANDARD_RATES } from "@/lib/properties";
 
@@ -45,6 +45,15 @@ export function PropertyForm({
     wifi: initial?.wifi ?? "",
     parking: initial?.parking ?? "",
     house_rules: initial?.house_rules ?? "",
+    // Payment / refund policy (per-property). For a new property these are
+    // pre-filled from the owner's global default below.
+    deposits_required: initial ? (initial.deposit_pct ?? 0) > 0 : true,
+    deposit_pct: initial && initial.deposit_pct ? String(initial.deposit_pct) : "25",
+    deposit_required_days: initial ? String(initial.deposit_required_days) : "30",
+    full_payment_due_days: initial ? String(initial.full_payment_due_days) : "30",
+    refund_100_days: initial ? String(initial.refund_100_days) : "30",
+    refund_50_days: initial ? String(initial.refund_50_days) : "15",
+    checkin_email_days: initial ? String(initial.checkin_email_days) : "2",
     is_listed: initial?.is_listed ?? false,
   });
   const [photos, setPhotos] = useState<string[]>(initial?.photos ?? []);
@@ -66,6 +75,29 @@ export function PropertyForm({
   );
   const [showAddNs, setShowAddNs] = useState(false);
   const [nsDraft, setNsDraft] = useState({ name: "", start: "", end: "", rate: "" });
+
+  // New property: pre-fill the payment/refund policy from the owner's global
+  // default so they only set it once (then can adjust per property).
+  useEffect(() => {
+    if (initial) return; // editing keeps the property's saved policy
+    fetch("/api/owner/policies", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d.policy) return;
+        const p = d.policy;
+        setForm((f) => ({
+          ...f,
+          deposits_required: (p.deposit_pct ?? 0) > 0,
+          deposit_pct: p.deposit_pct ? String(p.deposit_pct) : "25",
+          deposit_required_days: String(p.deposit_required_days),
+          full_payment_due_days: String(p.full_payment_due_days),
+          refund_100_days: String(p.refund_100_days),
+          refund_50_days: String(p.refund_50_days),
+          checkin_email_days: String(p.checkin_email_days),
+        }));
+      })
+      .catch(() => {});
+  }, [initial]);
   const [nsError, setNsError] = useState<string | null>(null);
 
   function nextDefaultName(): string {
@@ -385,6 +417,66 @@ export function PropertyForm({
           <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>
             Choose which fee applies to this property. The daily rate is multiplied by the length of stay; the others are a flat amount per booking.
           </p>
+        </div>
+
+        {/* Payment & refund policy (per-property) */}
+        <div className="bk-field">
+          <label>Payment policy</label>
+          <label className="cf-option" style={{ cursor: "pointer" }}>
+            <input
+              type="checkbox"
+              checked={form.deposits_required}
+              onChange={(e) => setForm((f) => ({ ...f, deposits_required: e.target.checked }))}
+            />
+            <span>Require a deposit to reserve</span>
+          </label>
+
+          {form.deposits_required && (
+            <div className="bk-grid2" style={{ marginTop: 10 }}>
+              <div className="bk-field">
+                <label htmlFor="dep_pct">Deposit amount</label>
+                <select id="dep_pct" value={form.deposit_pct} onChange={(e) => set("deposit_pct", e.target.value)}>
+                  <option value="25">25% of the total</option>
+                  <option value="50">50% of the total</option>
+                </select>
+              </div>
+              <div className="bk-field">
+                <label htmlFor="dep_days">Deposit due (days before check-in)</label>
+                <input id="dep_days" type="number" min="0" step="1" value={form.deposit_required_days} onChange={(e) => set("deposit_required_days", e.target.value)} />
+                <p className="bk-note" style={{ textAlign: "left", marginTop: 5 }}>
+                  If a guest books closer in than this, they pay in full at booking.
+                </p>
+              </div>
+              <div className="bk-field">
+                <label htmlFor="full_days">Full payment due (days before check-in)</label>
+                <input id="full_days" type="number" min="0" step="1" value={form.full_payment_due_days} onChange={(e) => set("full_payment_due_days", e.target.value)} />
+                <p className="bk-note" style={{ textAlign: "left", marginTop: 5 }}>
+                  Default 30. Must fall between the deposit due date and check-in.
+                </p>
+              </div>
+            </div>
+          )}
+
+          <details className="pol-advanced">
+            <summary>Advanced: cancellation &amp; reminders</summary>
+            <div className="bk-grid2" style={{ marginTop: 10 }}>
+              <div className="bk-field">
+                <label htmlFor="ref100">Full refund if cancelled (days before check-in)</label>
+                <input id="ref100" type="number" min="0" step="1" value={form.refund_100_days} onChange={(e) => set("refund_100_days", e.target.value)} />
+              </div>
+              <div className="bk-field">
+                <label htmlFor="ref50">50% refund if cancelled (days before check-in)</label>
+                <input id="ref50" type="number" min="0" step="1" value={form.refund_50_days} onChange={(e) => set("refund_50_days", e.target.value)} />
+              </div>
+              <div className="bk-field">
+                <label htmlFor="cie">Send check-in email (days before check-in)</label>
+                <input id="cie" type="number" min="0" step="1" value={form.checkin_email_days} onChange={(e) => set("checkin_email_days", e.target.value)} />
+              </div>
+            </div>
+            <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>
+              Cancel earlier than the full-refund window for 100% back; between the two windows, 50%; after that, no refund.
+            </p>
+          </details>
         </div>
 
         <div className="bk-grid2">

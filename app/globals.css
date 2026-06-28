@@ -477,6 +477,9 @@ input[type="password"]::-webkit-textfield-decoration-container { display: none }
 .ical-export-row{display:flex;gap:10px;align-items:center}
 .ical-export-url{flex:1;min-width:0;font-size:13px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--ink);background:#fff}
 .ical-export .bk-btn{flex:none;width:auto;margin:0;padding:9px 16px}
+.pol-advanced{margin-top:12px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:0 12px;background:var(--paper-2)}
+.pol-advanced>summary{cursor:pointer;padding:10px 0;font-size:13px;font-weight:600;color:var(--ink);list-style:revert}
+.pol-advanced[open]{padding-bottom:12px}
 /* property photo uploader */
 .ph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-bottom:10px}
 .ph-thumb{position:relative;aspect-ratio:4/3;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--line)}

@@ -100,6 +100,13 @@ export interface Property {
   alt_cleaning_fee_1_cents: number;
   alt_cleaning_fee_2_cents: number;
   min_nights: number;
+  // Per-property payment/refund policy (deposit_pct 0 = no deposit required).
+  deposit_pct: number;
+  deposit_required_days: number;
+  full_payment_due_days: number;
+  refund_100_days: number;
+  refund_50_days: number;
+  checkin_email_days: number;
   is_listed: boolean;
   airbnb_ical_url: string | null; // inbound: other platform's calendar we import
   ical_token: string; // outbound: token for this property's public .ics export URL
