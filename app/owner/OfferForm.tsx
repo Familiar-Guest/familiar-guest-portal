@@ -430,7 +430,8 @@ export function OfferForm({
             Booking terms
           </p>
           <p className="bk-note" style={{ textAlign: "left", marginBottom: 12 }}>
-            Defaults from your Global Policies — adjust for this offer if needed. All values are days before check-in.
+            Defaults from your Global Policies — adjust for this offer if needed.{" "}
+            <strong>All values are days before check-in.</strong>
           </p>
           <div className="bk-grid2">
             <div className="bk-field">

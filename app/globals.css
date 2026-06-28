@@ -466,6 +466,12 @@ input[type="password"]::-webkit-textfield-decoration-container { display: none }
 .cf-option input[type="radio"]{width:auto;flex-shrink:0}
 .cf-option span{flex:1;margin-right:14px}
 .cf-option input[type="number"]{width:80px;flex:none}
+.ns-row{display:flex;align-items:center;gap:10px;background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:8px 12px}
+.ns-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.ns-main .ns-name{width:100%}
+.ns-dates{font-size:12px;color:#4F605A}
+.ns-row .ns-rate{width:80px;flex:none}
+.ns-add{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px}
 /* property photo uploader */
 .ph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-bottom:10px}
 .ph-thumb{position:relative;aspect-ratio:4/3;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--line)}

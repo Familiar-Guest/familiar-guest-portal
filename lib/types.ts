@@ -68,6 +68,19 @@ export interface Booking {
 
 export type CleaningFeeType = "standard" | "daily" | "alt1" | "alt2";
 
+/**
+ * An owner-defined per-day price override for a date range. Nights within
+ * [start, end] (inclusive) are priced at rate_cents instead of the property's
+ * Standard Daily Rate. Ranges never overlap; max 8 per property.
+ */
+export interface NonStandardRate {
+  id: string;
+  name: string;
+  start: string; // YYYY-MM-DD (inclusive)
+  end: string; // YYYY-MM-DD (inclusive)
+  rate_cents: number;
+}
+
 export interface Property {
   id: string;
   owner_id: string;
@@ -79,7 +92,8 @@ export interface Property {
   gps_lat: number | null;
   gps_lng: number | null;
   currency: string;
-  nightly_rate_cents: number | null;
+  nightly_rate_cents: number | null; // "Standard Daily Rate" — default for every day
+  nonstandard_rates: NonStandardRate[]; // up to 8 date-range price overrides
   cleaning_fee_cents: number; // "Standard Cleaning Fee" amount
   cleaning_fee_type: CleaningFeeType;
   daily_cleaning_fee_cents: number;
