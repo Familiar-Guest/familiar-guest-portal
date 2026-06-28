@@ -28,6 +28,21 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid signature." }, { status: 400 });
   }
 
+  // Connect account KYC state changes — cache verification flags on the owner.
+  if (event.type === "account.updated") {
+    const account = event.data.object as Stripe.Account;
+    const supabase = createAdminClient();
+    await supabase
+      .from("owners")
+      .update({
+        stripe_charges_enabled: Boolean(account.charges_enabled),
+        stripe_payouts_enabled: Boolean(account.payouts_enabled),
+        stripe_details_submitted: Boolean(account.details_submitted),
+      })
+      .eq("stripe_account_id", account.id);
+    return NextResponse.json({ received: true });
+  }
+
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
     const bookingId = session.metadata?.booking_id;

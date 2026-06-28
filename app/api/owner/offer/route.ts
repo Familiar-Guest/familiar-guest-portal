@@ -97,6 +97,21 @@ export async function POST(request: NextRequest) {
 
   const amount_cents = stay_subtotal_cents + cleaning_fee_cents;
 
+  // Gate 1: an owner can't collect payment until Stripe identity verification
+  // (KYC) is complete. Complimentary ($0) offers are allowed through.
+  if (amount_cents > 0) {
+    const { data: ownerRow } = await supabase
+      .from("owners")
+      .select("stripe_charges_enabled")
+      .eq("id", owner.id)
+      .single();
+    if (!(ownerRow as { stripe_charges_enabled: boolean } | null)?.stripe_charges_enabled)
+      return bad(
+        "Finish identity verification (Get set up to get paid in your portal) before sending a paid offer.",
+        403
+      );
+  }
+
   // Per-booking policy overrides (null keeps the owner's global policy active).
   function parsePolicy(key: string): number | null {
     const v = Number(body[key]);

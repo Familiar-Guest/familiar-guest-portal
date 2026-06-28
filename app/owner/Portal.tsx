@@ -11,6 +11,7 @@ import { SettingsTab } from "./SettingsTab";
 import { MessagesTab, type StartBooking } from "./MessagesTab";
 import { PoliciesTab } from "./PoliciesTab";
 import { OnboardingChecklist } from "./OnboardingChecklist";
+import { PayoutBanner, type ConnectStatus } from "./PayoutBanner";
 import { BrandMark } from "../BrandMark";
 
 type Tab = "properties" | "calendar" | "bookings" | "offers" | "messages" | "policies" | "settings";
@@ -62,6 +63,7 @@ export function Portal({
   const [properties, setProperties] = useState<Property[]>([]);
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [policiesConfigured, setPoliciesConfigured] = useState(false);
+  const [kyc, setKyc] = useState<ConnectStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [overlay, setOverlay] = useState<Overlay>({ kind: "none" });
   const overlayOpenRef = useRef(false);
@@ -77,18 +79,21 @@ export function Portal({
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [pRes, bRes, polRes] = await Promise.all([
+      const [pRes, bRes, polRes, kycRes] = await Promise.all([
         fetch("/api/owner/properties", { cache: "no-store" }),
         fetch("/api/owner/bookings", { cache: "no-store" }),
         fetch("/api/owner/policies", { cache: "no-store" }),
+        fetch("/api/owner/stripe/status", { cache: "no-store" }),
       ]);
       const pData = await pRes.json().catch(() => ({}));
       const bData = await bRes.json().catch(() => ({}));
       const polData = await polRes.json().catch(() => ({}));
+      const kycData = await kycRes.json().catch(() => ({}));
       if (pRes.ok) setProperties(pData.properties ?? []);
       if (bRes.ok) setBookings(bData.bookings ?? []);
       // Policies are "configured" if the owner has saved at least one custom value.
       if (polRes.ok) setPoliciesConfigured(Boolean(polData.has_custom_row));
+      if (kycRes.ok) setKyc(kycData.status ?? null);
     } finally {
       setLoading(false);
     }
@@ -258,6 +263,7 @@ export function Portal({
         policiesConfigured={policiesConfigured}
         onNavigate={(t) => setTab(t)}
       />
+      {!loading && <PayoutBanner status={kyc} />}
       {/* PROPERTIES */}
       {tab === "properties" && (
         <div>

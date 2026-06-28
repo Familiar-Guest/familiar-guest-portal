@@ -483,6 +483,10 @@ input[type="password"]::-webkit-textfield-decoration-container { display: none }
 .pol-advanced{margin-top:12px;border:1px solid var(--line);border-radius:var(--radius-sm);padding:0 12px;background:var(--paper-2)}
 .pol-advanced>summary{cursor:pointer;padding:10px 0;font-size:13px;font-weight:600;color:var(--ink);list-style:revert}
 .pol-advanced[open]{padding-bottom:12px}
+.payout-banner{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:#FBEDE6;border:1px solid #E8C3B2;border-radius:var(--radius-md,12px);padding:16px 18px;margin-bottom:18px}
+.payout-banner-title{font-size:15px;font-weight:600;color:var(--ink)}
+.payout-banner-body{font-size:13.5px;color:var(--ink-soft);margin:4px 0 0;max-width:60ch;line-height:1.5}
+.payout-banner-btn{flex:none;width:auto;margin:0;padding:10px 18px;background:#D9663F;text-decoration:none;white-space:nowrap}
 /* property photo uploader */
 .ph-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px;margin-bottom:10px}
 .ph-thumb{position:relative;aspect-ratio:4/3;border-radius:var(--radius-sm);overflow:hidden;border:1px solid var(--line)}
