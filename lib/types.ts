@@ -79,7 +79,6 @@ export interface ImportFeed {
 export const IMPORT_PLATFORMS = [
   { key: "airbnb", label: "Airbnb", hint: "Listing → Availability → Export calendar" },
   { key: "booking", label: "Booking.com", hint: "Extranet → Calendar → Sync calendars → Export" },
-  { key: "expedia", label: "Expedia", hint: "Partner Central → Calendar, if an iCal export is offered" },
   { key: "houfy", label: "Houfy", hint: "Listing → Calendar → Export (iCal)" },
   { key: "vrbo", label: "VRBO", hint: "Calendar → Import/Export → Export calendar" },
 ] as const;

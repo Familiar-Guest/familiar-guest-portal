@@ -586,9 +586,9 @@ export default function Home() {
                 <h3>Two-way calendar sync</h3>
                 <p>
                   Keep every platform in step. Import calendars from{" "}
-                  <strong>Airbnb, VRBO, Booking.com, Houfy, and Expedia</strong>, and
-                  export Familiar Guest bookings back to each — so a booking anywhere
-                  blocks the dates everywhere. Standard iCal, no extra tools.
+                  <strong>Airbnb, VRBO, Booking.com, and Houfy</strong>, and export
+                  Familiar Guest bookings back to each — so a booking anywhere blocks
+                  the dates everywhere. Standard iCal, no extra tools.
                 </p>
               </div>
             </div>
