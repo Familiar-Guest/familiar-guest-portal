@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react";
 import type { Property } from "@/lib/types";
 import { formatMoney, nights } from "@/lib/format";
+import { quoteStay } from "@/lib/pricing";
 import { DateRangePicker } from "@/app/components/DateRangePicker";
+
+/** A property can be auto-priced from the calendar if it has a standard rate or any non-standard ranges. */
+function supportsCalendarPricing(p?: Property | null): boolean {
+  return Boolean(p && ((p.nightly_rate_cents ?? 0) > 0 || (p.nonstandard_rates?.length ?? 0) > 0));
+}
 
 const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -102,6 +108,18 @@ export function OfferForm({
   const [pricingTouched, setPricingTouched] = useState(
     Boolean(initial?.nightly_rate || initial?.cleaning_fee || initial?.currency)
   );
+  // Pricing mode: "calendar" auto-prices from the property's per-day rates;
+  // "custom" uses a flat nightly rate the owner types (and $0 comp stays).
+  // Default: editing a booking that has a stored flat rate keeps custom (so the
+  // price is preserved); a mixed-rate (no stored flat rate) booking, and any
+  // new/rebook offer, default to calendar when the property supports it.
+  const [pricingMode, setPricingMode] = useState<"calendar" | "custom">(
+    mode === "edit" && initial?.nightly_rate
+      ? "custom"
+      : supportsCalendarPricing(initialProperty)
+      ? "calendar"
+      : "custom"
+  );
 
   // Fetch busy ranges for the selected property so the calendar can gray them out.
   useEffect(() => {
@@ -155,6 +173,10 @@ export function OfferForm({
         : centsToStr(p?.cleaning_fee_cents),
       currency: pricingTouched ? f.currency : p?.currency ?? f.currency,
     }));
+    // Keep the pricing mode valid for the newly selected property: a property
+    // without any rates set can't use calendar pricing.
+    if (!supportsCalendarPricing(p)) setPricingMode("custom");
+    else if (mode !== "edit") setPricingMode("calendar");
   }
 
   function setPricing(key: "nightly_rate" | "cleaning_fee" | "currency", value: string) {
@@ -162,7 +184,10 @@ export function OfferForm({
     set(key, value);
   }
 
-  // Live total preview: nightly rate × nights + cleaning fee.
+  const canUseCalendar = supportsCalendarPricing(selectedProperty);
+
+  // Live total preview. In calendar mode the subtotal comes from the property's
+  // per-day rates; in custom mode it's the flat nightly rate × nights.
   const stayNights =
     DATE_RE.test(form.check_in) &&
     DATE_RE.test(form.check_out) &&
@@ -171,8 +196,18 @@ export function OfferForm({
       : 0;
   const nightlyCents = Math.round((Number(form.nightly_rate) || 0) * 100);
   const cleaningCents = Math.round((Number(form.cleaning_fee) || 0) * 100);
-  const totalCents =
-    stayNights > 0 ? nightlyCents * stayNights + cleaningCents : 0;
+  const quote =
+    pricingMode === "calendar" && stayNights > 0 && selectedProperty
+      ? quoteStay(
+          selectedProperty.nightly_rate_cents ?? 0,
+          selectedProperty.nonstandard_rates ?? [],
+          form.check_in,
+          form.check_out
+        )
+      : null;
+  const subtotalCents =
+    pricingMode === "calendar" ? quote?.subtotalCents ?? 0 : nightlyCents * stayNights;
+  const totalCents = stayNights > 0 ? subtotalCents + cleaningCents : 0;
   const isFreeStay = stayNights > 0 && totalCents === 0;
 
   async function submit(force: boolean) {
@@ -187,6 +222,7 @@ export function OfferForm({
       ...form,
       nightly_rate: Number(form.nightly_rate) || 0,
       cleaning_fee: Number(form.cleaning_fee) || 0,
+      pricing_mode: pricingMode,
       kind: mode === "rebook" ? "rebook" : "offer",
       force,
     };
@@ -361,16 +397,47 @@ export function OfferForm({
 
         <div className="bk-grid2">
           <div className="bk-field">
-            <label htmlFor="nightly_rate">Nightly rate ({currency})</label>
-            <input
-              id="nightly_rate"
-              type="number"
-              min="0"
-              step="0.01"
-              value={form.nightly_rate}
-              onChange={(e) => setPricing("nightly_rate", e.target.value)}
-              placeholder="0"
-            />
+            {pricingMode === "calendar" ? (
+              <>
+                <label>Nightly pricing</label>
+                <div className="ns-add" style={{ padding: "10px 12px" }}>
+                  <div style={{ fontSize: 13, color: "var(--ink)" }}>
+                    Auto-priced from this property&rsquo;s daily rates for the selected dates.
+                  </div>
+                  <button
+                    type="button"
+                    className="op-link"
+                    style={{ marginTop: 6 }}
+                    onClick={() => setPricingMode("custom")}
+                  >
+                    Set a custom price instead
+                  </button>
+                </div>
+              </>
+            ) : (
+              <>
+                <label htmlFor="nightly_rate">Nightly rate ({currency})</label>
+                <input
+                  id="nightly_rate"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  value={form.nightly_rate}
+                  onChange={(e) => setPricing("nightly_rate", e.target.value)}
+                  placeholder="0"
+                />
+                {canUseCalendar && (
+                  <button
+                    type="button"
+                    className="op-link"
+                    style={{ marginTop: 6 }}
+                    onClick={() => setPricingMode("calendar")}
+                  >
+                    Use calendar pricing
+                  </button>
+                )}
+              </>
+            )}
           </div>
           <div className="bk-field">
             <label htmlFor="cleaning_fee">
@@ -397,17 +464,30 @@ export function OfferForm({
               </div>
             ) : (
               <>
-                {nightlyCents > 0 && (
-                  <div className="bk-row">
-                    <span className="bk-label">
-                      {formatMoney(nightlyCents, currency)} × {stayNights}{" "}
-                      {stayNights === 1 ? "night" : "nights"}
-                    </span>
-                    <span className="bk-val">
-                      {formatMoney(nightlyCents * stayNights, currency)}
-                    </span>
-                  </div>
-                )}
+                {pricingMode === "calendar" && quote
+                  ? quote.segments.map((s, i) => (
+                      <div className="bk-row" key={i}>
+                        <span className="bk-label">
+                          {formatMoney(s.rate_cents, currency)} × {s.nights}{" "}
+                          {s.nights === 1 ? "night" : "nights"}
+                          {s.name !== "Standard Daily Rate" ? ` · ${s.name}` : ""}
+                        </span>
+                        <span className="bk-val">
+                          {formatMoney(s.rate_cents * s.nights, currency)}
+                        </span>
+                      </div>
+                    ))
+                  : nightlyCents > 0 && (
+                      <div className="bk-row">
+                        <span className="bk-label">
+                          {formatMoney(nightlyCents, currency)} × {stayNights}{" "}
+                          {stayNights === 1 ? "night" : "nights"}
+                        </span>
+                        <span className="bk-val">
+                          {formatMoney(nightlyCents * stayNights, currency)}
+                        </span>
+                      </div>
+                    )}
                 {cleaningCents > 0 && (
                   <div className="bk-row">
                     <span className="bk-label">Cleaning fee</span>

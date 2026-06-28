@@ -92,7 +92,7 @@ export default async function BookingPage({
             <span className="bk-label">Nights</span>
             <span className="bk-val">{n}</span>
           </div>
-          {booking.nightly_rate_cents != null && (
+          {booking.nightly_rate_cents != null ? (
             <>
               <div className="bk-row">
                 <span className="bk-label">
@@ -112,6 +112,28 @@ export default async function BookingPage({
                 </div>
               )}
             </>
+          ) : (
+            booking.amount_cents > 0 && (
+              <>
+                {/* Mixed per-day rates: show a single accommodation subtotal. */}
+                <div className="bk-row">
+                  <span className="bk-label">
+                    Accommodation · {n} {n === 1 ? "night" : "nights"}
+                  </span>
+                  <span className="bk-val">
+                    {formatMoney(booking.amount_cents - booking.cleaning_fee_cents, booking.currency)}
+                  </span>
+                </div>
+                {booking.cleaning_fee_cents > 0 && (
+                  <div className="bk-row">
+                    <span className="bk-label">Cleaning fee</span>
+                    <span className="bk-val">
+                      {formatMoney(booking.cleaning_fee_cents, booking.currency)}
+                    </span>
+                  </div>
+                )}
+              </>
+            )
           )}
           <div className="bk-row bk-total">
             <span className="bk-label">Total</span>

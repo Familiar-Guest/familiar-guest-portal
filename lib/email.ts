@@ -81,20 +81,26 @@ function summaryTable(b: Booking): string {
   const row = (label: string, value: string) =>
     `<tr><td style="padding:7px 0;color:#8a7e72;font-size:14px;">${label}</td><td style="padding:7px 0;text-align:right;font-size:14px;color:${INK};font-weight:600;">${value}</td></tr>`;
   const isFree = b.amount_cents === 0;
-  const priceRows =
-    isFree
-      ? ""
-      : b.nightly_rate_cents != null
-      ? row(
-          `${formatMoney(b.nightly_rate_cents, b.currency)} × ${n} ${
-            n === 1 ? "night" : "nights"
-          }`,
-          formatMoney(b.nightly_rate_cents * n, b.currency)
-        ) +
-        (b.cleaning_fee_cents > 0
-          ? row("Cleaning fee", formatMoney(b.cleaning_fee_cents, b.currency))
-          : "")
+  const cleaningRow =
+    b.cleaning_fee_cents > 0
+      ? row("Cleaning fee", formatMoney(b.cleaning_fee_cents, b.currency))
       : "";
+  // Uniform-rate stays show "rate × nights"; mixed-rate (per-day calendar)
+  // stays show a single "Accommodation · N nights" subtotal so the math foots.
+  const accommodationCents = b.amount_cents - b.cleaning_fee_cents;
+  const priceRows = isFree
+    ? ""
+    : b.nightly_rate_cents != null
+    ? row(
+        `${formatMoney(b.nightly_rate_cents, b.currency)} × ${n} ${
+          n === 1 ? "night" : "nights"
+        }`,
+        formatMoney(b.nightly_rate_cents * n, b.currency)
+      ) + cleaningRow
+    : row(
+        `Accommodation · ${n} ${n === 1 ? "night" : "nights"}`,
+        formatMoney(accommodationCents, b.currency)
+      ) + cleaningRow;
   const totalRow = isFree
     ? row("Total", `<span style="color:#14635A;font-weight:700;">Complimentary — no charge</span>`)
     : row("Total", formatMoney(b.amount_cents, b.currency));

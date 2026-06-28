@@ -9,6 +9,7 @@ import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { findInternalConflict } from "@/lib/offers";
 import { getOwnerPolicies, effectivePolicy } from "@/lib/policies";
 import { CURRENCIES } from "@/lib/properties";
+import { quoteStay } from "@/lib/pricing";
 import { nights } from "@/lib/format";
 import type { Booking, OfferKind, Property } from "@/lib/types";
 
@@ -59,11 +60,6 @@ export async function POST(request: NextRequest) {
     return bad("Enter valid check-in and check-out dates.");
   if (check_out <= check_in) return bad("Check-out must be after check-in.");
 
-  const nightly_rate = Number(body.nightly_rate);
-  if (!Number.isFinite(nightly_rate) || nightly_rate < 0)
-    return bad("Enter a valid nightly rate (0 for a complimentary stay).");
-  const nightly_rate_cents = Math.round(nightly_rate * 100);
-
   const cleaning_raw = Number(body.cleaning_fee);
   const cleaning_fee_cents =
     Number.isFinite(cleaning_raw) && cleaning_raw >= 0
@@ -76,8 +72,30 @@ export async function POST(request: NextRequest) {
     return bad("Unsupported currency.");
   const offerCurrency = currency || property.currency;
 
-  const amount_cents =
-    nightly_rate_cents * nights(check_in, check_out) + cleaning_fee_cents;
+  // Pricing: "calendar" sums the property's per-day rates for the stay;
+  // "custom" uses the flat nightly rate the owner entered. A mixed-rate
+  // calendar stay stores nightly_rate_cents = null (the total carries it).
+  const pricing_mode = body.pricing_mode === "calendar" ? "calendar" : "custom";
+  let nightly_rate_cents: number | null;
+  let stay_subtotal_cents: number;
+  if (pricing_mode === "calendar") {
+    const quote = quoteStay(
+      property.nightly_rate_cents ?? 0,
+      property.nonstandard_rates ?? [],
+      check_in,
+      check_out
+    );
+    stay_subtotal_cents = quote.subtotalCents;
+    nightly_rate_cents = quote.uniform ? quote.uniformRateCents : null;
+  } else {
+    const nightly_rate = Number(body.nightly_rate);
+    if (!Number.isFinite(nightly_rate) || nightly_rate < 0)
+      return bad("Enter a valid nightly rate (0 for a complimentary stay).");
+    nightly_rate_cents = Math.round(nightly_rate * 100);
+    stay_subtotal_cents = nightly_rate_cents * nights(check_in, check_out);
+  }
+
+  const amount_cents = stay_subtotal_cents + cleaning_fee_cents;
 
   // Per-booking policy overrides (null keeps the owner's global policy active).
   function parsePolicy(key: string): number | null {

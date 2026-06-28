@@ -14,8 +14,9 @@ import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { findInternalConflict, isActiveOffer } from "@/lib/offers";
 import { getOwnerPolicies, effectivePolicy, computeRefund } from "@/lib/policies";
 import { CURRENCIES } from "@/lib/properties";
+import { quoteStay } from "@/lib/pricing";
 import { nights, formatMoney } from "@/lib/format";
-import type { Booking, Property } from "@/lib/types";
+import type { Booking, NonStandardRate, Property } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -72,11 +73,6 @@ export async function PATCH(
     return bad("Enter valid check-in and check-out dates.");
   if (check_out <= check_in) return bad("Check-out must be after check-in.");
 
-  const nightly_rate = Number(body.nightly_rate);
-  if (!Number.isFinite(nightly_rate) || nightly_rate < 0)
-    return bad("Enter a valid nightly rate (0 for a complimentary stay).");
-  const nightly_rate_cents = Math.round(nightly_rate * 100);
-
   const cleaning_raw = Number(body.cleaning_fee);
   const cleaning_fee_cents =
     Number.isFinite(cleaning_raw) && cleaning_raw >= 0
@@ -90,8 +86,36 @@ export async function PATCH(
     return bad("Unsupported currency.");
   const offerCurrency = currencyInput || current.currency;
 
-  const amount_cents =
-    nightly_rate_cents * nights(check_in, check_out) + cleaning_fee_cents;
+  // Pricing mode (see POST route): calendar sums the property's per-day rates,
+  // custom uses the flat nightly rate from the form.
+  const pricing_mode = body.pricing_mode === "calendar" ? "calendar" : "custom";
+  let nightly_rate_cents: number | null;
+  let stay_subtotal_cents: number;
+  if (pricing_mode === "calendar") {
+    let standardCents = 0;
+    let nonstandard: NonStandardRate[] = [];
+    if (current.property_id) {
+      const { data: prop } = await supabase
+        .from("properties")
+        .select("nightly_rate_cents, nonstandard_rates")
+        .eq("id", current.property_id)
+        .maybeSingle();
+      const pr = prop as Pick<Property, "nightly_rate_cents" | "nonstandard_rates"> | null;
+      standardCents = pr?.nightly_rate_cents ?? 0;
+      nonstandard = pr?.nonstandard_rates ?? [];
+    }
+    const quote = quoteStay(standardCents, nonstandard, check_in, check_out);
+    stay_subtotal_cents = quote.subtotalCents;
+    nightly_rate_cents = quote.uniform ? quote.uniformRateCents : null;
+  } else {
+    const nightly_rate = Number(body.nightly_rate);
+    if (!Number.isFinite(nightly_rate) || nightly_rate < 0)
+      return bad("Enter a valid nightly rate (0 for a complimentary stay).");
+    nightly_rate_cents = Math.round(nightly_rate * 100);
+    stay_subtotal_cents = nightly_rate_cents * nights(check_in, check_out);
+  }
+
+  const amount_cents = stay_subtotal_cents + cleaning_fee_cents;
 
   function parsePolicy(key: string): number | null {
     const v = Number(body[key]);
