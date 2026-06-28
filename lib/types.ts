@@ -101,7 +101,8 @@ export interface Property {
   alt_cleaning_fee_2_cents: number;
   min_nights: number;
   is_listed: boolean;
-  airbnb_ical_url: string | null;
+  airbnb_ical_url: string | null; // inbound: other platform's calendar we import
+  ical_token: string; // outbound: token for this property's public .ics export URL
   checkin_instructions: string | null;
   welcome_message_html: string | null;
   // Structured check-in + address fields that populate the guest emails.

@@ -75,3 +75,60 @@ export async function fetchBusyBlocks(icalUrl: string): Promise<BusyBlock[]> {
     return [];
   }
 }
+
+// ── Outbound feed generation ────────────────────────────────────────────────
+// We publish a .ics feed of Familiar Guest bookings so other platforms (Airbnb,
+// VRBO, …) can import it and block those dates — the export half of two-way sync.
+
+export interface IcalEvent {
+  uid: string;
+  start: string; // YYYY-MM-DD (inclusive)
+  end: string; // YYYY-MM-DD (exclusive, iCal all-day convention)
+  summary: string;
+}
+
+/** Escape a value for an iCal text field (RFC 5545). */
+function escapeText(s: string): string {
+  return s
+    .replace(/\\/g, "\\\\")
+    .replace(/;/g, "\\;")
+    .replace(/,/g, "\\,")
+    .replace(/\r?\n/g, "\\n");
+}
+
+/** Current UTC timestamp in iCal basic format, e.g. 20260628T120000Z. */
+function icalStamp(now: Date = new Date()): string {
+  return now.toISOString().replace(/[-:]/g, "").replace(/\.\d+/, "");
+}
+
+/**
+ * Build a VCALENDAR feed of all-day "busy" events. Dates are emitted as
+ * VALUE=DATE (DTEND exclusive), matching our internal [check_in, check_out)
+ * convention, so importing platforms block exactly the booked nights.
+ */
+export function buildIcalFeed(calName: string, events: IcalEvent[]): string {
+  const stamp = icalStamp();
+  const lines: string[] = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//Familiar Guest//Booking Calendar//EN",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+    `X-WR-CALNAME:${escapeText(calName)}`,
+  ];
+  for (const e of events) {
+    lines.push(
+      "BEGIN:VEVENT",
+      `UID:${e.uid}`,
+      `DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${e.start.replace(/-/g, "")}`,
+      `DTEND;VALUE=DATE:${e.end.replace(/-/g, "")}`,
+      `SUMMARY:${escapeText(e.summary)}`,
+      "TRANSP:OPAQUE",
+      "STATUS:CONFIRMED",
+      "END:VEVENT"
+    );
+  }
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n") + "\r\n";
+}

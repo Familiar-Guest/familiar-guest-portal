@@ -62,6 +62,10 @@ export function CalendarTab({
   const [hasCalendar, setHasCalendar] = useState(false);
   const [loading, setLoading]     = useState(false);
   const [error, setError]         = useState<string | null>(null);
+  const [origin, setOrigin]       = useState("");
+  const [copied, setCopied]       = useState(false);
+
+  useEffect(() => { setOrigin(window.location.origin); }, []);
 
   const load = useCallback(async (id: string) => {
     if (!id) return;
@@ -95,6 +99,21 @@ export function CalendarTab({
   const todayIso = new Date().toISOString().slice(0, 10);
   const upcoming = ranges.filter(r => r.end >= todayIso);
   const calBars  = toCalendarBars(ranges, bookings);
+
+  const selectedProperty = properties.find(p => p.id === propertyId);
+  const exportUrl =
+    selectedProperty && origin ? `${origin}/ical/${selectedProperty.ical_token}.ics` : "";
+
+  async function copyExportUrl() {
+    if (!exportUrl) return;
+    try {
+      await navigator.clipboard.writeText(exportUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      /* clipboard unavailable — owner can still select the text manually */
+    }
+  }
 
   // Editable bookings for the selected property: confirmed stays + live offers,
   // still in the future. Airbnb-synced dates aren't editable here.
@@ -144,6 +163,33 @@ export function CalendarTab({
           </div>
         </div>
       </div>
+
+      {selectedProperty && (
+        <div className="ical-export">
+          <div className="ical-export-head">Sync these bookings to Airbnb &amp; VRBO</div>
+          <p className="bk-note" style={{ textAlign: "left", margin: "4px 0 8px" }}>
+            Paste this link into Airbnb&rsquo;s <strong>Availability → Sync calendars → Import calendar</strong>{" "}
+            (or VRBO&rsquo;s &ldquo;Import calendar&rdquo; field). Familiar Guest bookings and holds will then
+            block those dates there. Other platforms refresh on their own schedule (usually every few hours).
+          </p>
+          <div className="ical-export-row">
+            <input
+              className="ical-export-url"
+              readOnly
+              value={exportUrl}
+              onFocus={(e) => e.currentTarget.select()}
+              aria-label="Calendar export link"
+            />
+            <button type="button" className="bk-btn" onClick={copyExportUrl} disabled={!exportUrl}>
+              {copied ? "Copied" : "Copy"}
+            </button>
+          </div>
+          <p className="bk-note" style={{ textAlign: "left", marginTop: 8 }}>
+            To pull the other direction (their bookings into Familiar Guest), add that platform&rsquo;s
+            iCal link under the property on the Properties tab.
+          </p>
+        </div>
+      )}
 
       {loading && <p className="op-empty">Loading…</p>}
       {error   && <div className="bk-error">{error}</div>}
