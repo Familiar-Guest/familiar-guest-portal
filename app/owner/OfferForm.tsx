@@ -267,7 +267,7 @@ export function OfferForm({
           : mode === "rebook"
           ? "Pick the new dates and price — guest details are pre-filled. They'll get an email with a link to pay."
           : mode === "edit"
-          ? "Update the details. Saving re-sends the offer email and resets the 7-day hold."
+          ? "Update the details. Saving re-sends the offer email; the dates stay held for the guest until check-in."
           : "Set the dates and price for your guest. They'll get an email with a link to confirm — no account needed."}
         {mode === "create" &&
           " As soon as you send this, we'll block these dates on this property so no one else can book them."}

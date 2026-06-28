@@ -443,7 +443,7 @@ export function Portal({
           <div className="op-head">
             <div>
               <h2 className="op-h2">Offers</h2>
-              <p className="op-sub">Pre-define a stay and send a payment link. Offers hold the dates for 7 days.</p>
+              <p className="op-sub">Pre-define a stay and send a payment link. Offers hold the dates until check-in.</p>
             </div>
             <button
               className="bk-btn op-new"

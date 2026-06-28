@@ -592,8 +592,8 @@ export default function Home() {
                   payment link.
                 </li>
                 <li>
-                  <Check /> The dates are held for 7 days, then released
-                  automatically if unpaid.
+                  <Check /> The dates stay held for your guest right up to
+                  check-in — they can pay any time before they arrive.
                 </li>
                 <li>
                   <Check /> Your guest just accepts and pays — no account, no
@@ -614,7 +614,7 @@ export default function Home() {
                   <span className="mock-title">Your booking offer</span>
                 </div>
                 <div className="mock-body">
-                  <span className="mock-pill warn">Offer · expires in 7 days</span>
+                  <span className="mock-pill warn">Offer · held until check-in</span>
                   <div className="mock-line">
                     <span className="mock-lbl">Property</span>
                     <span className="mock-inp">Casa del Mar</span>
