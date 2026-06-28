@@ -57,13 +57,15 @@ export default function OpengraphImage() {
           </div>
           <div
             style={{
-              fontSize: 58,
+              display: "flex",
+              flexDirection: "column",
+              fontSize: 60,
               fontWeight: 700,
-              color: INK,
-              lineHeight: 1.12,
+              lineHeight: 1.14,
             }}
           >
-            Rent direct to the guests who already love your place.
+            <div style={{ color: INK }}>Rent to trusted guests</div>
+            <div style={{ color: TEAL }}>Rent from trusted owners</div>
           </div>
           <div
             style={{
@@ -73,7 +75,7 @@ export default function OpengraphImage() {
               lineHeight: 1.4,
             }}
           >
-            Skip the 15–20% platform fees. First month commission-free.
+            Skip the high platform fees.
           </div>
           <div
             style={{
