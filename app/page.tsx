@@ -574,6 +574,24 @@ export default function Home() {
                 </p>
               </div>
             </div>
+            <div className="feat">
+              <div className="ic">
+                <svg viewBox="0 0 24 24" fill="none">
+                  <rect x="3" y="4.5" width="18" height="16" rx="2" stroke="currentColor" strokeWidth="1.8" />
+                  <path d="M3 9h18M8 3v3M16 3v3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" />
+                  <path d="M9 14l2 2 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
+              <div>
+                <h3>Two-way calendar sync</h3>
+                <p>
+                  Keep every platform in step. Import calendars from{" "}
+                  <strong>Airbnb, VRBO, Booking.com, Houfy, and Expedia</strong>, and
+                  export Familiar Guest bookings back to each — so a booking anywhere
+                  blocks the dates everywhere. Standard iCal, no extra tools.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
