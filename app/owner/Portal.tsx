@@ -67,6 +67,12 @@ export function Portal({
   const [loading, setLoading] = useState(true);
   const [overlay, setOverlay] = useState<Overlay>({ kind: "none" });
   const overlayOpenRef = useRef(false);
+  // Tracks whether the open overlay form (e.g. property profile) has unsaved
+  // edits, so we can warn before closing/navigating away. Ref mirrors state for
+  // use inside the popstate/beforeunload listeners.
+  const overlayDirtyRef = useRef(false);
+  const setOverlayDirty = useCallback((d: boolean) => { overlayDirtyRef.current = d; }, []);
+  const UNSAVED_MSG = "You have unsaved changes. Leave without saving?";
   const [copied, setCopied] = useState<string | null>(null);
   const [shareCopied, setShareCopied] = useState(false);
   const [messageBooking, setMessageBooking] = useState<StartBooking | null>(null);
@@ -109,27 +115,49 @@ export function Portal({
     if (o.kind !== "none") {
       window.history.pushState({ overlayOpen: true }, "");
       overlayOpenRef.current = true;
+      overlayDirtyRef.current = false; // fresh overlay starts clean
     }
     setOverlay(o);
   }
 
   function closeOverlay(reload: boolean) {
+    // Saving (reload=true) clears the form, so only guard explicit cancel/back.
+    if (!reload && overlayDirtyRef.current && !window.confirm(UNSAVED_MSG)) return;
+    overlayDirtyRef.current = false;
     overlayOpenRef.current = false;
     setOverlay({ kind: "none" });
     if (reload) load();
   }
 
-  // Listen for the browser back button — if an overlay is open, close it instead
-  // of letting the browser navigate away from the portal.
+  // Browser back button — if an overlay is open, close it instead of leaving the
+  // portal. If the form has unsaved edits, confirm first; if the owner cancels,
+  // re-push the history entry so the overlay stays open.
   useEffect(() => {
     function onPopState() {
-      if (overlayOpenRef.current) {
-        overlayOpenRef.current = false;
-        setOverlay({ kind: "none" });
+      if (!overlayOpenRef.current) return;
+      if (overlayDirtyRef.current && !window.confirm(UNSAVED_MSG)) {
+        window.history.pushState({ overlayOpen: true }, "");
+        return;
       }
+      overlayDirtyRef.current = false;
+      overlayOpenRef.current = false;
+      setOverlay({ kind: "none" });
     }
     window.addEventListener("popstate", onPopState);
     return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  // Warn on hard navigation (tab close / refresh / typing a new URL) while an
+  // overlay form has unsaved edits.
+  useEffect(() => {
+    function onBeforeUnload(e: BeforeUnloadEvent) {
+      if (overlayDirtyRef.current) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    }
+    window.addEventListener("beforeunload", onBeforeUnload);
+    return () => window.removeEventListener("beforeunload", onBeforeUnload);
   }, []);
 
   async function logout() {
@@ -237,6 +265,7 @@ export function Portal({
           initial={overlay.initial}
           onDone={() => closeOverlay(true)}
           onCancel={() => closeOverlay(false)}
+          onDirtyChange={setOverlayDirty}
         />
       </Shell>
     );

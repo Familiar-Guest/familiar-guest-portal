@@ -17,10 +17,12 @@ export function PropertyForm({
   initial,
   onDone,
   onCancel,
+  onDirtyChange,
 }: {
   initial?: Property | null;
   onDone: () => void;
   onCancel: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
 }) {
   const [form, setForm] = useState({
     name: initial?.name ?? "",
@@ -60,6 +62,13 @@ export function PropertyForm({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
+
+  // Unsaved-changes tracking: any user edit flips this on (one-way until save),
+  // so the portal can warn before navigating away. Programmatic seeding (e.g.
+  // the policy prefetch below) uses setForm directly and doesn't fire here.
+  const [dirty, setDirty] = useState(false);
+  const markDirty = () => setDirty(true);
+  useEffect(() => { onDirtyChange?.(dirty); }, [dirty, onDirtyChange]);
 
   // Non-standard (per-date-range) rates. Dates are fixed once added; only the
   // name and price are editable. Ranges may not overlap; up to 8 allowed.
@@ -148,10 +157,12 @@ export function PropertyForm({
     ]);
     setNsDraft({ name: "", start: "", end: "", rate: "" });
     setShowAddNs(false);
+    markDirty();
   }
 
   function removeNs(id: string) {
     setNsRates((rs) => rs.filter((r) => r.id !== id));
+    markDirty();
   }
 
   function updateNs(id: string, field: "name" | "rate", value: string) {
@@ -197,6 +208,7 @@ export function PropertyForm({
       next.unshift(src);
       return next;
     });
+    markDirty();
   }
 
   async function submit(e: React.FormEvent) {
@@ -240,7 +252,7 @@ export function PropertyForm({
         Add your place, set a nightly rate, upload photos, and link your Airbnb
         calendar. Publish it to share a booking page with guests.
       </p>
-      <form onSubmit={submit}>
+      <form onSubmit={submit} onChange={markDirty}>
         <div className="bk-field">
           <label htmlFor="name">Property name</label>
           <input id="name" value={form.name} onChange={(e) => set("name", e.target.value)} required />
@@ -262,7 +274,7 @@ export function PropertyForm({
                       Make cover
                     </button>
                   )}
-                  <button type="button" className="ph-x" onClick={() => setPhotos((p) => p.filter((u) => u !== src))} aria-label="Remove">×</button>
+                  <button type="button" className="ph-x" onClick={() => { markDirty(); setPhotos((p) => p.filter((u) => u !== src)); }} aria-label="Remove">×</button>
                 </div>
               ))}
             </div>
