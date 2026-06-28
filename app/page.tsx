@@ -79,6 +79,10 @@ export default function Home() {
       <header className="hero">
         <div className="wrap hero-grid">
           <div>
+            <div className="hero-topline reveal d1">
+              <span>Rent to Trusted Guests</span>
+              <span>Rent from Trusted Owners</span>
+            </div>
             <p className="eyebrow reveal d1">For owners, not platforms</p>
             <h1 className="reveal d2">
               Host familiar
