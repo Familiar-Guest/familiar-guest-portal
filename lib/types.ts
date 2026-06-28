@@ -68,6 +68,26 @@ export interface Booking {
 
 export type CleaningFeeType = "standard" | "daily" | "alt1" | "alt2";
 
+/** One inbound iCal feed to import (another platform's calendar). */
+export interface ImportFeed {
+  platform: string; // one of IMPORT_PLATFORMS keys
+  url: string;
+}
+
+/** Platforms we can import an iCal calendar from. Any platform that exposes an
+ *  iCal export URL works with our generic importer; these are the ones we guide. */
+export const IMPORT_PLATFORMS = [
+  { key: "airbnb", label: "Airbnb", hint: "Listing → Availability → Export calendar" },
+  { key: "booking", label: "Booking.com", hint: "Extranet → Calendar → Sync calendars → Export" },
+  { key: "expedia", label: "Expedia", hint: "Partner Central → Calendar, if an iCal export is offered" },
+  { key: "houfy", label: "Houfy", hint: "Listing → Calendar → Export (iCal)" },
+  { key: "vrbo", label: "VRBO", hint: "Calendar → Import/Export → Export calendar" },
+] as const;
+
+export function platformLabel(key: string): string {
+  return IMPORT_PLATFORMS.find((p) => p.key === key)?.label ?? "Synced calendar";
+}
+
 /**
  * An owner-defined per-day price override for a date range. Nights within
  * [start, end] (inclusive) are priced at rate_cents instead of the property's
@@ -108,7 +128,8 @@ export interface Property {
   refund_50_days: number;
   checkin_email_days: number;
   is_listed: boolean;
-  airbnb_ical_url: string | null; // inbound: other platform's calendar we import
+  airbnb_ical_url: string | null; // deprecated: legacy single inbound feed (kept for back-compat)
+  import_feeds: ImportFeed[]; // inbound: other platforms' calendars we import
   ical_token: string; // outbound: token for this property's public .ics export URL
   checkin_instructions: string | null;
   welcome_message_html: string | null;

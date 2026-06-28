@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getOwner } from "@/lib/auth";
-import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
+import { fetchFeedsBusyBlocks, hasConflict } from "@/lib/ical";
 import {
   buildOfferEmail,
   buildChangeEmail,
@@ -154,20 +154,18 @@ export async function PATCH(
     if (current.property_id) {
       const { data: prop } = await supabase
         .from("properties")
-        .select("airbnb_ical_url")
+        .select("import_feeds")
         .eq("id", current.property_id)
         .eq("owner_id", owner.id)
         .single();
-      const ical = (prop as Pick<Property, "airbnb_ical_url"> | null)?.airbnb_ical_url;
-      if (ical) {
-        const blocks = await fetchBusyBlocks(ical);
-        const c = hasConflict(blocks, check_in, check_out);
-        if (c)
-          return NextResponse.json(
-            { conflict: { type: "calendar", start: c.start, end: c.end, summary: c.summary } },
-            { status: 409 }
-          );
-      }
+      const feeds = (prop as Pick<Property, "import_feeds"> | null)?.import_feeds;
+      const blocks = await fetchFeedsBusyBlocks(feeds);
+      const c = hasConflict(blocks, check_in, check_out);
+      if (c)
+        return NextResponse.json(
+          { conflict: { type: "calendar", start: c.start, end: c.end, summary: c.summary } },
+          { status: 409 }
+        );
     }
   }
 

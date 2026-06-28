@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { Property } from "@/lib/types";
+import { IMPORT_PLATFORMS, type Property } from "@/lib/types";
 import { MAX_NONSTANDARD_RATES } from "@/lib/properties";
 
 // UI shape for a non-standard rate row — `rate` is an editable dollar string.
@@ -36,7 +36,6 @@ export function PropertyForm({
     min_nights: initial?.min_nights ? String(initial.min_nights) : "1",
     gps_lat: initial?.gps_lat != null ? String(initial.gps_lat) : "",
     gps_lng: initial?.gps_lng != null ? String(initial.gps_lng) : "",
-    airbnb_ical_url: initial?.airbnb_ical_url ?? "",
     // Structured check-in + address fields that populate the guest emails.
     address: initial?.address ?? "",
     check_in_time: initial?.check_in_time ?? "3:00 PM",
@@ -82,6 +81,14 @@ export function PropertyForm({
   const [exportCopied, setExportCopied] = useState(false);
   useEffect(() => { setOrigin(window.location.origin); }, []);
   const exportUrl = initial?.ical_token && origin ? `${origin}/ical/${initial.ical_token}.ics` : "";
+
+  // Inbound calendar feeds, one optional URL per platform (keyed by platform key).
+  const [importUrls, setImportUrls] = useState<Record<string, string>>(() => {
+    const m: Record<string, string> = {};
+    for (const f of initial?.import_feeds ?? []) m[f.platform] = f.url;
+    return m;
+  });
+  const hasAnyImport = IMPORT_PLATFORMS.some((p) => importUrls[p.key]?.trim());
 
   // New property: pre-fill the payment/refund policy from the owner's global
   // default so they only set it once (then can adjust per property).
@@ -210,6 +217,10 @@ export function PropertyForm({
           start: r.start,
           end: r.end,
           rate: r.rate,
+        })),
+        import_feeds: IMPORT_PLATFORMS.filter((p) => importUrls[p.key]?.trim()).map((p) => ({
+          platform: p.key,
+          url: importUrls[p.key].trim(),
         })),
       }),
     });
@@ -494,23 +505,35 @@ export function PropertyForm({
           <div className="bk-field" />
         </div>
 
-        <div className="bk-field">
-          <label htmlFor="ical">
-            1. Import Airbnb &rarr; Familiar Guest{" "}
-            <span style={{ fontWeight: 400 }}>(paste Airbnb&rsquo;s iCal export URL)</span>
-          </label>
-          <input id="ical" value={form.airbnb_ical_url} onChange={(e) => set("airbnb_ical_url", e.target.value)} />
-          <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>
-            In Airbnb: your listing &rarr; Availability &rarr; Export calendar. This blocks
-            dates here when someone books on Airbnb.
+        <details className="pol-advanced" open={hasAnyImport}>
+          <summary>
+            1. Import Other Calendars &rarr; Familiar Guest{" "}
+            <span style={{ fontWeight: 400 }}>(optional)</span>
+          </summary>
+          <p className="bk-note" style={{ textAlign: "left", margin: "8px 0 12px" }}>
+            Paste each platform&rsquo;s iCal <strong>export</strong> link so bookings there block these
+            dates here. Leave any blank. Works with any site that offers an iCal export URL.
           </p>
-        </div>
+          {IMPORT_PLATFORMS.map((p) => (
+            <div className="bk-field" key={p.key}>
+              <label htmlFor={`imp_${p.key}`}>
+                {p.label} <span style={{ fontWeight: 400 }}>({p.hint})</span>
+              </label>
+              <input
+                id={`imp_${p.key}`}
+                value={importUrls[p.key] ?? ""}
+                placeholder="https://…"
+                onChange={(e) => setImportUrls((m) => ({ ...m, [p.key]: e.target.value }))}
+              />
+            </div>
+          ))}
+        </details>
 
         {exportUrl ? (
           <div className="bk-field">
             <label>
-              2. Export Familiar Guest &rarr; Airbnb{" "}
-              <span style={{ fontWeight: 400 }}>(paste this into Airbnb&rsquo;s Import calendar)</span>
+              2. Export Familiar Guest &rarr; Other Calendars{" "}
+              <span style={{ fontWeight: 400 }}>(paste this into each platform&rsquo;s Import calendar)</span>
             </label>
             <div className="ical-export-row">
               <input
@@ -535,14 +558,14 @@ export function PropertyForm({
               </button>
             </div>
             <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>
-              In Airbnb: your listing &rarr; Availability &rarr; <strong>Import calendar</strong> &rarr; paste
-              this link. This blocks dates on Airbnb when someone books here. Airbnb refreshes
-              every few hours (not instant).
+              In each platform (e.g. Airbnb: your listing &rarr; Availability), open{" "}
+              <strong>Import calendar</strong> and paste this link. Bookings made here then block
+              those dates there. Other platforms refresh every few hours (not instant).
             </p>
           </div>
         ) : (
           <p className="bk-note" style={{ textAlign: "left" }}>
-            Save this property to get its &ldquo;Export to Airbnb&rdquo; calendar link (for two-way sync).
+            Save this property to get its &ldquo;Export to other calendars&rdquo; link (for two-way sync).
           </p>
         )}
 

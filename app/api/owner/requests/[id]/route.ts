@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getOwner } from "@/lib/auth";
-import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
+import { fetchFeedsBusyBlocks, hasConflict } from "@/lib/ical";
 import { buildOfferEmail, sendEmail } from "@/lib/email";
 import { findInternalConflict, offerExpiresAt } from "@/lib/offers";
 import type { Booking, Property } from "@/lib/types";
@@ -63,15 +63,13 @@ export async function POST(
   if (booking.property_id) {
     const { data: prop } = await supabase
       .from("properties")
-      .select("airbnb_ical_url")
+      .select("import_feeds")
       .eq("id", booking.property_id)
       .single();
-    const ical = (prop as Pick<Property, "airbnb_ical_url"> | null)?.airbnb_ical_url;
-    if (ical) {
-      const blocks = await fetchBusyBlocks(ical);
-      if (hasConflict(blocks, booking.check_in, booking.check_out))
-        return bad("Those dates are now busy on your Airbnb calendar. Decline this request.", 409);
-    }
+    const feeds = (prop as Pick<Property, "import_feeds"> | null)?.import_feeds;
+    const blocks = await fetchFeedsBusyBlocks(feeds);
+    if (hasConflict(blocks, booking.check_in, booking.check_out))
+      return bad("Those dates are now busy on a synced calendar. Decline this request.", 409);
   }
 
   const { data: updated } = await supabase

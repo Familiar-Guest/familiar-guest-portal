@@ -1,5 +1,7 @@
-import type { NonStandardRate } from "./types";
+import { IMPORT_PLATFORMS, type ImportFeed, type NonStandardRate } from "./types";
 import { DEFAULT_POLICY } from "./policies";
+
+const IMPORT_PLATFORM_KEYS = new Set<string>(IMPORT_PLATFORMS.map((p) => p.key));
 
 export const CURRENCIES = ["usd", "cad", "mxn", "eur"];
 const CLEANING_FEE_TYPES = ["standard", "daily", "alt1", "alt2"];
@@ -28,7 +30,7 @@ export type PropertyInput = {
   refund_50_days: number;
   checkin_email_days: number;
   is_listed: boolean;
-  airbnb_ical_url: string | null;
+  import_feeds: ImportFeed[];
   checkin_instructions: string | null;
   // Structured check-in + address fields used by the guest emails.
   address: string | null;
@@ -54,9 +56,12 @@ export function parsePropertyInput(
 
   const location = String(body.location ?? "").trim() || null;
   const description = String(body.description ?? "").trim() || null;
-  const airbnb_ical_url = String(body.airbnb_ical_url ?? "").trim() || null;
-  if (airbnb_ical_url && !/^https?:\/\//i.test(airbnb_ical_url))
-    return { error: "The calendar link must start with http:// or https://" };
+
+  // Inbound calendar feeds to import (one optional URL per platform).
+  const importResult = parseImportFeeds(body.import_feeds);
+  if ("error" in importResult) return { error: importResult.error };
+  const import_feeds = importResult.value;
+
   const checkin_instructions =
     String(body.checkin_instructions ?? "").trim() || null;
 
@@ -139,7 +144,7 @@ export function parsePropertyInput(
       refund_50_days,
       checkin_email_days,
       is_listed,
-      airbnb_ical_url,
+      import_feeds,
       checkin_instructions,
       address,
       check_in_time,
@@ -210,6 +215,32 @@ function parseNonStandardRates(
   }
 
   return { value: parsed };
+}
+
+/** Validate + normalize the inbound import feeds: an array of { platform, url }
+ *  with known platforms and http(s) URLs; blanks are dropped. */
+function parseImportFeeds(
+  raw: unknown
+): { value: ImportFeed[] } | { error: string } {
+  if (raw === undefined || raw === null) return { value: [] };
+  if (!Array.isArray(raw)) return { error: "Invalid calendar feeds." };
+  const seen = new Set<string>();
+  const feeds: ImportFeed[] = [];
+  for (const item of raw) {
+    const r = (item ?? {}) as Record<string, unknown>;
+    const platform = String(r.platform ?? "").trim().toLowerCase();
+    const url = String(r.url ?? "").trim();
+    if (!url) continue;
+    if (!IMPORT_PLATFORM_KEYS.has(platform))
+      return { error: "Unknown calendar platform." };
+    if (seen.has(platform))
+      return { error: "Only one calendar link per platform." };
+    if (!/^https?:\/\//i.test(url))
+      return { error: "Each calendar link must start with http:// or https://" };
+    seen.add(platform);
+    feeds.push({ platform, url });
+  }
+  return { value: feeds };
 }
 
 export function slugify(s: string): string {

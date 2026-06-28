@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getOwner } from "@/lib/auth";
 import { computeBusyRanges } from "@/lib/availability";
+import type { ImportFeed } from "@/lib/types";
 
 export const runtime = "nodejs";
 
@@ -21,7 +22,7 @@ export async function GET(
   const supabase = createAdminClient();
   const { data: prop } = await supabase
     .from("properties")
-    .select("airbnb_ical_url")
+    .select("import_feeds")
     .eq("id", id)
     .eq("owner_id", owner.id)
     .maybeSingle();
@@ -31,7 +32,7 @@ export async function GET(
   const ranges = await computeBusyRanges(
     supabase,
     id,
-    (prop as { airbnb_ical_url: string | null }).airbnb_ical_url ?? null,
+    (prop as { import_feeds: ImportFeed[] | null }).import_feeds ?? null,
     excludeId
   );
 

@@ -1,8 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { fetchBusyBlocks } from "./ical";
+import { fetchFeedsBusyBlocks } from "./ical";
 import { isActiveOffer } from "./offers";
 import { nights } from "./format";
-import type { Booking, Property } from "./types";
+import type { Booking, ImportFeed, Property } from "./types";
 
 export interface BusyRange {
   start: string; // YYYY-MM-DD
@@ -18,7 +18,7 @@ export interface BusyRange {
 export async function computeBusyRanges(
   supabase: SupabaseClient,
   propertyId: string,
-  airbnbIcalUrl: string | null,
+  importFeeds: ImportFeed[] | null,
   excludeBookingId?: string
 ): Promise<BusyRange[]> {
   let q = supabase
@@ -39,11 +39,9 @@ export async function computeBusyRanges(
     }
   }
 
-  if (airbnbIcalUrl) {
-    const blocks = await fetchBusyBlocks(airbnbIcalUrl);
-    for (const blk of blocks) {
-      ranges.push({ start: blk.start, end: blk.end, label: blk.summary || "Airbnb", type: "airbnb" });
-    }
+  const blocks = await fetchFeedsBusyBlocks(importFeeds);
+  for (const blk of blocks) {
+    ranges.push({ start: blk.start, end: blk.end, label: blk.summary || "Synced", type: "airbnb" });
   }
 
   ranges.sort((a, b) => (a.start < b.start ? -1 : a.start > b.start ? 1 : 0));

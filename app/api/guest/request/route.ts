@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getOwner, ensureGuestProfile } from "@/lib/auth";
-import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
+import { fetchFeedsBusyBlocks, hasConflict } from "@/lib/ical";
 import { findInternalConflict } from "@/lib/offers";
 import { getOwnerPolicies } from "@/lib/policies";
 import { quote } from "@/lib/availability";
@@ -61,11 +61,9 @@ export async function POST(request: NextRequest) {
   // Make sure the dates are actually open.
   const clash = await findInternalConflict(supabase, { check_in, check_out, propertyId: property_id });
   if (clash) return bad("Sorry, those dates are no longer available.", 409);
-  if (property.airbnb_ical_url) {
-    const blocks = await fetchBusyBlocks(property.airbnb_ical_url);
-    if (hasConflict(blocks, check_in, check_out))
-      return bad("Sorry, those dates are no longer available.", 409);
-  }
+  const extBlocks = await fetchFeedsBusyBlocks(property.import_feeds);
+  if (hasConflict(extBlocks, check_in, check_out))
+    return bad("Sorry, those dates are no longer available.", 409);
 
   // Guest display name.
   const { data: g } = await supabase

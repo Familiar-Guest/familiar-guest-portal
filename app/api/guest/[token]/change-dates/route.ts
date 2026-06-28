@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getEmailForToken } from "@/lib/guestPortal";
 import { postMessage } from "@/lib/messages";
-import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
+import { fetchFeedsBusyBlocks, hasConflict } from "@/lib/ical";
 import { findInternalConflict } from "@/lib/offers";
 import { getOwnerPolicies } from "@/lib/policies";
 import { sendEmail, siteUrl } from "@/lib/email";
@@ -91,11 +91,9 @@ export async function POST(
   });
   if (clash) return bad("Sorry, those dates aren't available.", 409);
 
-  if (property?.airbnb_ical_url) {
-    const blocks = await fetchBusyBlocks(property.airbnb_ical_url);
-    if (hasConflict(blocks, check_in, check_out))
-      return bad("Sorry, those dates aren't available.", 409);
-  }
+  const extBlocks = await fetchFeedsBusyBlocks(property?.import_feeds);
+  if (hasConflict(extBlocks, check_in, check_out))
+    return bad("Sorry, those dates aren't available.", 409);
 
   // Store the requested dates — do NOT update check_in/check_out yet.
   // The owner must approve before dates are confirmed.

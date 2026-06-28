@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { randomBytes } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getOwner } from "@/lib/auth";
-import { fetchBusyBlocks, hasConflict } from "@/lib/ical";
+import { fetchFeedsBusyBlocks, hasConflict } from "@/lib/ical";
 import { buildOfferEmail, sendEmail, bookingUrl, siteUrl } from "@/lib/email";
 import { getOwnerContact } from "@/lib/owner";
 import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
@@ -120,15 +120,13 @@ export async function POST(request: NextRequest) {
     });
     if (clash) return conflict409("booking", clash);
 
-    if (property.airbnb_ical_url) {
-      const blocks = await fetchBusyBlocks(property.airbnb_ical_url);
-      const c = hasConflict(blocks, check_in, check_out);
-      if (c)
-        return NextResponse.json(
-          { conflict: { type: "calendar", start: c.start, end: c.end, summary: c.summary } },
-          { status: 409 }
-        );
-    }
+    const blocks = await fetchFeedsBusyBlocks(property.import_feeds);
+    const c = hasConflict(blocks, check_in, check_out);
+    if (c)
+      return NextResponse.json(
+        { conflict: { type: "calendar", start: c.start, end: c.end, summary: c.summary } },
+        { status: 409 }
+      );
   }
 
   const token = randomBytes(24).toString("hex");

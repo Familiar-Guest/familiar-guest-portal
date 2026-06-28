@@ -333,7 +333,7 @@ export function Portal({
                         ? `${formatMoney(p.nightly_rate_cents, p.currency)}/night · `
                         : "no rate · "}
                       {p.is_listed ? "Published" : "Hidden"} ·{" "}
-                      {p.airbnb_ical_url ? "calendar linked" : "no calendar"}
+                      {p.import_feeds?.length ? "calendar linked" : "no calendar"}
                     </div>
                   </div>
                   <div className="op-actions">

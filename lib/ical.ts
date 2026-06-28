@@ -5,6 +5,8 @@
  * conflict before sending an offer.
  */
 
+import { platformLabel, type ImportFeed } from "./types";
+
 export interface BusyBlock {
   start: string; // YYYY-MM-DD
   end: string; // YYYY-MM-DD (exclusive, per iCal convention)
@@ -74,6 +76,28 @@ export async function fetchBusyBlocks(icalUrl: string): Promise<BusyBlock[]> {
   } catch {
     return [];
   }
+}
+
+/**
+ * Fetch + merge busy blocks from several import feeds (Airbnb, VRBO, …) in
+ * parallel. Each block's summary is set to the platform label so the calendar
+ * shows which site a block came from. Non-blocking: a failed feed contributes
+ * nothing rather than throwing.
+ */
+export async function fetchFeedsBusyBlocks(
+  feeds: ImportFeed[] | null | undefined
+): Promise<BusyBlock[]> {
+  if (!feeds || feeds.length === 0) return [];
+  const results = await Promise.all(
+    feeds
+      .filter((f) => f?.url)
+      .map(async (f) => {
+        const blocks = await fetchBusyBlocks(f.url);
+        const label = platformLabel(f.platform);
+        return blocks.map((b) => ({ ...b, summary: label }));
+      })
+  );
+  return results.flat();
 }
 
 // ── Outbound feed generation ────────────────────────────────────────────────

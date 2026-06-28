@@ -27,12 +27,12 @@ export async function GET(
   if (!property)
     return NextResponse.json({ error: "Property not found." }, { status: 404 });
 
-  const ranges = await computeBusyRanges(supabase, id, property.airbnb_ical_url);
+  const ranges = await computeBusyRanges(supabase, id, property.import_feeds);
 
   return NextResponse.json({
     ok: true,
     property: { id: property.id, name: property.name },
-    hasCalendar: Boolean(property.airbnb_ical_url),
+    hasCalendar: (property.import_feeds?.length ?? 0) > 0,
     ranges,
   });
 }

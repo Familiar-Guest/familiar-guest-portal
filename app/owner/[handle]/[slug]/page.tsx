@@ -46,7 +46,7 @@ export default async function ListingDetailPage({
   if (!property) notFound();
 
   const admin = createAdminClient();
-  const ranges = await computeBusyRanges(admin, property.id, property.airbnb_ical_url);
+  const ranges = await computeBusyRanges(admin, property.id, property.import_feeds);
   const busy = ranges.map((r) => ({ start: r.start, end: r.end }));
 
   return (
