@@ -370,6 +370,7 @@ export function Portal({
           bookings={bookings}
           onEdit={editBooking}
           onCancel={cancelBooking}
+          onRefresh={load}
         />
       )}
 

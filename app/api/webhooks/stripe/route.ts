@@ -108,6 +108,7 @@ export async function POST(request: NextRequest) {
               status: "paid",
               balance_paid_at: nowIso,
               paid_at: booking.paid_at ?? nowIso,
+              balance_payment_intent_id: intentId,
               confirmation_sent_at: sent ? nowIso : booking.confirmation_sent_at,
             })
             .eq("id", booking.id);

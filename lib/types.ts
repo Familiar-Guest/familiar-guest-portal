@@ -48,6 +48,12 @@ export interface Booking {
   balance_reminder_sent_at: string | null;
   balance_forfeited_at: string | null;
   balance_stripe_session_id: string | null;
+  balance_payment_intent_id: string | null;
+  // Escrow payout: platform holds funds until check-in, then transfers to owner.
+  payout_transfer_id: string | null;
+  payout_released_at: string | null;
+  payout_amount_cents: number | null;
+  payout_error: string | null;
   // Pending guest date-change request — null means no request is pending.
   requested_check_in: string | null;
   requested_check_out: string | null;

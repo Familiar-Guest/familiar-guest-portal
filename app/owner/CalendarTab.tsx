@@ -50,12 +50,32 @@ export function CalendarTab({
   bookings,
   onEdit,
   onCancel,
+  onRefresh,
 }: {
   properties: Property[];
   bookings: Booking[];
   onEdit: (b: Booking) => void;
   onCancel: (b: Booking) => void;
+  onRefresh?: () => void;
 }) {
+  const [releasingId, setReleasingId] = useState<string | null>(null);
+  const [releaseErr, setReleaseErr] = useState<string | null>(null);
+
+  async function releasePayout(b: Booking) {
+    if (releasingId) return;
+    setReleasingId(b.id);
+    setReleaseErr(null);
+    try {
+      const res = await fetch(`/api/owner/bookings/${b.id}/release`, { method: "POST" });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) setReleaseErr(data.error ?? "Could not release the payout.");
+      else onRefresh?.();
+    } catch {
+      setReleaseErr("Could not release the payout.");
+    } finally {
+      setReleasingId(null);
+    }
+  }
   const [view, setView]           = useState<View>("calendar");
   const [propertyId, setPropertyId] = useState(properties[0]?.id ?? "");
   const [ranges, setRanges]       = useState<BusyRange[]>([]);
@@ -281,6 +301,17 @@ export function CalendarTab({
                         <button className="op-link" onClick={() => onEdit(b)}>
                           Edit
                         </button>
+                        {paid && (
+                          b.payout_released_at ? (
+                            <span className="op-link" style={{ color: "var(--teal)", cursor: "default" }}>
+                              Paid out{b.payout_amount_cents != null ? ` · ${formatMoney(b.payout_amount_cents, b.currency)}` : ""}
+                            </span>
+                          ) : (
+                            <button className="op-link" onClick={() => releasePayout(b)} disabled={releasingId === b.id}>
+                              {releasingId === b.id ? "Releasing…" : "Release payout"}
+                            </button>
+                          )
+                        )}
                         <button className="op-link op-danger" onClick={() => onCancel(b)}>
                           {paid ? "Cancel" : "Remove"}
                         </button>
@@ -291,6 +322,7 @@ export function CalendarTab({
               })}
             </ul>
           )}
+          {releaseErr && <div className="bk-error" style={{ marginTop: 10 }}>{releaseErr}</div>}
         </div>
       )}
     </div>
