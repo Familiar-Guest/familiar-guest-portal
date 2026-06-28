@@ -272,7 +272,7 @@ export function PropertyForm({
 
           <div className="bk-field">
             <label htmlFor="entry">Entry instructions</label>
-            <textarea id="entry" rows={2} value={form.entry_instructions} onChange={(e) => set("entry_instructions", e.target.value)} />
+            <textarea id="entry" rows={4} value={form.entry_instructions} onChange={(e) => set("entry_instructions", e.target.value)} />
           </div>
 
           <div className="bk-field">
@@ -283,11 +283,11 @@ export function PropertyForm({
           <div className="bk-grid2">
             <div className="bk-field">
               <label htmlFor="parking">Parking</label>
-              <textarea id="parking" rows={2} value={form.parking} onChange={(e) => set("parking", e.target.value)} />
+              <textarea id="parking" rows={4} value={form.parking} onChange={(e) => set("parking", e.target.value)} />
             </div>
             <div className="bk-field">
               <label htmlFor="house_rules">House rules</label>
-              <textarea id="house_rules" rows={2} value={form.house_rules} onChange={(e) => set("house_rules", e.target.value)} />
+              <textarea id="house_rules" rows={4} value={form.house_rules} onChange={(e) => set("house_rules", e.target.value)} />
             </div>
           </div>
 
