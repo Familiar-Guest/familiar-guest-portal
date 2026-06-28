@@ -76,6 +76,13 @@ export function PropertyForm({
   const [showAddNs, setShowAddNs] = useState(false);
   const [nsDraft, setNsDraft] = useState({ name: "", start: "", end: "", rate: "" });
 
+  // Outbound calendar export link (FamGuest → Airbnb/VRBO). Only exists once the
+  // property is saved (it has an ical_token then).
+  const [origin, setOrigin] = useState("");
+  const [exportCopied, setExportCopied] = useState(false);
+  useEffect(() => { setOrigin(window.location.origin); }, []);
+  const exportUrl = initial?.ical_token && origin ? `${origin}/ical/${initial.ical_token}.ics` : "";
+
   // New property: pre-fill the payment/refund policy from the owner's global
   // default so they only set it once (then can adjust per property).
   useEffect(() => {
@@ -488,10 +495,56 @@ export function PropertyForm({
         </div>
 
         <div className="bk-field">
-          <label htmlFor="ical">Airbnb calendar link <span style={{ fontWeight: 400 }}>(iCal export URL)</span></label>
+          <label htmlFor="ical">
+            1. Import Airbnb &rarr; Familiar Guest{" "}
+            <span style={{ fontWeight: 400 }}>(paste Airbnb&rsquo;s iCal export URL)</span>
+          </label>
           <input id="ical" value={form.airbnb_ical_url} onChange={(e) => set("airbnb_ical_url", e.target.value)} />
-          <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>Airbnb → your listing → Availability → Export calendar. Keeps your listing from double-booking.</p>
+          <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>
+            In Airbnb: your listing &rarr; Availability &rarr; Export calendar. This blocks
+            dates here when someone books on Airbnb.
+          </p>
         </div>
+
+        {exportUrl ? (
+          <div className="bk-field">
+            <label>
+              2. Export Familiar Guest &rarr; Airbnb{" "}
+              <span style={{ fontWeight: 400 }}>(paste this into Airbnb&rsquo;s Import calendar)</span>
+            </label>
+            <div className="ical-export-row">
+              <input
+                className="ical-export-url"
+                readOnly
+                value={exportUrl}
+                onFocus={(e) => e.currentTarget.select()}
+                aria-label="Familiar Guest calendar export link"
+              />
+              <button
+                type="button"
+                className="bk-btn"
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(exportUrl);
+                    setExportCopied(true);
+                    setTimeout(() => setExportCopied(false), 1800);
+                  } catch {}
+                }}
+              >
+                {exportCopied ? "Copied" : "Copy"}
+              </button>
+            </div>
+            <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>
+              In Airbnb: your listing &rarr; Availability &rarr; <strong>Import calendar</strong> &rarr; paste
+              this link. This blocks dates on Airbnb when someone books here. Airbnb refreshes
+              every few hours (not instant).
+            </p>
+          </div>
+        ) : (
+          <p className="bk-note" style={{ textAlign: "left" }}>
+            Save this property to get its &ldquo;Export to Airbnb&rdquo; calendar link (for two-way sync).
+          </p>
+        )}
 
         <div className="bk-grid2">
           <div className="bk-field">
