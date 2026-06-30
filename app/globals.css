@@ -33,8 +33,8 @@ h1,h2,h3{font-family:var(--display);font-weight:500;line-height:1.08;letter-spac
 .hero-topline span:last-child{color:#0F4D45}
 
 /* NAV */
-nav{position:sticky;top:0;z-index:50;transition:background .3s,box-shadow .3s,border-color .3s;border-bottom:1px solid transparent}
-nav.scrolled{background:rgba(246,241,232,.86);backdrop-filter:blur(12px);border-color:var(--line)}
+nav{position:sticky;top:0;z-index:50;background:var(--paper-2);transition:background .3s,box-shadow .3s,border-color .3s;border-bottom:1px solid var(--line)}
+nav.scrolled{background:rgba(228,216,196,.92);backdrop-filter:blur(12px);border-color:var(--line)}
 .nav-in{max-width:var(--maxw);margin:0 auto;padding:18px 28px;display:flex;align-items:center;justify-content:space-between}
 .logo{display:flex;align-items:center;gap:10px;font-family:var(--body);font-weight:700;font-size:21px;letter-spacing:-.01em}
 .logo .mark{display:flex;align-items:center;justify-content:center;flex-shrink:0}
@@ -434,6 +434,7 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 .op-attention-item{font-size:13px;color:var(--ink);display:flex;align-items:baseline;gap:6px}
 .op-attention-item::before{content:"•";color:var(--coral);flex-shrink:0}
 .op-item-live{border-left:3px solid var(--coral);padding-left:11px;margin-left:-14px}
+.op-item-focus{box-shadow:0 0 0 2px var(--seaglass);border-radius:var(--radius-sm);transition:box-shadow .3s}
 .op-panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-md);padding:26px}
 .op-formwrap{display:flex;justify-content:center}
 .op-h2{font-family:var(--display);font-size:22px;color:var(--forest);margin:0}
@@ -487,7 +488,8 @@ input[type="password"]::-webkit-textfield-decoration-container { display: none }
 .mc-out .mc-day-num{color:var(--ink-soft);opacity:.38}
 .mc-today .mc-day-num{background:var(--forest);color:#fff;font-weight:700}
 .mc-bar-layer{position:relative;height:52px;overflow:hidden}
-.mc-bar{position:absolute;height:20px;border-radius:5px;font-size:11px;font-weight:600;color:#fff;display:flex;align-items:center;padding:0 8px;white-space:nowrap;overflow:hidden;box-sizing:border-box;cursor:default}
+.mc-bar{position:absolute;height:20px;border:none;border-radius:5px;font-family:var(--body);font-size:11px;font-weight:600;color:#fff;display:flex;align-items:center;padding:0 8px;white-space:nowrap;overflow:hidden;box-sizing:border-box;cursor:default;text-align:left}
+button.mc-bar{appearance:none}
 .mc-bar.mc-cl{border-top-left-radius:0;border-bottom-left-radius:0;padding-left:5px}
 .mc-bar.mc-cr{border-top-right-radius:0;border-bottom-right-radius:0;padding-right:5px}
 .mc-bar.mc-bar-booked{background:var(--forest)}

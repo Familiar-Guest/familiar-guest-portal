@@ -9,6 +9,7 @@ export interface CalendarBar {
   fullLabel: string;   // tooltip
   type: "booked" | "offer" | "airbnb";
   href?: string;       // optional link (e.g. /book/<token>) — renders bar as <a>
+  onClick?: () => void; // optional click handler — renders bar as a <button> (ignored if href is set)
 }
 
 const MONTHS = [
@@ -136,7 +137,7 @@ export function MonthCalendar({ bars }: { bars: CalendarBar[] }) {
                   `mc-bar-${bar.type}`,
                   bar.continuesLeft  ? "mc-cl" : "",
                   bar.continuesRight ? "mc-cr" : "",
-                  bar.href ? "mc-bar-link" : "",
+                  bar.href || bar.onClick ? "mc-bar-link" : "",
                 ].filter(Boolean).join(" ");
                 const style = {
                   left:  `${bar.leftPct}%`,
@@ -146,11 +147,21 @@ export function MonthCalendar({ bars }: { bars: CalendarBar[] }) {
                 const inner = !bar.continuesLeft
                   ? <span className="mc-bar-name">{bar.shortLabel}</span>
                   : null;
-                return bar.href ? (
-                  <a key={i} className={cls} style={style} title={bar.fullLabel} href={bar.href} target="_blank" rel="noreferrer">
-                    {inner}
-                  </a>
-                ) : (
+                if (bar.href) {
+                  return (
+                    <a key={i} className={cls} style={style} title={bar.fullLabel} href={bar.href} target="_blank" rel="noreferrer">
+                      {inner}
+                    </a>
+                  );
+                }
+                if (bar.onClick) {
+                  return (
+                    <button key={i} type="button" className={cls} style={style} title={bar.fullLabel} onClick={bar.onClick}>
+                      {inner}
+                    </button>
+                  );
+                }
+                return (
                   <div key={i} className={cls} style={style} title={bar.fullLabel}>
                     {inner}
                   </div>

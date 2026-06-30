@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatDate, formatMoney } from "@/lib/format";
 import { isExpired } from "@/lib/offers";
 import type { Booking } from "@/lib/types";
@@ -33,6 +33,9 @@ export function GuestStays({
   terms?: Record<string, string[]>;
 }) {
   const [view, setView] = useState<View>("calendar");
+  // When a calendar bar is clicked we switch to the list and focus that stay,
+  // where the guest can change dates or cancel (subject to the host's policy).
+  const [focusId, setFocusId] = useState<string | null>(null);
 
   async function logout() {
     await fetch("/api/owner/logout", { method: "POST" });
@@ -54,8 +57,12 @@ export function GuestStays({
     start: b.check_in,
     end: b.check_out,
     shortLabel: b.property_name,
-    fullLabel: `${b.property_name} · ${formatDate(b.check_in)} – ${formatDate(b.check_out)}`,
+    fullLabel: `${b.property_name} · ${formatDate(b.check_in)} – ${formatDate(b.check_out)} — tap to manage`,
     type: b.status === "paid" ? "booked" : "offer",
+    onClick: () => {
+      setFocusId(b.id);
+      setView("list");
+    },
   }));
 
   return (
@@ -112,7 +119,7 @@ export function GuestStays({
         {bookings.length > 0 && view === "list" && (
           <ul className="op-list">
             {bookings.map((b) => (
-              <StayRow key={b.id} booking={b} coverPhoto={b.property_id ? coverPhotos[b.property_id] : undefined} terms={terms[b.id]} />
+              <StayRow key={b.id} booking={b} coverPhoto={b.property_id ? coverPhotos[b.property_id] : undefined} terms={terms[b.id]} focused={focusId === b.id} />
             ))}
           </ul>
         )}
@@ -121,7 +128,7 @@ export function GuestStays({
   );
 }
 
-function StayRow({ booking: b, coverPhoto, terms }: { booking: Booking; coverPhoto?: string; terms?: string[] }): JSX.Element {
+function StayRow({ booking: b, coverPhoto, terms, focused = false }: { booking: Booking; coverPhoto?: string; terms?: string[]; focused?: boolean }): JSX.Element {
   const s = statusLabel(b);
   const today = new Date().toISOString().slice(0, 10);
   const isFuture = b.check_in > today;
@@ -136,6 +143,14 @@ function StayRow({ booking: b, coverPhoto, terms }: { booking: Booking; coverPho
     b.status !== "expired" &&
     b.status !== "forfeited";
   const hasPendingChange = Boolean(b.requested_check_in && b.date_change_requested_at);
+
+  // Scroll into view + briefly highlight when navigated here from a calendar bar.
+  const rowRef = useRef<HTMLLIElement>(null);
+  useEffect(() => {
+    if (focused && rowRef.current) {
+      rowRef.current.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  }, [focused]);
 
   const [showChange, setShowChange] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -175,7 +190,7 @@ function StayRow({ booking: b, coverPhoto, terms }: { booking: Booking; coverPho
   }
 
   return (
-    <li className="op-item" style={{ flexDirection: "column", alignItems: "stretch", gap: 10 }}>
+    <li ref={rowRef} className={`op-item${focused ? " op-item-focus" : ""}`} style={{ flexDirection: "column", alignItems: "stretch", gap: 10 }}>
       <div style={{ display: "flex", justifyContent: "space-between", gap: 14, flexWrap: "wrap" }}>
         <div className="op-main">
           <div className="op-title">{b.property_name}</div>

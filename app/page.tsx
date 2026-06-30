@@ -144,7 +144,6 @@ export default function Home() {
               <span>Rent to Trusted Guests</span>
               <span>Rent from Trusted Owners</span>
             </div>
-            <p className="eyebrow reveal d1">For owners and their trusted guests</p>
             <h1 className="reveal d2">
               Host familiar
               <br />
@@ -153,7 +152,7 @@ export default function Home() {
             <p className="sub reveal d3">
               Familiar Guest is the simplest way to rent to the people who
               already love your place. Keep the relationship, skip the
-              15-20% rental platform fees, and let us manage your bookings. <strong>Your first month is commission-free.</strong>
+              15-20% rental platform fees, and let us manage your bookings.
             </p>
             <SignupCTA />
             <p className="micro reveal d5">
@@ -769,7 +768,7 @@ export default function Home() {
                         <span className="sf-preview-pill">Book direct</span>
                       </div>
                       <div className="sf-preview-info">
-                        <div className="sf-preview-loc">Todos Santos, BCS</div>
+                        <div className="sf-preview-loc">120 Beach Dr., San Diego, CA 92107</div>
                         <div className="sf-preview-name">Villa Azul</div>
                         <div className="sf-preview-desc">Hilltop retreat with panoramic ocean views, private pool.</div>
                         <div className="sf-preview-footer">
@@ -784,9 +783,9 @@ export default function Home() {
                         <span className="sf-preview-pill">Book direct</span>
                       </div>
                       <div className="sf-preview-info">
-                        <div className="sf-preview-loc">La Paz, BCS</div>
+                        <div className="sf-preview-loc">542 Viewpoint Rd., Carlsbad, CA 92010</div>
                         <div className="sf-preview-name">Casa Palmas</div>
-                        <div className="sf-preview-desc">Steps from the malecón, sleeps 6, rooftop terrace.</div>
+                        <div className="sf-preview-desc">Steps from the beach, sleeps 6, rooftop terrace.</div>
                         <div className="sf-preview-footer">
                           <span><strong>$195</strong><span className="sf-preview-per">/night</span></span>
                           <span className="sf-preview-cta">View &amp; book →</span>
