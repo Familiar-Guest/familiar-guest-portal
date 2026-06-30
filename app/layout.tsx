@@ -5,13 +5,18 @@ const TITLE = "Familiar Guest — Host familiar guests direct";
 const DESCRIPTION =
   "Familiar Guest lets vacation-rental owners take bookings directly from guests they already know — keeping the guest relationship, avoiding the 15–20% platform fees, with escrow, verification, and payments handled. First month commission-free.";
 
+// Link-preview (SMS / iMessage / WhatsApp) headline + second line. Kept short
+// and separate from the SEO title/description above.
+const OG_TITLE = "Rent to Trusted Guests";
+const OG_DESCRIPTION = "Rent from Trusted Owners";
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://famguest.com"),
   title: TITLE,
   description: DESCRIPTION,
   openGraph: {
-    title: TITLE,
-    description: DESCRIPTION,
+    title: OG_TITLE,
+    description: OG_DESCRIPTION,
     url: "https://famguest.com",
     siteName: "Familiar Guest",
     type: "website",
@@ -19,8 +24,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: TITLE,
-    description: DESCRIPTION,
+    title: OG_TITLE,
+    description: OG_DESCRIPTION,
   },
 };
 
