@@ -15,6 +15,7 @@ export const contentType = "image/png";
 const CREAM = "#F6F1E8";
 const TEAL = "#0F4D45";
 const INK = "#16302B";
+const MUTED = "#4F605A";
 
 export default function OpengraphImage() {
   const logo = readFileSync(join(process.cwd(), "public", "key-logo.png"));
@@ -28,32 +29,54 @@ export default function OpengraphImage() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
           background: CREAM,
           padding: "44px 64px",
         }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={logoSrc}
-          alt=""
-          width={140}
-          height={250}
-          style={{ objectFit: "contain", marginBottom: 18 }}
-        />
+        {/* Centered main content */}
         <div
           style={{
+            flex: 1,
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
-            fontSize: 78,
-            fontWeight: 700,
-            lineHeight: 1.2,
+            justifyContent: "center",
           }}
         >
-          <div style={{ color: INK, marginBottom: 20 }}>Rent to Trusted Guests</div>
-          <div style={{ color: TEAL }}>Rent from Trusted Owners</div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={logoSrc}
+            alt=""
+            width={120}
+            height={214}
+            style={{ objectFit: "contain", marginBottom: 24 }}
+          />
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              fontSize: 76,
+              fontWeight: 700,
+              lineHeight: 1.2,
+            }}
+          >
+            <div style={{ color: INK, marginBottom: 16 }}>Rent to Trusted Guests</div>
+            <div style={{ color: TEAL }}>Rent Direct</div>
+          </div>
+        </div>
+        {/* famguest.com pinned to bottom */}
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            fontSize: 34,
+            fontWeight: 500,
+            color: MUTED,
+            letterSpacing: 1,
+          }}
+        >
+          famguest.com
         </div>
       </div>
     ),
