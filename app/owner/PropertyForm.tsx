@@ -97,7 +97,10 @@ export function PropertyForm({
     for (const f of initial?.import_feeds ?? []) m[f.platform] = f.url;
     return m;
   });
-  const hasAnyImport = IMPORT_PLATFORMS.some((p) => importUrls[p.key]?.trim());
+  const importCount = IMPORT_PLATFORMS.filter((p) => importUrls[p.key]?.trim()).length;
+  // Collapsible cleaning-fee section; opened automatically if the required
+  // standard fee is missing on submit.
+  const [cleaningOpen, setCleaningOpen] = useState(false);
 
   // New property: pre-fill the payment/refund policy from the owner's global
   // default so they only set it once (then can adjust per property).
@@ -215,6 +218,17 @@ export function PropertyForm({
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // The standard (default) cleaning fee is required for every property, even
+    // when another fee type is selected. Open the section so the owner can fix it.
+    const stdFee = Number(form.cleaning_fee);
+    if (form.cleaning_fee.trim() === "" || !Number.isFinite(stdFee) || stdFee < 0) {
+      setError("Set a standard cleaning fee — it's required for every property (enter 0 if you don't charge one).");
+      setCleaningOpen(true);
+      setLoading(false);
+      return;
+    }
+
     const isEdit = Boolean(initial?.id);
     const url = isEdit ? `/api/owner/properties/${initial!.id}` : "/api/owner/properties";
     const res = await fetch(url, {
@@ -401,8 +415,24 @@ export function PropertyForm({
         </div>
 
         <div className="bk-field">
-          <label>Cleaning fee</label>
-          <div className="cf-options">
+          <details
+            className="pol-advanced"
+            open={cleaningOpen}
+            onToggle={(e) => setCleaningOpen((e.currentTarget as HTMLDetailsElement).open)}
+          >
+          <summary>
+            Cleaning fee{" "}
+            <span style={{ fontWeight: 400 }}>
+              ({form.cleaning_fee_type === "daily"
+                ? `$${form.daily_cleaning_fee || "0"}/night`
+                : form.cleaning_fee_type === "alt1"
+                ? `$${form.alt_cleaning_fee_1 || "0"}`
+                : form.cleaning_fee_type === "alt2"
+                ? `$${form.alt_cleaning_fee_2 || "0"}`
+                : `$${form.cleaning_fee || "0"} standard`})
+            </span>
+          </summary>
+          <div className="cf-options" style={{ marginTop: 10 }}>
             <label className="cf-option">
               <input
                 type="radio"
@@ -410,7 +440,7 @@ export function PropertyForm({
                 checked={form.cleaning_fee_type === "standard"}
                 onChange={() => set("cleaning_fee_type", "standard")}
               />
-              <span>Standard cleaning fee</span>
+              <span>Standard cleaning fee <span style={{ fontWeight: 400, color: "var(--ink-soft)" }}>(required)</span></span>
               <input type="number" min="0" step="0.01" value={form.cleaning_fee} onChange={(e) => set("cleaning_fee", e.target.value)} />
             </label>
             <label className="cf-option">
@@ -445,8 +475,9 @@ export function PropertyForm({
             </label>
           </div>
           <p className="bk-note" style={{ textAlign: "left", marginTop: 6 }}>
-            Choose which fee applies to this property. The daily rate is multiplied by the length of stay; the others are a flat amount per booking.
+            The standard cleaning fee is required. Choose which fee applies to this property — the daily rate is multiplied by the length of stay; the others are a flat amount per booking.
           </p>
+          </details>
         </div>
 
         {/* Payment & refund policy (per-property) */}
@@ -517,10 +548,12 @@ export function PropertyForm({
           <div className="bk-field" />
         </div>
 
-        <details className="pol-advanced" open={hasAnyImport}>
+        <details className="pol-advanced">
           <summary>
             1. Import Other Calendars &rarr; Familiar Guest{" "}
-            <span style={{ fontWeight: 400 }}>(optional)</span>
+            <span style={{ fontWeight: 400 }}>
+              {importCount > 0 ? `(${importCount} linked)` : "(optional)"}
+            </span>
           </summary>
           <p className="bk-note" style={{ textAlign: "left", margin: "8px 0 12px" }}>
             Paste each platform&rsquo;s iCal <strong>export</strong> link so bookings there block these
