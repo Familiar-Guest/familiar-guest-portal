@@ -15,7 +15,6 @@ export const contentType = "image/png";
 const CREAM = "#F6F1E8";
 const TEAL = "#0F4D45";
 const INK = "#16302B";
-const CORAL = "#D9663F";
 
 export default function OpengraphImage() {
   const logo = readFileSync(join(process.cwd(), "public", "key-logo.png"));
@@ -45,17 +44,6 @@ export default function OpengraphImage() {
         />
         <div
           style={{
-            fontSize: 36,
-            fontWeight: 700,
-            color: TEAL,
-            letterSpacing: 4,
-            marginBottom: 22,
-          }}
-        >
-          BOOK DIRECT
-        </div>
-        <div
-          style={{
             display: "flex",
             flexDirection: "column",
             alignItems: "center",
@@ -66,9 +54,6 @@ export default function OpengraphImage() {
         >
           <div style={{ color: INK, marginBottom: 20 }}>Rent to Trusted Guests</div>
           <div style={{ color: TEAL }}>Rent from Trusted Owners</div>
-        </div>
-        <div style={{ fontSize: 30, fontWeight: 600, color: CORAL, marginTop: 36 }}>
-          famguest.com
         </div>
       </div>
     ),
