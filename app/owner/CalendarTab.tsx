@@ -38,7 +38,7 @@ function toCalendarBars(ranges: BusyRange[], bookings: Booking[]): CalendarBar[]
       shortLabel: shortLabelFrom(r.label),
       fullLabel: r.label,
       type: r.type,
-      href: linked ? `/book/${linked.token}` : undefined,
+      href: linked ? `/book/${linked.token}?from=owner` : undefined,
     };
   });
 }
@@ -258,7 +258,7 @@ export function CalendarTab({
                         {TYPE_LABEL[r.type]}
                       </span>
                       {linked && (
-                        <a className="op-link" href={`/book/${linked.token}`} target="_blank" rel="noreferrer">
+                        <a className="op-link" href={`/book/${linked.token}?from=owner`} target="_blank" rel="noreferrer">
                           View booking
                         </a>
                       )}
@@ -300,7 +300,7 @@ export function CalendarTab({
                         {paid ? "Booked" : "Offer sent"}
                       </span>
                       <div className="op-actions">
-                        <a className="op-link" href={`/book/${b.token}`} target="_blank" rel="noreferrer">
+                        <a className="op-link" href={`/book/${b.token}?from=owner`} target="_blank" rel="noreferrer">
                           View
                         </a>
                         <button className="op-link" onClick={() => onEdit(b)}>

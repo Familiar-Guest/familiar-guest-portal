@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getOwner } from "@/lib/auth";
 import { formatDate, formatMoney, nights } from "@/lib/format";
 import { isExpired, expiryDate } from "@/lib/offers";
+import { depositPlanFor, effectivePolicyForBooking } from "@/lib/policies";
 import type { Booking } from "@/lib/types";
 import { PayButton } from "./PayButton";
 import { AcceptButton } from "./AcceptButton";
@@ -25,17 +26,21 @@ async function getBooking(token: string): Promise<Booking | null> {
 
 export default async function BookingPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ token: string }>;
+  searchParams: Promise<{ from?: string }>;
 }) {
   const { token } = await params;
+  const { from } = await searchParams;
   const booking = await getBooking(token);
   if (!booking) notFound();
 
   const session = await getOwner();
-  // Show "Owner portal" only when the logged-in user is the owner of THIS booking.
-  // A user who is both owner and guest should see "My stays" when viewing their own stay.
-  const isBookingOwner = session !== null && booking.owner_id === session.id;
+  // The breadcrumb reflects the screen you came FROM, not your account roles:
+  // owner-portal links pass ?from=owner; everything else returns to the guest
+  // portal. (A user with both roles shouldn't see "Owner portal" while paying.)
+  const fromOwner = from === "owner";
   const n = nights(booking.check_in, booking.check_out);
   const isPaid = booking.status === "paid";
   const isDepositPaid = booking.status === "deposit_paid";
@@ -46,14 +51,20 @@ export default async function BookingPage({
   const canPay = !isFree && !isPaid && !isCancelled && !expired && !isForfeited;
   const canAccept = isFree && !isPaid && !isCancelled && !expired && !isForfeited;
 
+  // For an unpaid offer, work out whether a deposit applies so the screen can
+  // explain the deposit-now / balance-auto-charge schedule.
+  const policy = await effectivePolicyForBooking(createAdminClient(), booking);
+  const plan = depositPlanFor(policy, booking.amount_cents, booking.check_in);
+  const showDepositPlan = canPay && !isDepositPaid && plan.plan === "deposit";
+
   return (
     <div className="bk-wrap">
       <BrandMark />
       <nav className="bk-nav">
-        {isBookingOwner ? (
+        {fromOwner ? (
           <a href="/owner" className="bk-nav-link">← Owner portal</a>
         ) : (
-          <a href="/guest" className="bk-nav-link">← My stays</a>
+          <a href="/guest" className="bk-nav-link">← Guest portal</a>
         )}
       </nav>
       <div className="bk-card">
@@ -141,6 +152,25 @@ export default async function BookingPage({
               {formatMoney(booking.amount_cents, booking.currency)}
             </span>
           </div>
+          {showDepositPlan && (
+            <>
+              <div className="bk-row">
+                <span className="bk-label">Deposit due today</span>
+                <span className="bk-val">
+                  {formatMoney(plan.depositCents, booking.currency)}
+                </span>
+              </div>
+              <div className="bk-row">
+                <span className="bk-label">
+                  Balance auto-charged
+                  {plan.balanceDueDate ? ` ${formatDate(plan.balanceDueDate)}` : ""}
+                </span>
+                <span className="bk-val">
+                  {formatMoney(plan.balanceCents, booking.currency)}
+                </span>
+              </div>
+            </>
+          )}
           {isDepositPaid && (
             <>
               <div className="bk-row">
@@ -170,17 +200,25 @@ export default async function BookingPage({
             <p className="bk-note">
               Secure payment. You won&rsquo;t be charged until you confirm on the
               next screen.
-              {booking.expires_at && !isDepositPaid && (
+              {showDepositPlan ? (
                 <>
-                  {" "}
-                  {(() => {
-                    const rawExpiry = expiryDate(booking.expires_at!);
-                    const displayExpiry = rawExpiry >= booking.check_in ? booking.check_in : rawExpiry;
-                    return rawExpiry >= booking.check_in
-                      ? <>Payment is due by your check-in date, <strong>{formatDate(displayExpiry)}</strong>.</>
-                      : <>These dates are held for you until <strong>{formatDate(displayExpiry)}</strong>.</>;
-                  })()}
+                  {" "}You&rsquo;ll pay the{" "}
+                  <strong>{formatMoney(plan.depositCents, booking.currency)}</strong>{" "}
+                  deposit today; the remaining{" "}
+                  <strong>{formatMoney(plan.balanceCents, booking.currency)}</strong>{" "}
+                  is automatically charged to the same card
+                  {plan.balanceDueDate ? (
+                    <> on <strong>{formatDate(plan.balanceDueDate)}</strong></>
+                  ) : null}
+                  . We&rsquo;ll remind you beforehand.
                 </>
+              ) : (
+                booking.expires_at && !isDepositPaid && (() => {
+                  const rawExpiry = expiryDate(booking.expires_at!);
+                  return rawExpiry < booking.check_in ? (
+                    <> These dates are held for you until <strong>{formatDate(rawExpiry)}</strong>.</>
+                  ) : null;
+                })()
               )}
             </p>
           </>

@@ -449,7 +449,7 @@ export function Portal({
                       <div className="op-side">
                         <span className={`op-status ${s.cls}`}>{s.text}</span>
                         <div className="op-actions">
-                          <a className="op-link" href={`/book/${b.token}`} target="_blank" rel="noreferrer">View</a>
+                          <a className="op-link" href={`/book/${b.token}?from=owner`} target="_blank" rel="noreferrer">View</a>
                           {b.status === "paid" && (
                             <button className="op-link" onClick={() => openOverlay({ kind: "offer", mode: "rebook", initial: rebookInitial(b) })}>
                               Rebook

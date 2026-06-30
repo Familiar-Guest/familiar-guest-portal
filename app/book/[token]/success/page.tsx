@@ -27,7 +27,7 @@ export default async function SuccessPage({
     <div className="bk-wrap">
       <BrandMark />
       <nav className="bk-nav">
-        <a href="/guest" className="bk-nav-link">← My stays</a>
+        <a href="/guest" className="bk-nav-link">← Guest portal</a>
       </nav>
       <div className="bk-card">
         <span className="bk-badge">✓ Payment received</span>
