@@ -6,19 +6,23 @@ import type { Booking } from "./types";
 export interface OwnerPolicy {
   min_days_to_book: number;
   checkin_email_days: number;
-  deposit_required_days: number;
-  full_payment_due_days: number;
+  // Single authoritative knob: balance auto-charges this many days before
+  // check-in, and a deposit only applies to bookings made further out than this.
+  balance_lead_days: number;
+  deposit_required_days: number; // legacy mirror of balance_lead_days
+  full_payment_due_days: number; // legacy mirror of balance_lead_days
   deposit_pct: number;
   refund_100_days: number;
   refund_50_days: number;
 }
 
-/** Defaults from the 2026-06-17 Policies spec. */
+/** Defaults (deposit 25% / balance auto-charged 45 days before check-in). */
 export const DEFAULT_POLICY: OwnerPolicy = {
   min_days_to_book: 2,
   checkin_email_days: 2,
-  deposit_required_days: 30,
-  full_payment_due_days: 15,
+  balance_lead_days: 45,
+  deposit_required_days: 45,
+  full_payment_due_days: 45,
   deposit_pct: 25,
   refund_100_days: 30,
   refund_50_days: 15,
@@ -67,6 +71,7 @@ export function parsePolicyInput(
 /** Policy fields that now live on the property (the per-property payment/refund policy). */
 export interface PropertyPolicyFields {
   deposit_pct: number;
+  balance_lead_days: number;
   deposit_required_days: number;
   full_payment_due_days: number;
   refund_100_days: number;
@@ -75,7 +80,7 @@ export interface PropertyPolicyFields {
 }
 
 const PROPERTY_POLICY_COLS =
-  "deposit_pct, deposit_required_days, full_payment_due_days, refund_100_days, refund_50_days, checkin_email_days";
+  "deposit_pct, balance_lead_days, deposit_required_days, full_payment_due_days, refund_100_days, refund_50_days, checkin_email_days";
 
 /** Build an OwnerPolicy from a property's per-property policy fields.
  *  `min_days_to_book` is a global concern (public-request lead time) and is not
@@ -84,6 +89,7 @@ export function policyFromProperty(p: PropertyPolicyFields): OwnerPolicy {
   return {
     min_days_to_book: DEFAULT_POLICY.min_days_to_book,
     checkin_email_days: p.checkin_email_days,
+    balance_lead_days: p.balance_lead_days ?? p.full_payment_due_days ?? DEFAULT_POLICY.balance_lead_days,
     deposit_required_days: p.deposit_required_days,
     full_payment_due_days: p.full_payment_due_days,
     deposit_pct: p.deposit_pct,
@@ -124,6 +130,8 @@ export function effectivePolicy(booking: Booking, ownerPolicy: OwnerPolicy): Own
     min_days_to_book: ownerPolicy.min_days_to_book,
     checkin_email_days:
       booking.policy_checkin_email_days ?? ownerPolicy.checkin_email_days,
+    balance_lead_days:
+      booking.policy_balance_lead_days ?? ownerPolicy.balance_lead_days,
     deposit_required_days:
       booking.policy_deposit_required_days ?? ownerPolicy.deposit_required_days,
     full_payment_due_days:
@@ -155,11 +163,14 @@ export function depositPlanFor(
   checkIn: string,
   now: Date = new Date()
 ): DepositPlan {
+  // A deposit only applies when the stay is further out than the balance lead
+  // time; booked at or inside that window, the guest pays in full now. The
+  // balance then auto-charges `balance_lead_days` before check-in.
   const eligible =
     amountCents > 0 &&
     policy.deposit_pct > 0 &&
     policy.deposit_pct < 100 &&
-    daysUntil(checkIn, now) >= policy.deposit_required_days;
+    daysUntil(checkIn, now) > policy.balance_lead_days;
 
   if (!eligible) {
     return { plan: "full", depositCents: 0, balanceCents: 0, balanceDueDate: null };
@@ -171,7 +182,7 @@ export function depositPlanFor(
     plan: "deposit",
     depositCents,
     balanceCents,
-    balanceDueDate: addDays(checkIn, -policy.full_payment_due_days),
+    balanceDueDate: addDays(checkIn, -policy.balance_lead_days),
   };
 }
 
@@ -257,7 +268,7 @@ export function guestBookingTerms(
       );
       lines.push(
         plan.balanceDueDate
-          ? `Remaining balance of ${money(plan.balanceCents)} is due by ${formatDate(plan.balanceDueDate)} (${policy.full_payment_due_days} days before check-in).`
+          ? `Remaining balance of ${money(plan.balanceCents)} is due by ${formatDate(plan.balanceDueDate)} (${policy.balance_lead_days} days before check-in).`
           : `Remaining balance of ${money(plan.balanceCents)} is due before check-in.`
       );
     } else {

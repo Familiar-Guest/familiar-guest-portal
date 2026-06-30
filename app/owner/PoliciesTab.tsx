@@ -6,8 +6,7 @@ import type { OwnerPolicy } from "@/lib/policies";
 type FormState = {
   deposits_required: boolean;
   deposit_pct: string;
-  deposit_required_days: string;
-  full_payment_due_days: string;
+  balance_lead_days: string;
   refund_100_days: string;
   refund_50_days: string;
   checkin_email_days: string;
@@ -35,8 +34,7 @@ export function PoliciesTab() {
         setForm({
           deposits_required: p.deposit_pct > 0,
           deposit_pct: p.deposit_pct ? String(p.deposit_pct) : "25",
-          deposit_required_days: String(p.deposit_required_days),
-          full_payment_due_days: String(p.full_payment_due_days),
+          balance_lead_days: String(p.balance_lead_days ?? 45),
           refund_100_days: String(p.refund_100_days),
           refund_50_days: String(p.refund_50_days),
           checkin_email_days: String(p.checkin_email_days),
@@ -61,8 +59,7 @@ export function PoliciesTab() {
     const payload = {
       min_days_to_book: Number(form.min_days_to_book),
       checkin_email_days: Number(form.checkin_email_days),
-      deposit_required_days: Number(form.deposit_required_days),
-      full_payment_due_days: Number(form.full_payment_due_days),
+      balance_lead_days: Number(form.balance_lead_days),
       deposit_pct: form.deposits_required ? Number(form.deposit_pct) : 0,
       refund_100_days: Number(form.refund_100_days),
       refund_50_days: Number(form.refund_50_days),
@@ -117,17 +114,10 @@ export function PoliciesTab() {
                 </select>
               </div>
               <div className="bk-field">
-                <label htmlFor="g_dep_days">Deposit due (days before check-in)</label>
-                <input id="g_dep_days" type="number" min="0" step="1" value={form.deposit_required_days} onChange={(e) => set("deposit_required_days", e.target.value)} />
+                <label htmlFor="g_bal_days">Collect the balance (days before check-in)</label>
+                <input id="g_bal_days" type="number" min="1" step="1" value={form.balance_lead_days} onChange={(e) => set("balance_lead_days", e.target.value)} />
                 <p className="bk-note" style={{ textAlign: "left", marginTop: 5 }}>
-                  If a guest books closer in than this, they pay in full at booking.
-                </p>
-              </div>
-              <div className="bk-field">
-                <label htmlFor="g_full_days">Full payment due (days before check-in)</label>
-                <input id="g_full_days" type="number" min="0" step="1" value={form.full_payment_due_days} onChange={(e) => set("full_payment_due_days", e.target.value)} />
-                <p className="bk-note" style={{ textAlign: "left", marginTop: 5 }}>
-                  Default 30. Must fall between the deposit due date and check-in.
+                  The balance auto-charges the guest&rsquo;s card this many days before check-in. Bookings made closer in are charged in full at booking.
                 </p>
               </div>
             </div>

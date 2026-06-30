@@ -24,6 +24,7 @@ export type PropertyInput = {
   min_nights: number;
   nonstandard_rates: NonStandardRate[];
   deposit_pct: number;
+  balance_lead_days: number;
   deposit_required_days: number;
   full_payment_due_days: number;
   refund_100_days: number;
@@ -101,10 +102,14 @@ export function parsePropertyInput(
     if (deposit_pct !== 25 && deposit_pct !== 50)
       return { error: "Deposit must be 25% or 50%." };
   }
-  const deposit_required_days = intOr(body.deposit_required_days, DEFAULT_POLICY.deposit_required_days);
-  const full_payment_due_days = intOr(body.full_payment_due_days, DEFAULT_POLICY.full_payment_due_days);
-  if (deposits_required && full_payment_due_days > deposit_required_days)
-    return { error: "Full payment must be due on or after the deposit due date (the same or fewer days before check-in)." };
+  // Single timing knob: the balance auto-charges this many days before check-in,
+  // and a deposit only applies to bookings made further out than this. The legacy
+  // deposit_required_days / full_payment_due_days columns are mirrored to it.
+  const balance_lead_days = intOr(body.balance_lead_days, DEFAULT_POLICY.balance_lead_days);
+  if (deposits_required && balance_lead_days < 1)
+    return { error: "The balance must be collected at least 1 day before check-in." };
+  const deposit_required_days = balance_lead_days;
+  const full_payment_due_days = balance_lead_days;
   const refund_100_days = intOr(body.refund_100_days, DEFAULT_POLICY.refund_100_days);
   const refund_50_days = intOr(body.refund_50_days, DEFAULT_POLICY.refund_50_days);
   if (refund_50_days > refund_100_days)
@@ -138,6 +143,7 @@ export function parsePropertyInput(
       min_nights,
       nonstandard_rates,
       deposit_pct,
+      balance_lead_days,
       deposit_required_days,
       full_payment_due_days,
       refund_100_days,

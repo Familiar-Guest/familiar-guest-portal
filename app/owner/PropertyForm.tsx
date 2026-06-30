@@ -50,8 +50,7 @@ export function PropertyForm({
     // pre-filled from the owner's global default below.
     deposits_required: initial ? (initial.deposit_pct ?? 0) > 0 : true,
     deposit_pct: initial && initial.deposit_pct ? String(initial.deposit_pct) : "25",
-    deposit_required_days: initial ? String(initial.deposit_required_days) : "30",
-    full_payment_due_days: initial ? String(initial.full_payment_due_days) : "30",
+    balance_lead_days: initial ? String(initial.balance_lead_days ?? 45) : "45",
     refund_100_days: initial ? String(initial.refund_100_days) : "30",
     refund_50_days: initial ? String(initial.refund_50_days) : "15",
     checkin_email_days: initial ? String(initial.checkin_email_days) : "2",
@@ -115,8 +114,7 @@ export function PropertyForm({
           ...f,
           deposits_required: (p.deposit_pct ?? 0) > 0,
           deposit_pct: p.deposit_pct ? String(p.deposit_pct) : "25",
-          deposit_required_days: String(p.deposit_required_days),
-          full_payment_due_days: String(p.full_payment_due_days),
+          balance_lead_days: String(p.balance_lead_days ?? 45),
           refund_100_days: String(p.refund_100_days),
           refund_50_days: String(p.refund_50_days),
           checkin_email_days: String(p.checkin_email_days),
@@ -502,17 +500,10 @@ export function PropertyForm({
                 </select>
               </div>
               <div className="bk-field">
-                <label htmlFor="dep_days">Deposit due (days before check-in)</label>
-                <input id="dep_days" type="number" min="0" step="1" value={form.deposit_required_days} onChange={(e) => set("deposit_required_days", e.target.value)} />
+                <label htmlFor="bal_days">Collect the balance (days before check-in)</label>
+                <input id="bal_days" type="number" min="1" step="1" value={form.balance_lead_days} onChange={(e) => set("balance_lead_days", e.target.value)} />
                 <p className="bk-note" style={{ textAlign: "left", marginTop: 5 }}>
-                  If a guest books closer in than this, they pay in full at booking.
-                </p>
-              </div>
-              <div className="bk-field">
-                <label htmlFor="full_days">Full payment due (days before check-in)</label>
-                <input id="full_days" type="number" min="0" step="1" value={form.full_payment_due_days} onChange={(e) => set("full_payment_due_days", e.target.value)} />
-                <p className="bk-note" style={{ textAlign: "left", marginTop: 5 }}>
-                  Default 30. Must fall between the deposit due date and check-in.
+                  We automatically charge the guest&rsquo;s card this many days before check-in and remind them first. Bookings made closer in than this are charged in full at booking.
                 </p>
               </div>
             </div>

@@ -44,11 +44,22 @@ export interface Booking {
   balance_cents: number;
   deposit_paid_at: string | null;
   balance_paid_at: string | null;
-  balance_due_date: string | null; // YYYY-MM-DD
+  balance_due_date: string | null; // YYYY-MM-DD (legacy alias of balance_charge_date)
   balance_reminder_sent_at: string | null;
   balance_forfeited_at: string | null;
   balance_stripe_session_id: string | null;
   balance_payment_intent_id: string | null;
+  // Card-on-file for off-session balance auto-charge (Stripe ids only — no card data).
+  stripe_customer_id: string | null;
+  stripe_payment_method_id: string | null;
+  balance_charge_date: string | null; // YYYY-MM-DD — when the balance auto-charges
+  balance_charge_attempted_at: string | null;
+  balance_charge_failed_at: string | null;
+  balance_charge_error: string | null;
+  balance_reminder7_sent_at: string | null; // pre-charge reminders
+  balance_reminder1_sent_at: string | null;
+  owner_balance_paid_sent_at: string | null; // owner balance-lifecycle emails
+  owner_balance_failed_sent_at: string | null;
   // Escrow payout: platform holds funds until check-in, then transfers to owner.
   payout_transfer_id: string | null;
   payout_released_at: string | null;
@@ -73,6 +84,21 @@ export interface Booking {
   policy_refund_100_days: number | null;
   policy_refund_50_days: number | null;
   policy_deposit_pct: number | null;
+  policy_balance_lead_days: number | null;
+  created_at: string;
+}
+
+/** One transaction on a booking — proof of payment for the owner's records. */
+export interface BookingPayment {
+  id: string;
+  booking_id: string;
+  kind: "deposit" | "balance" | "full" | "refund";
+  amount_cents: number;
+  currency: string;
+  stripe_payment_intent_id: string | null;
+  card_brand: string | null;
+  card_last4: string | null;
+  status: "succeeded" | "failed" | "refunded";
   created_at: string;
 }
 
@@ -131,8 +157,9 @@ export interface Property {
   min_nights: number;
   // Per-property payment/refund policy (deposit_pct 0 = no deposit required).
   deposit_pct: number;
-  deposit_required_days: number;
-  full_payment_due_days: number;
+  balance_lead_days: number; // balance auto-charges this many days before check-in
+  deposit_required_days: number; // legacy: mirrored to balance_lead_days
+  full_payment_due_days: number; // legacy: mirrored to balance_lead_days
   refund_100_days: number;
   refund_50_days: number;
   checkin_email_days: number;
