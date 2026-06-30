@@ -3,7 +3,7 @@ import "./globals.css";
 
 const TITLE = "Familiar Guest — Host familiar guests direct";
 const DESCRIPTION =
-  "Familiar Guest is the simplest way to rent to the people who already love your place. Keep the relationship, skip the 15-20% rental platform fees, and let us handle the trust. Your first month is commission-free.";
+  "Familiar Guest lets vacation-rental owners take bookings directly from guests they already know — keeping the guest relationship, avoiding the 15–20% platform fees, with escrow, verification, and payments handled. First month commission-free.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://famguest.com"),
