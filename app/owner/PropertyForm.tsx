@@ -62,9 +62,10 @@ export function PropertyForm({
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  // Unsaved-changes tracking: any user edit flips this on (one-way until save),
-  // so the portal can warn before navigating away. Programmatic seeding (e.g.
-  // the policy prefetch below) uses setForm directly and doesn't fire here.
+  // Unsaved-changes tracking: any user edit flips this on; a successful save
+  // (see submit() below) flips it back off so the portal stops warning once
+  // changes are actually persisted. Programmatic seeding (e.g. the policy
+  // prefetch below) uses setForm directly and doesn't fire here.
   const [dirty, setDirty] = useState(false);
   const markDirty = () => setDirty(true);
   useEffect(() => { onDirtyChange?.(dirty); }, [dirty, onDirtyChange]);
@@ -254,6 +255,7 @@ export function PropertyForm({
       setLoading(false);
       return;
     }
+    setDirty(false);
     onDone();
   }
 
