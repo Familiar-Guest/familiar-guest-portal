@@ -150,9 +150,9 @@ export default function Home() {
               guests <span className="it">direct.</span>
             </h1>
             <p className="sub reveal d3">
-              Familiar Guest is the simplest way to rent to the people who
-              already love your place. Keep the relationship, skip the
-              15-20% rental platform fees, and let us manage your bookings.
+              Familiar Guest lets you take bookings directly from guests you
+              already know. You keep the guest relationship, avoid the 15–20%
+              platform fees, and we handle the booking, payment, and paperwork.
             </p>
             <SignupCTA />
             <p className="micro reveal d5">
@@ -315,7 +315,7 @@ export default function Home() {
         <div className="wrap aud-grid">
           <a className="aud-card" href="#how">
             <h3>I own a place</h3>
-            <p>See how direct booking works and get set up in an afternoon.</p>
+            <p>See how direct booking works and how to get set up.</p>
             <span className="aud-go">How it works →</span>
           </a>
           <a className="aud-card" href="/owner/login">
@@ -337,10 +337,11 @@ export default function Home() {
           <div className="shift">
             <h2>You found these guests. Why keep paying to rebook them?</h2>
             <p>
-              Your repeat guests already know your place. When they book again
-              through a big platform, you lose a cut of every stay — and you
-              never really own the relationship. Familiar Guest hands it back to
-              you, with the safety guests expect built right in.
+              Your repeat guests already know your place. When they rebook
+              through a big platform, you still pay a cut of every stay, and the
+              guest stays the platform&rsquo;s contact rather than yours.
+              Familiar Guest lets you take that booking directly, with the
+              escrow and verification guests expect.
             </p>
           </div>
         </div>
@@ -350,12 +351,12 @@ export default function Home() {
       <section className="block" id="how" style={{ paddingTop: 0 }}>
         <div className="wrap">
           <div className="sec-head">
-            <p className="eyebrow">Effortless setup</p>
-            <h2>Three things to start. We handle the rest.</h2>
+            <p className="eyebrow">Setup</p>
+            <h2>Three things to get started.</h2>
             <p>
-              To go live you bring just your listing details, a few facts about
-              you, and a Stripe account to get paid. No website to build, no
-              spreadsheets, nothing to write from scratch.
+              To go live, you provide your listing details, a few facts about
+              yourself, and a Stripe account for payouts. There&rsquo;s no
+              website to build or spreadsheet to keep up.
             </p>
           </div>
           <div className="bring-grid">
@@ -487,8 +488,8 @@ export default function Home() {
           </div>
 
           <p className="bring-after">
-            That&rsquo;s it — share your booking link and the page, payment,
-            rental agreement, and house guide all run themselves.
+            After that, you share your booking link. The booking page, payment,
+            rental agreement, and house guide are handled for each reservation.
           </p>
         </div>
       </section>
@@ -498,7 +499,7 @@ export default function Home() {
         <div className="wrap">
           <div className="sec-head">
             <p className="eyebrow">What you get</p>
-            <h2>Everything to run direct, nothing you don&rsquo;t.</h2>
+            <h2>The tools to run direct bookings.</h2>
           </div>
           <div className="feat-grid">
             <div className="feat">
@@ -520,11 +521,11 @@ export default function Home() {
                 </svg>
               </div>
               <div>
-                <h3>Direct bookings, full control</h3>
+                <h3>Direct bookings on your terms</h3>
                 <p>
-                  Your price, your guests, your relationship — no algorithm in
-                  the middle. Fees a fraction of the big platforms&rsquo; mean
-                  more for you and a better deal for them.
+                  Set your own prices and rules and book guests directly,
+                  without an algorithm in between. Lower fees than the big
+                  platforms mean you keep more and can pass some on.
                 </p>
               </div>
             </div>
@@ -544,9 +545,9 @@ export default function Home() {
               <div>
                 <h3>Stay offers &amp; one-click rebook</h3>
                 <p>
-                  Pre-define a stay and send a pay link to any guest who
-                  inquires — or rebook last year&rsquo;s guests in seconds.
-                  Repeat bookings, on autopilot.
+                  Pre-define a stay and send a payment link to anyone who
+                  inquires, or rebook last year&rsquo;s guests from their saved
+                  details.
                 </p>
               </div>
             </div>
@@ -560,8 +561,8 @@ export default function Home() {
               <div>
                 <h3>Payments &amp; escrow</h3>
                 <p>
-                  Funds held safely until check-in. Damage deposits release on
-                  their own. Guests pay with confidence.
+                  Guest payments are held until check-in, and damage deposits
+                  release automatically after the inspection window.
                 </p>
               </div>
             </div>
@@ -586,8 +587,8 @@ export default function Home() {
               <div>
                 <h3>Built-in safeguards</h3>
                 <p>
-                  Optional guest screening and damage protection — open to the
-                  public with big-platform peace of mind.
+                  Add optional guest screening and damage protection when you
+                  open a place to the public.
                 </p>
               </div>
             </div>
@@ -606,9 +607,8 @@ export default function Home() {
               <div>
                 <h3>Rental income &amp; tax accounting</h3>
                 <p>
-                  Income tracked, lodging taxes handled, year-end documents
-                  ready for your accountant — across every property. No other
-                  platform does this.
+                  Track income, handle lodging taxes, and produce year-end
+                  documents for your accountant, across every property you list.
                 </p>
               </div>
             </div>
@@ -626,9 +626,8 @@ export default function Home() {
               <div>
                 <h3>Reminders &amp; check-in messages</h3>
                 <p>
-                  Automatic text, WhatsApp, and email — including GPS directions
-                  straight to your door. Guests arrive informed, you stay
-                  hands-off.
+                  Automatic text, WhatsApp, and email, with GPS directions to
+                  the door, so guests arrive knowing what they need.
                 </p>
               </div>
             </div>
@@ -683,11 +682,12 @@ export default function Home() {
           <div className="offer-spot">
             <div>
               <p className="eyebrow">Send a stay offer</p>
-              <h2>Got an inquiry? Turn it into a booking in one message.</h2>
+              <h2>Turn an inquiry into a booking with one link.</h2>
               <p className="lead">
-                Someone asks about your place — a text, a DM, an email from a
-                past guest. Pre-define the stay, set your price, and send one
-                link. They just accept and pay. No back-and-forth, no chasing.
+                When someone asks about your place by text, DM, or email, you
+                pre-define the stay, set your price, and send a single link they
+                can accept and pay. It replaces the back-and-forth of arranging
+                a booking by hand.
               </p>
               <ul className="spot-list">
                 <li>
@@ -699,11 +699,11 @@ export default function Home() {
                   check-in — they can pay any time before they arrive.
                 </li>
                 <li>
-                  <Check /> Your guest just accepts and pays — no account, no
-                  app, works on mobile.
+                  <Check /> Your guest accepts and pays — no account or app
+                  required, and it works on mobile.
                 </li>
                 <li>
-                  <Check /> The same engine powers one-click rebooking for your
+                  <Check /> The same flow handles one-click rebooking for
                   returning guests.
                 </li>
               </ul>
@@ -804,12 +804,11 @@ export default function Home() {
             </div>
             <div>
               <p className="eyebrow">Your booking page</p>
-              <h2>One link to all your places — that never changes.</h2>
+              <h2>One link to all your places.</h2>
               <p className="lead">
-                Every owner gets a permanent storefront link. Share it once — in
-                your rental profiles, your email signature, your Instagram bio —
-                and guests browse all your available properties and book the
-                dates they want.
+                Every owner gets a permanent storefront link. Add it to your
+                rental profiles, email signature, or social bio, and guests can
+                browse your available properties and book the dates they want.
               </p>
               <ul className="spot-list">
                 <li>
@@ -817,8 +816,7 @@ export default function Home() {
                   pick.
                 </li>
                 <li>
-                  <Check /> Permanent and unchanging — share it once, it works
-                  forever.
+                  <Check /> The link stays the same, so you only share it once.
                 </li>
                 <li>
                   <Check /> Guests book themselves — live availability, secure
@@ -955,7 +953,7 @@ export default function Home() {
           <div>
             <p className="eyebrow">Trust &amp; safety</p>
             <h2 style={{ fontSize: "clamp(30px,3.6vw,42px)", margin: "14px 0 28px" }}>
-              Booking direct, as safe as booking big.
+              The same safeguards, booking direct.
             </h2>
             <div className="trust-list">
               <div className="trust-item">
@@ -968,8 +966,8 @@ export default function Home() {
                 <div>
                   <h3>Money held in escrow</h3>
                   <p>
-                    Your guest&rsquo;s payment is held safely and only released
-                    to you after check-in — so booking direct never feels risky.
+                    Your guest&rsquo;s payment is held and only released to you
+                    after check-in.
                   </p>
                 </div>
               </div>
@@ -989,8 +987,8 @@ export default function Home() {
                 <div>
                   <h3>Verified owners only</h3>
                   <p>
-                    Every owner passes identity verification before a single
-                    booking. Guests always know the listing is real.
+                    Every owner passes identity verification before taking a
+                    booking, so guests know who they&rsquo;re paying.
                   </p>
                 </div>
               </div>
@@ -1097,10 +1095,10 @@ export default function Home() {
       <section className="block" id="signup" style={{ paddingTop: 0 }}>
         <div className="wrap">
           <div className="cta">
-            <h2>Keep the guests you&rsquo;ve earned.</h2>
+            <h2>Host your repeat guests directly.</h2>
             <p>
-              Sign up free and host your repeat guests direct — your first month
-              is commission-free, and founding owners lock Host at $19/mo for life.
+              Sign up free. Your first month is commission-free, and founding
+              owners lock Host at $19/mo for life.
             </p>
             <SignupCTA buttonStyle={{ background: "var(--forest)" }} label="Create your free account" />
           </div>
