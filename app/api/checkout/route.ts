@@ -6,6 +6,7 @@ import { siteUrl } from "@/lib/email";
 import { formatDate } from "@/lib/format";
 import { isExpired } from "@/lib/offers";
 import { depositPlanFor, effectivePolicyForBooking } from "@/lib/policies";
+import { normalizePhone } from "@/lib/sms";
 import type { Booking } from "@/lib/types";
 
 export async function POST(request: NextRequest) {
@@ -34,8 +35,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid request." }, { status: 400 });
   }
 
-  const phone =
-    typeof guestPhone === "string" && guestPhone.trim() ? guestPhone.trim() : null;
+  const rawPhone = typeof guestPhone === "string" && guestPhone.trim() ? guestPhone.trim() : null;
+  const phone = rawPhone ? normalizePhone(rawPhone) : null;
   // Text confirmation requires a phone number — fall back to email otherwise.
   const method = confirmationMethod === "sms" && phone ? "sms" : "email";
 

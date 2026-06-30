@@ -74,9 +74,8 @@ export async function POST(request: NextRequest) {
       ): Promise<boolean> => {
         const portalToken = await ensureGuestPortal(b.guest_email, supabase);
         let sent = false;
-        // SMS only applies to the final (paid-in-full) confirmations.
-        if (kind !== "deposit" && b.confirmation_method === "sms" && b.guest_phone) {
-          sent = await sendSms({ to: b.guest_phone, body: buildConfirmationSms(b) });
+        if (b.confirmation_method === "sms" && b.guest_phone) {
+          sent = await sendSms({ to: b.guest_phone, body: buildConfirmationSms(b, kind) });
         }
         if (!sent) {
           const { subject, html } = await buildBookingConfirmation(b, kind, guestPortalUrl(portalToken));
