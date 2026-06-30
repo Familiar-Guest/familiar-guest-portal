@@ -21,11 +21,20 @@ export const metadata: Metadata = {
     siteName: "Familiar Guest",
     type: "website",
     locale: "en_US",
+    images: [
+      {
+        url: "https://famguest.com/og-image.png",
+        width: 1200,
+        height: 630,
+        alt: "Familiar Guest — Rent to Trusted Guests, Rent from Trusted Owners",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: OG_TITLE,
     description: OG_DESCRIPTION,
+    images: ["https://famguest.com/og-image.png"],
   },
 };
 
