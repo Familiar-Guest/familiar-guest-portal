@@ -268,8 +268,8 @@ export function guestBookingTerms(
       );
       lines.push(
         plan.balanceDueDate
-          ? `Remaining balance of ${money(plan.balanceCents)} is due by ${formatDate(plan.balanceDueDate)} (${policy.balance_lead_days} days before check-in).`
-          : `Remaining balance of ${money(plan.balanceCents)} is due before check-in.`
+          ? `Remaining balance of ${money(plan.balanceCents)} is automatically charged to your card on ${formatDate(plan.balanceDueDate)} (${policy.balance_lead_days} days before check-in). We'll remind you beforehand.`
+          : `Remaining balance of ${money(plan.balanceCents)} is charged before check-in.`
       );
     } else {
       lines.push(`Full payment of ${money(b.amount_cents)} confirms your booking.`);

@@ -97,6 +97,7 @@ export async function POST(request: NextRequest) {
       planFields.deposit_cents = plan.depositCents;
       planFields.balance_cents = plan.balanceCents;
       planFields.balance_due_date = plan.balanceDueDate;
+      planFields.balance_charge_date = plan.balanceDueDate;
     } else {
       amountCents = booking.amount_cents;
       paymentKind = "full";
@@ -105,12 +106,17 @@ export async function POST(request: NextRequest) {
   }
 
   try {
+    // For a deposit we save the card and create a Customer so the balance can be
+    // auto-charged off-session later. The mandate is disclosed to the guest on
+    // the booking page before they pay.
+    const saveCard = paymentKind === "deposit";
     const checkoutSession = await getStripe().checkout.sessions.create({
       mode: "payment",
       // Card only — excludes Stripe Link, which can prompt the guest for a
       // phone number and send it an SMS code unrelated to our confirmation flow.
       payment_method_types: ["card"],
       customer_email: booking.guest_email,
+      ...(saveCard ? { customer_creation: "always" as const } : {}),
       line_items: [
         {
           quantity: 1,
@@ -129,6 +135,8 @@ export async function POST(request: NextRequest) {
       metadata: { booking_id: booking.id, token: booking.token, payment_kind: paymentKind },
       payment_intent_data: {
         metadata: { booking_id: booking.id, token: booking.token, payment_kind: paymentKind },
+        // Save the payment method to the Customer for off-session balance charges.
+        ...(saveCard ? { setup_future_usage: "off_session" as const } : {}),
       },
       success_url: `${siteUrl()}/book/${booking.token}/success`,
       cancel_url: `${siteUrl()}/book/${booking.token}`,

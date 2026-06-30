@@ -395,6 +395,93 @@ export function buildBalanceReminderEmail(
   };
 }
 
+/** A two-row money table (label/value) in the booking-email style. */
+function moneyTable(rows: Array<[string, string]>): string {
+  const body = rows
+    .map(
+      ([label, value]) =>
+        `<tr><td style="padding:7px 0;color:#8a7e72;font-size:14px;">${label}</td><td style="padding:7px 0;text-align:right;font-size:14px;color:${INK};font-weight:600;">${value}</td></tr>`
+    )
+    .join("");
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="margin:18px 0;border-top:1px solid ${LINE};border-bottom:1px solid ${LINE};">${body}</table>`;
+}
+
+/**
+ * Pre-charge reminder — the saved card will be auto-charged for the balance on
+ * `chargeDate`. `whenLabel` is a short phrase like "in one week" / "tomorrow".
+ */
+export function buildBalanceChargeReminderEmail(
+  b: Booking,
+  chargeDate: string,
+  whenLabel: string
+): { subject: string; html: string } {
+  const inner =
+    heading(`Your balance will be charged ${whenLabel}`) +
+    p(`Hi ${b.guest_name}, a friendly reminder that the remaining balance for your stay at ${b.property_name} (${formatDate(b.check_in)} → ${formatDate(b.check_out)}) will be charged automatically to the card you used for your deposit.`) +
+    moneyTable([
+      ["Balance", formatMoney(b.balance_cents, b.currency)],
+      ["Charges on", formatDate(chargeDate)],
+    ]) +
+    p(`No action is needed. If you'd like to use a different card or have any questions, just reply to this email.`) +
+    button(bookingUrl(b.token), "View your booking");
+  return {
+    subject: `Your balance for ${b.property_name} charges ${whenLabel}`,
+    html: layout(inner),
+  };
+}
+
+/** Auto-charge failed — ask the guest to complete the balance by the deadline. */
+export function buildBalanceChargeFailedEmail(
+  b: Booking,
+  deadlineDate: string
+): { subject: string; html: string } {
+  const inner =
+    heading("We couldn't charge your balance") +
+    p(`Hi ${b.guest_name}, we tried to charge the remaining balance for your stay at ${b.property_name} (${formatDate(b.check_in)} → ${formatDate(b.check_out)}), but the payment didn't go through.`) +
+    moneyTable([["Balance due", formatMoney(b.balance_cents, b.currency)]]) +
+    p(`Please complete it by <strong>${formatDate(deadlineDate)}</strong> to keep your reservation. If the balance remains unpaid after this date, your reservation will be released and your deposit forfeited per your host's policy.`) +
+    button(bookingUrl(b.token), "Complete your balance") +
+    p(`<span style="font-size:13px;color:#8a7e72;">If you've already paid or have questions, just reply to this email.</span>`);
+  return {
+    subject: `Action needed: balance for your stay at ${b.property_name}`,
+    html: layout(inner),
+  };
+}
+
+/** Owner notification — the balance was auto-collected (booking paid in full). */
+export function buildOwnerBalanceCollectedEmail(b: Booking): {
+  subject: string;
+  html: string;
+} {
+  const inner =
+    heading(`Balance collected — ${b.property_name}`) +
+    p(`The remaining balance for ${b.guest_name}'s stay at ${b.property_name} (${formatDate(b.check_in)} → ${formatDate(b.check_out)}) was charged automatically. This booking is now <strong>paid in full</strong>.`) +
+    moneyTable([
+      ["Balance collected", formatMoney(b.balance_cents, b.currency)],
+      ["Total", formatMoney(b.amount_cents, b.currency)],
+    ]) +
+    button(`${siteUrl()}/owner`, "Open your portal");
+  return {
+    subject: `Balance collected: ${b.property_name} (${formatDate(b.check_in)})`,
+    html: layout(inner),
+  };
+}
+
+/** Owner notification — the balance auto-charge failed (a day past due). */
+export function buildOwnerBalancePastDueEmail(
+  b: Booking,
+  deadlineDate: string
+): { subject: string; html: string } {
+  const inner =
+    heading(`Balance not collected — ${b.property_name}`) +
+    p(`Heads up: the ${formatMoney(b.balance_cents, b.currency)} balance for ${b.guest_name}'s stay at ${b.property_name} (${formatDate(b.check_in)} → ${formatDate(b.check_out)}) was not collected — the card was declined or the charge didn't go through. We've asked the guest to complete it by <strong>${formatDate(deadlineDate)}</strong>; the dates are still held for now.`) +
+    button(`${siteUrl()}/owner`, "Open your portal");
+  return {
+    subject: `Balance not collected: ${b.property_name} (${formatDate(b.check_in)})`,
+    html: layout(inner),
+  };
+}
+
 /** Owner notification — a guest requested a stay (awaiting approval). */
 export function buildOwnerRequestEmail(b: Booking): {
   subject: string;

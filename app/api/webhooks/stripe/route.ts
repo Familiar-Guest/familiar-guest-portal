@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { buildBookingConfirmation, sendEmail } from "@/lib/email";
 import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { buildConfirmationSms, sendSms } from "@/lib/sms";
+import { cardDetailsFromIntent, recordBookingPayment } from "@/lib/payments";
 import type { Booking } from "@/lib/types";
 
 // Stripe needs the raw request body to verify the signature.
@@ -84,6 +85,15 @@ export async function POST(request: NextRequest) {
         return sent;
       };
 
+      // Card brand/last4 (+ saved payment-method id for deposits) from the intent.
+      const card = intentId
+        ? await cardDetailsFromIntent(intentId)
+        : { paymentMethodId: null, brand: null, last4: null };
+      const customerId =
+        typeof session.customer === "string"
+          ? session.customer
+          : session.customer?.id ?? null;
+
       if (booking && paymentKind === "deposit") {
         // Idempotent on deposit_paid_at.
         if (booking.deposit_paid_at === null) {
@@ -94,9 +104,21 @@ export async function POST(request: NextRequest) {
               status: "deposit_paid",
               deposit_paid_at: nowIso,
               stripe_payment_intent_id: intentId,
+              // Card-on-file for the off-session balance auto-charge later.
+              stripe_customer_id: customerId,
+              stripe_payment_method_id: card.paymentMethodId,
               confirmation_sent_at: sent ? nowIso : null,
             })
             .eq("id", booking.id);
+          await recordBookingPayment(supabase, {
+            booking_id: booking.id,
+            kind: "deposit",
+            amount_cents: booking.deposit_cents,
+            currency: booking.currency,
+            stripe_payment_intent_id: intentId,
+            card_brand: card.brand,
+            card_last4: card.last4,
+          });
         }
       } else if (booking && paymentKind === "balance") {
         // Idempotent on balance_paid_at.
@@ -112,6 +134,15 @@ export async function POST(request: NextRequest) {
               confirmation_sent_at: sent ? nowIso : booking.confirmation_sent_at,
             })
             .eq("id", booking.id);
+          await recordBookingPayment(supabase, {
+            booking_id: booking.id,
+            kind: "balance",
+            amount_cents: booking.balance_cents,
+            currency: booking.currency,
+            stripe_payment_intent_id: intentId,
+            card_brand: card.brand,
+            card_last4: card.last4,
+          });
         }
       } else if (booking) {
         // Full payment. Idempotent on confirmation_sent_at.
@@ -126,6 +157,15 @@ export async function POST(request: NextRequest) {
               confirmation_sent_at: sent ? nowIso : null,
             })
             .eq("id", booking.id);
+          await recordBookingPayment(supabase, {
+            booking_id: booking.id,
+            kind: "full",
+            amount_cents: booking.amount_cents,
+            currency: booking.currency,
+            stripe_payment_intent_id: intentId,
+            card_brand: card.brand,
+            card_last4: card.last4,
+          });
         }
       }
     }

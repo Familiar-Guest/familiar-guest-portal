@@ -435,6 +435,12 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 .op-attention-item::before{content:"•";color:var(--coral);flex-shrink:0}
 .op-item-live{border-left:3px solid var(--coral);padding-left:11px;margin-left:-14px}
 .op-item-focus{box-shadow:0 0 0 2px var(--seaglass);border-radius:var(--radius-sm);transition:box-shadow .3s}
+/* per-booking payment ledger (proof of payment) */
+.pay-ledger{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0}
+.pay-ledger th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--ink-soft);font-weight:600;padding:6px 10px;border-bottom:1px solid var(--line)}
+.pay-ledger td{padding:7px 10px;border-bottom:1px solid var(--line);color:var(--ink);vertical-align:top}
+.pay-ledger tr:last-child td{border-bottom:none}
+.pay-txid{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;color:var(--ink-soft);word-break:break-all}
 .op-panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius-md);padding:26px}
 .op-formwrap{display:flex;justify-content:center}
 .op-h2{font-family:var(--display);font-size:22px;color:var(--forest);margin:0}

@@ -1,9 +1,9 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { formatDate, formatMoney } from "@/lib/format";
 import { isActiveOffer } from "@/lib/offers";
-import type { Booking, Property } from "@/lib/types";
+import type { Booking, BookingPayment, Property } from "@/lib/types";
 import { MonthCalendar, type CalendarBar } from "./MonthCalendar";
 
 interface BusyRange {
@@ -62,6 +62,7 @@ export function CalendarTab({
 }) {
   const [releasingId, setReleasingId] = useState<string | null>(null);
   const [releaseErr, setReleaseErr] = useState<string | null>(null);
+  const [openLedger, setOpenLedger] = useState<string | null>(null);
 
   async function releasePayout(b: Booking) {
     if (releasingId) return;
@@ -280,8 +281,10 @@ export function CalendarTab({
             <ul className="op-list">
               {editableBookings.map(b => {
                 const paid = b.status === "paid";
+                const ledgerOpen = openLedger === b.id;
                 return (
-                  <li key={b.id} className="op-item">
+                  <Fragment key={b.id}>
+                  <li className="op-item">
                     <div className="op-main">
                       <div className="op-title">
                         <span className={`cal-dot cal-${paid ? "booked" : "offer"}`} />
@@ -303,6 +306,9 @@ export function CalendarTab({
                         <button className="op-link" onClick={() => onEdit(b)}>
                           Edit
                         </button>
+                        <button className="op-link" onClick={() => setOpenLedger(ledgerOpen ? null : b.id)}>
+                          {ledgerOpen ? "Hide payments" : "Payments"}
+                        </button>
                         {paid && payoutsEnabled && (
                           b.payout_released_at ? (
                             <span className="op-link" style={{ color: "var(--teal)", cursor: "default" }}>
@@ -320,6 +326,12 @@ export function CalendarTab({
                       </div>
                     </div>
                   </li>
+                  {ledgerOpen && (
+                    <li className="op-item" style={{ display: "block" }}>
+                      <PaymentsLedger bookingId={b.id} />
+                    </li>
+                  )}
+                  </Fragment>
                 );
               })}
             </ul>
@@ -328,5 +340,59 @@ export function CalendarTab({
         </div>
       )}
     </div>
+  );
+}
+
+/** Per-booking payment ledger (proof of payment) — lazy-loaded on open. */
+function PaymentsLedger({ bookingId }: { bookingId: string }) {
+  const [rows, setRows] = useState<BookingPayment[] | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    let on = true;
+    fetch(`/api/owner/bookings/${bookingId}/payments`, { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => {
+        if (!on) return;
+        if (d.ok) setRows(d.payments as BookingPayment[]);
+        else setErr(d.error ?? "Could not load payments.");
+      })
+      .catch(() => on && setErr("Could not load payments."));
+    return () => {
+      on = false;
+    };
+  }, [bookingId]);
+
+  if (err) return <div className="bk-note" style={{ textAlign: "left" }}>{err}</div>;
+  if (!rows) return <div className="bk-note" style={{ textAlign: "left" }}>Loading payments…</div>;
+  if (rows.length === 0)
+    return <div className="bk-note" style={{ textAlign: "left" }}>No payments recorded yet.</div>;
+
+  return (
+    <table className="pay-ledger">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Amount</th>
+          <th>Card</th>
+          <th>Date</th>
+          <th>Transaction ID</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows.map((p) => (
+          <tr key={p.id}>
+            <td style={{ textTransform: "capitalize" }}>
+              {p.kind}
+              {p.status !== "succeeded" ? ` (${p.status})` : ""}
+            </td>
+            <td>{formatMoney(p.amount_cents, p.currency)}</td>
+            <td>{p.card_brand ? `${p.card_brand} ····${p.card_last4 ?? ""}` : "—"}</td>
+            <td>{formatDate(p.created_at)}</td>
+            <td className="pay-txid">{p.stripe_payment_intent_id ?? "—"}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
   );
 }

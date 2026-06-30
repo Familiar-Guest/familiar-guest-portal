@@ -4,6 +4,11 @@ import {
   buildReminderEmail,
   buildCheckinForBooking,
   buildBalanceReminderEmail,
+  buildBalanceChargeReminderEmail,
+  buildBalanceChargeFailedEmail,
+  buildOwnerBalanceCollectedEmail,
+  buildOwnerBalancePastDueEmail,
+  buildBookingConfirmation,
   sendEmail,
   siteUrl,
 } from "@/lib/email";
@@ -11,6 +16,7 @@ import { ensureGuestPortal, guestPortalUrl } from "@/lib/guestPortal";
 import { daysUntil, formatDate, formatMoney } from "@/lib/format";
 import { forfeitDeadline, effectivePolicyForBooking } from "@/lib/policies";
 import { releaseBookingPayout } from "@/lib/payouts";
+import { autoChargeBalance } from "@/lib/balanceCharge";
 import { paymentsGateEnabled } from "@/lib/flags";
 import type { Booking } from "@/lib/types";
 
@@ -24,6 +30,11 @@ export async function GET(request: NextRequest) {
   }
 
   const supabase = createAdminClient();
+
+  const ownerEmailFor = async (ownerId: string): Promise<string | null> => {
+    const { data } = await supabase.from("owners").select("email").eq("id", ownerId).maybeSingle();
+    return (data as { email: string } | null)?.email ?? null;
+  };
 
   // Housekeeping: lapse any open offers past their hold window so their dates
   // free up. (Expiry is also enforced live at checkout, but this keeps the
@@ -132,17 +143,23 @@ export async function GET(request: NextRequest) {
   let reminders = 0;
   let checkins = 0;
   let balanceReminders = 0;
+  let balanceCharges = 0;
+  let balanceChargeFails = 0;
   let forfeits = 0;
 
   for (const b of bookings) {
     const days = daysUntil(b.check_in);
     const policy = await effectivePolicyForBooking(supabase, b);
 
-    // ── Deposit-paid bookings: balance reminders + forfeiture ───────────────
-    if (b.status === "deposit_paid" && b.balance_due_date && b.balance_paid_at === null) {
-      const forfeitOn = forfeitDeadline(b.balance_due_date);
+    // ── Deposit-paid: pre-charge reminders, balance auto-charge, forfeiture ──
+    if (b.status === "deposit_paid" && b.balance_paid_at === null) {
+      const chargeDate = b.balance_charge_date ?? b.balance_due_date;
+      if (!chargeDate) continue;
+      const forfeitOn = forfeitDeadline(chargeDate);
+      const daysToCharge = daysUntil(chargeDate);
+      const hasCard = Boolean(b.stripe_customer_id && b.stripe_payment_method_id);
 
-      // Forfeit once the grace window (due + 5 days) has fully passed.
+      // Forfeit once the grace window (charge date + 5 days) has fully passed.
       if (daysUntil(forfeitOn) < 0) {
         const { error: upErr } = await supabase
           .from("bookings")
@@ -158,12 +175,7 @@ export async function GET(request: NextRequest) {
             fromName: b.property_name,
           });
           if (b.owner_id) {
-            const { data: ownerRow } = await supabase
-              .from("owners")
-              .select("email")
-              .eq("id", b.owner_id)
-              .maybeSingle();
-            const ownerEmail = (ownerRow as { email: string } | null)?.email;
+            const ownerEmail = await ownerEmailFor(b.owner_id);
             if (ownerEmail) {
               await sendEmail({
                 to: ownerEmail,
@@ -176,16 +188,67 @@ export async function GET(request: NextRequest) {
         continue;
       }
 
-      // Overdue-balance reminder once, on/after the due date.
-      if (b.balance_reminder_sent_at === null && daysUntil(b.balance_due_date) <= 0) {
-        const { subject, html } = buildBalanceReminderEmail(b, forfeitOn);
-        const sent = await sendEmail({ to: b.guest_email, subject, html, fromName: b.property_name });
-        if (sent) {
-          await supabase
-            .from("bookings")
-            .update({ balance_reminder_sent_at: nowIso })
-            .eq("id", b.id);
-          balanceReminders++;
+      if (hasCard && paymentsGateEnabled()) {
+        // Pre-charge reminders so the guest is never surprised by the charge.
+        if (b.balance_reminder7_sent_at === null && daysToCharge >= 2 && daysToCharge <= 7) {
+          const { subject, html } = buildBalanceChargeReminderEmail(b, chargeDate, "in about a week");
+          if (await sendEmail({ to: b.guest_email, subject, html, fromName: b.property_name })) {
+            await supabase.from("bookings").update({ balance_reminder7_sent_at: nowIso }).eq("id", b.id);
+            balanceReminders++;
+          }
+        }
+        if (b.balance_reminder1_sent_at === null && daysToCharge >= 0 && daysToCharge <= 1) {
+          const { subject, html } = buildBalanceChargeReminderEmail(b, chargeDate, "tomorrow");
+          if (await sendEmail({ to: b.guest_email, subject, html, fromName: b.property_name })) {
+            await supabase.from("bookings").update({ balance_reminder1_sent_at: nowIso }).eq("id", b.id);
+            balanceReminders++;
+          }
+        }
+
+        // Auto-charge the balance on/after its charge date (retries daily).
+        if (daysToCharge <= 0) {
+          const result = await autoChargeBalance(supabase, b);
+          if (result.ok) {
+            balanceCharges++;
+            const portalToken = await ensureGuestPortal(b.guest_email, supabase);
+            const { subject, html } = await buildBookingConfirmation(b, "balance", guestPortalUrl(portalToken));
+            await sendEmail({ to: b.guest_email, subject, html, fromName: b.property_name });
+            if (b.owner_id && b.owner_balance_paid_sent_at === null) {
+              const ownerEmail = await ownerEmailFor(b.owner_id);
+              if (ownerEmail) {
+                const m = buildOwnerBalanceCollectedEmail(b);
+                await sendEmail({ to: ownerEmail, subject: m.subject, html: m.html });
+                await supabase.from("bookings").update({ owner_balance_paid_sent_at: nowIso }).eq("id", b.id);
+              }
+            }
+          } else {
+            balanceChargeFails++;
+            // Tell the guest once that the charge failed (pay link + deadline).
+            if (b.balance_reminder_sent_at === null) {
+              const { subject, html } = buildBalanceChargeFailedEmail(b, forfeitOn);
+              if (await sendEmail({ to: b.guest_email, subject, html, fromName: b.property_name })) {
+                await supabase.from("bookings").update({ balance_reminder_sent_at: nowIso }).eq("id", b.id);
+              }
+            }
+            // Tell the owner once, a day past the charge date.
+            if (b.owner_id && b.owner_balance_failed_sent_at === null && daysToCharge <= -1) {
+              const ownerEmail = await ownerEmailFor(b.owner_id);
+              if (ownerEmail) {
+                const m = buildOwnerBalancePastDueEmail(b, forfeitOn);
+                await sendEmail({ to: ownerEmail, subject: m.subject, html: m.html });
+                await supabase.from("bookings").update({ owner_balance_failed_sent_at: nowIso }).eq("id", b.id);
+              }
+            }
+          }
+        }
+      } else {
+        // No saved card (legacy bookings): overdue reminder + manual pay link.
+        if (b.balance_reminder_sent_at === null && daysToCharge <= 0) {
+          const { subject, html } = buildBalanceReminderEmail(b, forfeitOn);
+          if (await sendEmail({ to: b.guest_email, subject, html, fromName: b.property_name })) {
+            await supabase.from("bookings").update({ balance_reminder_sent_at: nowIso }).eq("id", b.id);
+            balanceReminders++;
+          }
         }
       }
       continue;
@@ -251,6 +314,8 @@ export async function GET(request: NextRequest) {
     reminders,
     checkins,
     balanceReminders,
+    balanceCharges,
+    balanceChargeFails,
     forfeits,
     expired,
     ownerUnpaidAlerts,
