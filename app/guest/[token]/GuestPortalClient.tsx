@@ -23,12 +23,14 @@ export function GuestPortalClient({
   bookings,
   coverPhotos = {},
   terms = {},
+  modifiable = {},
 }: {
   token: string;
   email: string;
   bookings: Booking[];
   coverPhotos?: Record<string, string>;
   terms?: Record<string, string[]>;
+  modifiable?: Record<string, boolean>;
 }) {
   return (
     <div className="op-shell">
@@ -54,7 +56,7 @@ export function GuestPortalClient({
         {bookings.length > 0 && (
           <ul className="op-list">
             {bookings.map((b) => (
-              <StayCard key={b.id} token={token} booking={b} coverPhoto={b.property_id ? coverPhotos[b.property_id] : undefined} terms={terms[b.id]} />
+              <StayCard key={b.id} token={token} booking={b} coverPhoto={b.property_id ? coverPhotos[b.property_id] : undefined} terms={terms[b.id]} canChange={modifiable[b.id] ?? true} />
             ))}
           </ul>
         )}
@@ -63,7 +65,7 @@ export function GuestPortalClient({
   );
 }
 
-function StayCard({ token, booking: b, coverPhoto, terms }: { token: string; booking: Booking; coverPhoto?: string; terms?: string[] }) {
+function StayCard({ token, booking: b, coverPhoto, terms, canChange = true }: { token: string; booking: Booking; coverPhoto?: string; terms?: string[]; canChange?: boolean }) {
   const s = statusLabel(b);
   const today = new Date().toISOString().slice(0, 10);
   const isFuture = b.check_in > today;
@@ -174,10 +176,15 @@ function StayCard({ token, booking: b, coverPhoto, terms }: { token: string; boo
         <button className="op-link" onClick={() => setShowMessages((v) => !v)}>
           {showMessages ? "Hide messages" : "Message host"}
         </button>
-        {isCancellable && !hasPendingChange && (
+        {isCancellable && !hasPendingChange && canChange && (
           <button className="op-link" onClick={() => setShowChange((v) => !v)}>
             {showChange ? "Cancel change" : "Change dates"}
           </button>
+        )}
+        {isCancellable && !hasPendingChange && !canChange && (
+          <span className="op-meta">
+            Date changes are closed this close to check-in — message your host.
+          </span>
         )}
         {isCancellable && (
           <button className="op-link op-danger" onClick={cancel} disabled={busy}>
@@ -188,7 +195,7 @@ function StayCard({ token, booking: b, coverPhoto, terms }: { token: string; boo
 
       {error && <div className="bk-error">{error}</div>}
 
-      {showChange && isCancellable && (
+      {showChange && isCancellable && canChange && (
         <ChangeDates token={token} booking={b} onDone={() => window.location.reload()} />
       )}
 

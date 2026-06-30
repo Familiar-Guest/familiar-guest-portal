@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getEmailForToken } from "@/lib/guestPortal";
-import { buildTermsMap } from "@/lib/policies";
+import { buildPolicyMap, guestBookingTerms, withinCancellationPeriod } from "@/lib/policies";
 import { GuestPortalClient } from "./GuestPortalClient";
 import type { Booking } from "@/lib/types";
 
@@ -55,7 +55,15 @@ export default async function GuestTokenPortal({
     if (p.photos?.[0]) coverPhotos[p.id] = p.photos[0];
   }
 
-  const terms = await buildTermsMap(admin, bookings);
+  // Per-booking terms + whether the guest is still within the cancellation
+  // window (which gates self-service date changes).
+  const policies = await buildPolicyMap(admin, bookings);
+  const terms: Record<string, string[]> = {};
+  const modifiable: Record<string, boolean> = {};
+  for (const b of bookings) {
+    terms[b.id] = guestBookingTerms(b, policies[b.id]);
+    modifiable[b.id] = withinCancellationPeriod(policies[b.id], b.check_in);
+  }
 
   return (
     <div className="bk-wrap op-wrap-page">
@@ -65,6 +73,7 @@ export default async function GuestTokenPortal({
         bookings={bookings}
         coverPhotos={coverPhotos}
         terms={terms}
+        modifiable={modifiable}
       />
     </div>
   );

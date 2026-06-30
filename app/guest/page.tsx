@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { getOwner } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { buildTermsMap } from "@/lib/policies";
+import { buildPolicyMap, guestBookingTerms, withinCancellationPeriod } from "@/lib/policies";
 import { GuestStays } from "./GuestStays";
 import type { Booking } from "@/lib/types";
 
@@ -36,11 +36,19 @@ export default async function GuestPage() {
     if (p.photos?.[0]) coverPhotos[p.id] = p.photos[0];
   }
 
-  const terms = await buildTermsMap(admin, bookings);
+  // Per-booking terms + whether the guest is still within the cancellation
+  // window (which gates self-service date changes).
+  const policies = await buildPolicyMap(admin, bookings);
+  const terms: Record<string, string[]> = {};
+  const modifiable: Record<string, boolean> = {};
+  for (const b of bookings) {
+    terms[b.id] = guestBookingTerms(b, policies[b.id]);
+    modifiable[b.id] = withinCancellationPeriod(policies[b.id], b.check_in);
+  }
 
   return (
     <div className="bk-wrap op-wrap-page">
-      <GuestStays email={session.email} bookings={bookings} coverPhotos={coverPhotos} terms={terms} />
+      <GuestStays email={session.email} bookings={bookings} coverPhotos={coverPhotos} terms={terms} modifiable={modifiable} />
     </div>
   );
 }

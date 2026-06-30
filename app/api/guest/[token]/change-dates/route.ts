@@ -4,7 +4,7 @@ import { getEmailForToken } from "@/lib/guestPortal";
 import { postMessage } from "@/lib/messages";
 import { fetchFeedsBusyBlocks, hasConflict } from "@/lib/ical";
 import { findInternalConflict } from "@/lib/offers";
-import { getOwnerPolicies } from "@/lib/policies";
+import { getOwnerPolicies, effectivePolicyForBooking, withinCancellationPeriod } from "@/lib/policies";
 import { sendEmail, siteUrl } from "@/lib/email";
 import { formatDate, nights, daysUntil } from "@/lib/format";
 import type { Booking, Property } from "@/lib/types";
@@ -60,6 +60,12 @@ export async function POST(
   const today = new Date().toISOString().slice(0, 10);
   if (booking.check_in <= today)
     return bad("This stay has already started and can't be changed here. Message your host instead.", 409);
+
+  // Date changes are self-service only while within the host's cancellation
+  // window; past it, the guest must go through the host.
+  const cancelPolicy = await effectivePolicyForBooking(admin, booking);
+  if (!withinCancellationPeriod(cancelPolicy, booking.check_in))
+    return bad("Date changes aren't available this close to check-in. Please message your host.", 409);
 
   const oldCheckIn = booking.check_in;
   const oldCheckOut = booking.check_out;

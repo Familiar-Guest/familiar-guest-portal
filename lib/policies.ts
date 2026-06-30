@@ -187,6 +187,20 @@ export function refundPctForCancellation(
   return 0;
 }
 
+/**
+ * Whether a guest is still within the host's cancellation window for a booking
+ * — i.e. cancelling now would still earn a refund (the refund tier is above 0%).
+ * Once the stay is closer than the 50% cutoff the window has closed, so
+ * self-service date changes are blocked and the guest is sent to the host.
+ */
+export function withinCancellationPeriod(
+  policy: OwnerPolicy,
+  checkIn: string,
+  now: Date = new Date()
+): boolean {
+  return refundPctForCancellation(policy, checkIn, now) > 0;
+}
+
 /** Last day a balance can be paid before the deposit is forfeited (due + 5). */
 export function forfeitDeadline(balanceDueDate: string): string {
   return addDays(balanceDueDate, 5);
@@ -261,18 +275,17 @@ export function guestBookingTerms(
 }
 
 /**
- * Build a map of booking id → guest-facing terms for a set of bookings,
- * caching each owner's policy so the table is hit once per owner. Used by the
- * guest portal pages to render terms per reservation.
+ * Resolve each booking's effective policy (property policy + per-booking
+ * overrides), caching property and owner lookups so each is hit once. Used by
+ * the guest portal pages to derive both terms and the cancellation window.
  */
-export async function buildTermsMap(
+export async function buildPolicyMap(
   admin: SupabaseClient,
-  bookings: Booking[],
-  now: Date = new Date()
-): Promise<Record<string, string[]>> {
+  bookings: Booking[]
+): Promise<Record<string, OwnerPolicy>> {
   const propCache = new Map<string, OwnerPolicy>();
   const ownerCache = new Map<string, OwnerPolicy>();
-  const map: Record<string, string[]> = {};
+  const map: Record<string, OwnerPolicy> = {};
   for (const b of bookings) {
     let base: OwnerPolicy | null = null;
     if (b.property_id) {
@@ -294,8 +307,23 @@ export async function buildTermsMap(
       base = ownerCache.get(key) ?? (await getOwnerPolicies(admin, b.owner_id));
       ownerCache.set(key, base);
     }
-    map[b.id] = guestBookingTerms(b, effectivePolicy(b, base), now);
+    map[b.id] = effectivePolicy(b, base);
   }
+  return map;
+}
+
+/**
+ * Build a map of booking id → guest-facing terms for a set of bookings. Used by
+ * the guest portal pages to render terms per reservation.
+ */
+export async function buildTermsMap(
+  admin: SupabaseClient,
+  bookings: Booking[],
+  now: Date = new Date()
+): Promise<Record<string, string[]>> {
+  const policies = await buildPolicyMap(admin, bookings);
+  const map: Record<string, string[]> = {};
+  for (const b of bookings) map[b.id] = guestBookingTerms(b, policies[b.id], now);
   return map;
 }
 

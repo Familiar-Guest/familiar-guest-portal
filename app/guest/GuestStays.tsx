@@ -26,11 +26,13 @@ export function GuestStays({
   bookings,
   coverPhotos = {},
   terms = {},
+  modifiable = {},
 }: {
   email: string;
   bookings: Booking[];
   coverPhotos?: Record<string, string>;
   terms?: Record<string, string[]>;
+  modifiable?: Record<string, boolean>;
 }) {
   const [view, setView] = useState<View>("calendar");
   // When a calendar bar is clicked we switch to the list and focus that stay,
@@ -44,13 +46,16 @@ export function GuestStays({
 
   const todayIso = new Date().toISOString().slice(0, 10);
 
+  // Calendar shows only live, upcoming stays — cancelled, declined, forfeited,
+  // and expired/lapsed offers are dropped so they don't linger on the calendar.
   const upcoming = bookings.filter(
     (b) =>
       b.check_out >= todayIso &&
       b.status !== "declined" &&
       b.status !== "cancelled" &&
       b.status !== "forfeited" &&
-      !(b.status !== "paid" && b.status !== "requested" && isExpired(b))
+      b.status !== "expired" &&
+      !isExpired(b)
   );
 
   const calBars: CalendarBar[] = upcoming.map(b => ({
@@ -119,7 +124,7 @@ export function GuestStays({
         {bookings.length > 0 && view === "list" && (
           <ul className="op-list">
             {bookings.map((b) => (
-              <StayRow key={b.id} booking={b} coverPhoto={b.property_id ? coverPhotos[b.property_id] : undefined} terms={terms[b.id]} focused={focusId === b.id} />
+              <StayRow key={b.id} booking={b} coverPhoto={b.property_id ? coverPhotos[b.property_id] : undefined} terms={terms[b.id]} focused={focusId === b.id} canChange={modifiable[b.id] ?? true} />
             ))}
           </ul>
         )}
@@ -128,7 +133,7 @@ export function GuestStays({
   );
 }
 
-function StayRow({ booking: b, coverPhoto, terms, focused = false }: { booking: Booking; coverPhoto?: string; terms?: string[]; focused?: boolean }): JSX.Element {
+function StayRow({ booking: b, coverPhoto, terms, focused = false, canChange = true }: { booking: Booking; coverPhoto?: string; terms?: string[]; focused?: boolean; canChange?: boolean }): JSX.Element {
   const s = statusLabel(b);
   const today = new Date().toISOString().slice(0, 10);
   const isFuture = b.check_in > today;
@@ -233,10 +238,15 @@ function StayRow({ booking: b, coverPhoto, terms, focused = false }: { booking: 
           </a>
         )}
         {b.status === "paid" && <a className="op-link" href={`/book/${b.token}`}>View booking</a>}
-        {isCancellable && !hasPendingChange && (
+        {isCancellable && !hasPendingChange && canChange && (
           <button className="op-link" onClick={() => setShowChange((v) => !v)}>
             {showChange ? "Cancel change" : "Change dates"}
           </button>
+        )}
+        {isCancellable && !hasPendingChange && !canChange && (
+          <span className="op-meta">
+            Date changes are closed this close to check-in — message your host.
+          </span>
         )}
         {isCancellable && (
           <button className="op-link op-danger" onClick={cancel} disabled={busy}>
@@ -247,7 +257,7 @@ function StayRow({ booking: b, coverPhoto, terms, focused = false }: { booking: 
 
       {error && <div className="bk-error">{error}</div>}
 
-      {showChange && isCancellable && (
+      {showChange && isCancellable && canChange && (
         <AuthChangeDates booking={b} onDone={() => window.location.reload()} />
       )}
     </li>
