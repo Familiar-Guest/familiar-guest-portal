@@ -7,7 +7,7 @@ const DESCRIPTION =
 
 // Link-preview (SMS / iMessage / WhatsApp) headline + second line. Kept short
 // and separate from the SEO title/description above.
-const OG_TITLE = "Rent to Trusted Guests";
+const OG_TITLE = "Rent Direct";
 const OG_DESCRIPTION = "Rent from Trusted Owners";
 
 export const metadata: Metadata = {

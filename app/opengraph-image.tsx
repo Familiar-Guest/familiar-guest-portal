@@ -52,7 +52,7 @@ export default function OpengraphImage() {
             lineHeight: 1.2,
           }}
         >
-          <div style={{ color: INK, marginBottom: 20 }}>Rent Direct</div>
+          <div style={{ color: INK, marginBottom: 20 }}>Rent to Trusted Guests</div>
           <div style={{ color: TEAL }}>Rent from Trusted Owners</div>
         </div>
       </div>
