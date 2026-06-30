@@ -266,7 +266,7 @@ export default function Home() {
                 strokeLinejoin="round"
               />
             </svg>{" "}
-            ~8% all-in, vs Airbnb&rsquo;s 15.5%
+            Fees typically ~50% less than big rental platforms
           </div>
           <div className="strip-item">
             <svg viewBox="0 0 24 24" fill="none">
@@ -523,8 +523,8 @@ export default function Home() {
                 <h3>Direct bookings, full control</h3>
                 <p>
                   Your price, your guests, your relationship — no algorithm in
-                  the middle. Fees a fraction of Airbnb&rsquo;s mean more for
-                  you and a better deal for them.
+                  the middle. Fees a fraction of the big platforms&rsquo; mean
+                  more for you and a better deal for them.
                 </p>
               </div>
             </div>
@@ -807,7 +807,7 @@ export default function Home() {
               <h2>One link to all your places — that never changes.</h2>
               <p className="lead">
                 Every owner gets a permanent storefront link. Share it once — in
-                your Airbnb profile, your email signature, your Instagram bio —
+                your rental profiles, your email signature, your Instagram bio —
                 and guests browse all your available properties and book the
                 dates they want.
               </p>
@@ -1016,19 +1016,20 @@ export default function Home() {
             </div>
           </div>
           <div className="trust-visual">
-            <div className="big">100%</div>
+            <div className="big">~50%</div>
             <div className="lbl">
-              of the rate stays yours — minus a fee about half of Airbnb&rsquo;s
+              lower fees, typically, than the big rental platforms — so more of
+              every booking stays yours
             </div>
             <hr />
             <div className="vs">
               <div>
-                <div className="num us">~8%</div>
-                <div className="t">Familiar Guest</div>
+                <div className="num us">Direct</div>
+                <div className="t">You keep the guest</div>
               </div>
               <div>
-                <div className="num them">15.5%</div>
-                <div className="t">Airbnb</div>
+                <div className="num us">Built-in</div>
+                <div className="t">Escrow &amp; verification</div>
               </div>
             </div>
           </div>
