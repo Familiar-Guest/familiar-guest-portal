@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /* Reused checkmark used in the suggested-shots and pricing lists */
 function Check() {
@@ -37,6 +37,8 @@ function SignupCTA({ buttonStyle, label = "Get started free" }: { buttonStyle?: 
 }
 
 export default function Home() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   useEffect(() => {
     const nav = document.getElementById("nav");
     const onScroll = () =>
@@ -44,6 +46,20 @@ export default function Home() {
     window.addEventListener("scroll", onScroll);
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  // Mobile menu: lock background scroll and close on Escape while open.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setMenuOpen(false);
+    };
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   return (
     <>
@@ -65,15 +81,60 @@ export default function Home() {
             <a className="txt" href="#pricing">
               Pricing
             </a>
-            <a className="txt" href="#trust">
-              Trust &amp; safety
+            <a className="txt" href="#guests">
+              For guests
             </a>
-            <a className="btn btn-primary" href="/owner/signup">
-              Get started free
-            </a>
+            <span className="nav-auth">
+              <a className="txt" href="/guest/login">
+                Guest sign-in
+              </a>
+              <a className="btn btn-ghost" href="/owner/login">
+                Owner login
+              </a>
+              <a className="btn btn-primary" href="/owner/signup">
+                Get started free
+              </a>
+            </span>
           </div>
+          <button
+            className="nav-toggle"
+            aria-label="Open menu"
+            aria-expanded={menuOpen}
+            onClick={() => setMenuOpen(true)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M3 6h18M3 12h18M3 18h18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
         </div>
       </nav>
+
+      {/* MOBILE MENU */}
+      {menuOpen && (
+        <div className="mobile-menu" role="dialog" aria-modal="true" aria-label="Menu">
+          <button
+            className="mm-close"
+            aria-label="Close menu"
+            onClick={() => setMenuOpen(false)}
+          >
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </button>
+          <div className="mm-links">
+            <a href="#how" onClick={() => setMenuOpen(false)}>How it works</a>
+            <a href="#features" onClick={() => setMenuOpen(false)}>Features</a>
+            <a href="#pricing" onClick={() => setMenuOpen(false)}>Pricing</a>
+            <a href="#trust" onClick={() => setMenuOpen(false)}>Trust &amp; safety</a>
+            <a href="#guests" onClick={() => setMenuOpen(false)}>For guests</a>
+          </div>
+          <div className="mm-actions">
+            <a className="btn btn-primary" href="/owner/signup">Get started free</a>
+            <a className="btn btn-ghost" href="/owner/login">Owner login</a>
+            <a className="btn btn-ghost" href="/guest/login">Guest sign-in</a>
+          </div>
+        </div>
+      )}
 
       {/* HERO */}
       <header className="hero">
@@ -83,7 +144,7 @@ export default function Home() {
               <span>Rent to Trusted Guests</span>
               <span>Rent from Trusted Owners</span>
             </div>
-            <p className="eyebrow reveal d1">For owners, not platforms</p>
+            <p className="eyebrow reveal d1">For owners and their trusted guests</p>
             <h1 className="reveal d2">
               Host familiar
               <br />
@@ -249,6 +310,27 @@ export default function Home() {
           </div>
         </div>
       </div>
+
+      {/* AUDIENCE ROUTER */}
+      <section className="audience" aria-label="Choose where to go">
+        <div className="wrap aud-grid">
+          <a className="aud-card" href="#how">
+            <h3>I own a place</h3>
+            <p>See how direct booking works and get set up in an afternoon.</p>
+            <span className="aud-go">How it works →</span>
+          </a>
+          <a className="aud-card" href="/owner/login">
+            <h3>I&rsquo;m an owner</h3>
+            <p>Log in to your dashboard, bookings, and payouts.</p>
+            <span className="aud-go">Owner login →</span>
+          </a>
+          <a className="aud-card" href="/guest/login">
+            <h3>I&rsquo;m a guest</h3>
+            <p>Find your booking, house guide, and check-in details.</p>
+            <span className="aud-go">Find my stay →</span>
+          </a>
+        </div>
+      </section>
 
       {/* SHIFT */}
       <section className="block">
@@ -954,6 +1036,63 @@ export default function Home() {
         </div>
       </section>
 
+      {/* FOR GUESTS */}
+      <section className="block guests-sec" id="guests" style={{ paddingTop: 0 }}>
+        <div className="wrap">
+          <div className="guests-card">
+            <div>
+              <p className="eyebrow">For guests</p>
+              <h2>Booking a stay through Familiar Guest?</h2>
+              <p className="guests-lead">
+                You&rsquo;re booking direct with the owner — with the safeguards
+                you&rsquo;d expect from a big platform. Here&rsquo;s how
+                you&rsquo;re protected, and how to get back to your trip anytime.
+              </p>
+              <ul className="spot-list">
+                <li>
+                  <Check /> Your payment is <strong>held until check-in</strong>{" "}
+                  and released to the owner only after you arrive.
+                </li>
+                <li>
+                  <Check /> Every owner is <strong>identity-verified</strong>{" "}
+                  before they can take a single booking.
+                </li>
+                <li>
+                  <Check /> Your dates, agreement, receipts, and house guide are{" "}
+                  <strong>emailed and always re-openable</strong>.
+                </li>
+              </ul>
+              <div className="guests-actions">
+                <a className="btn btn-primary" href="/guest/login">
+                  Find my booking
+                </a>
+                <a className="btn btn-ghost" href="/guest/login">
+                  Open my house guide
+                </a>
+              </div>
+            </div>
+            <div className="guests-aside">
+              <h3>Returning guest?</h3>
+              <p>
+                Sign in with the email your host has on file to see all your
+                stays in one place.
+              </p>
+              <a
+                className="btn btn-primary"
+                href="/guest/login"
+                style={{ width: "100%", justifyContent: "center" }}
+              >
+                Find my stay
+              </a>
+              <p className="guests-aside-note">
+                No account needed — your host&rsquo;s booking link is all you
+                need. No app, no password.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA */}
       <section className="block" id="signup" style={{ paddingTop: 0 }}>
         <div className="wrap">
@@ -1009,6 +1148,12 @@ export default function Home() {
                 <a href="#">About</a>
                 <a href="mailto:info@famguest.com">Contact</a>
                 <a href="#">Help</a>
+              </div>
+              <div className="foot-col">
+                <h4>Sign in</h4>
+                <a href="/owner/login">Owner login</a>
+                <a href="/guest/login">Guest — find my stay</a>
+                <a href="/owner/login">Caretaker login</a>
               </div>
               <div className="foot-col">
                 <h4>Legal</h4>

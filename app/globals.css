@@ -48,6 +48,18 @@ nav.scrolled{background:rgba(246,241,232,.86);backdrop-filter:blur(12px);border-
 .btn-primary:hover{background:var(--forest-deep);transform:translateY(-1px)}
 .btn-ghost{background:transparent;border-color:var(--line);color:var(--ink)}
 .btn-ghost:hover{border-color:var(--ink);transform:translateY(-1px)}
+.nav-auth{display:flex;align-items:center;gap:14px}
+.nav-toggle{display:none;background:none;border:none;cursor:pointer;color:var(--ink);padding:6px;margin:-6px}
+.nav-toggle svg{width:26px;height:26px;display:block}
+
+/* MOBILE MENU */
+.mobile-menu{position:fixed;inset:0;z-index:60;background:var(--paper);display:flex;flex-direction:column;padding:80px 28px 40px;overflow:auto}
+.mm-close{position:absolute;top:18px;right:22px;background:none;border:none;cursor:pointer;color:var(--ink);padding:6px}
+.mm-close svg{width:26px;height:26px;display:block}
+.mm-links{display:flex;flex-direction:column;gap:4px;margin-bottom:26px}
+.mm-links a{font-family:var(--display);font-size:24px;color:var(--ink);padding:12px 0;border-bottom:1px solid var(--line)}
+.mm-actions{display:flex;flex-direction:column;gap:12px}
+.mm-actions .btn{width:100%;justify-content:center;font-size:16px;padding:14px}
 
 /* HERO */
 .hero{padding:70px 0 40px;position:relative}
@@ -97,6 +109,28 @@ nav.scrolled{background:rgba(246,241,232,.86);backdrop-filter:blur(12px);border-
 .strip-in{max-width:var(--maxw);margin:0 auto;padding:20px 28px;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:18px}
 .strip-item{display:flex;align-items:center;gap:10px;font-size:14.5px;font-weight:500;color:var(--ink)}
 .strip-item svg{width:18px;height:18px;color:var(--forest);flex-shrink:0}
+
+/* AUDIENCE ROUTER */
+.audience{padding:40px 0 0}
+.aud-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.aud-card{display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-md);padding:24px 24px 22px;transition:transform .2s,border-color .2s}
+.aud-card:hover{transform:translateY(-4px);border-color:var(--seaglass)}
+.aud-card h3{font-size:21px;margin-bottom:6px}
+.aud-card p{font-size:14.5px;color:var(--ink-soft);flex:1;margin-bottom:14px}
+.aud-card .aud-go{font-size:14px;font-weight:600;color:var(--teal)}
+
+/* FOR GUESTS */
+.guests-card{display:grid;grid-template-columns:1.25fr .75fr;gap:40px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--radius-md);padding:48px 52px}
+.guests-card h2{font-size:clamp(28px,3.4vw,40px);margin:12px 0 16px}
+.guests-lead{font-size:17px;color:var(--ink-soft);margin-bottom:22px}
+.guests-card .spot-list{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:24px}
+.guests-card .spot-list li{display:flex;gap:11px;align-items:flex-start;font-size:15px;color:var(--ink)}
+.guests-card .spot-list li svg{width:18px;height:18px;color:var(--forest);flex-shrink:0;margin-top:3px}
+.guests-actions{display:flex;gap:12px;flex-wrap:wrap}
+.guests-aside{background:var(--paper-2);border:1px solid var(--line);border-radius:var(--radius-md);padding:28px 26px}
+.guests-aside h3{font-size:20px;margin-bottom:8px}
+.guests-aside p{font-size:14.5px;color:var(--ink-soft);margin-bottom:16px}
+.guests-aside-note{font-size:13px;color:var(--ink-soft);margin-top:14px;margin-bottom:0}
 
 /* SECTIONS */
 section.block{padding:96px 0}
@@ -267,12 +301,13 @@ footer{padding:60px 0 40px;border-top:1px solid var(--line);margin-top:96px}
 @media(max-width:900px){
   .hero-grid,.trust-wrap,.offer-spot{grid-template-columns:1fr;gap:40px}
   .offer-spot{padding:36px 26px}
-  .steps,.feat-grid,.price-grid,.bring-grid{grid-template-columns:1fr}
+  .steps,.feat-grid,.price-grid,.bring-grid,.aud-grid{grid-template-columns:1fr}
+  .guests-card{grid-template-columns:1fr;gap:32px;padding:36px 26px}
   .setup-panel{grid-template-columns:1fr}
   .setup-half.left{border-right:none;border-bottom:1px solid var(--line)}
-  .nav-in{flex-direction:column;align-items:flex-start;gap:12px;padding:14px 28px}
-  .nav-links{flex-wrap:wrap;gap:14px 20px;font-size:14px;width:100%}
-  .nav-links a.btn{display:none}
+  .nav-in{padding:14px 22px}
+  .nav-links{display:none}
+  .nav-toggle{display:flex}
   .shift{padding:44px 30px}
   section.block{padding:48px 0}
   .preview{margin-top:8px}
