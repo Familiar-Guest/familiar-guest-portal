@@ -7,7 +7,7 @@ import { join } from "path";
 // designed card (rather than letting scrapers grab a random page image) is what
 // makes the preview look intentional and on-brand.
 export const runtime = "nodejs";
-export const alt = "Rent to Trusted Guests · Rent from Trusted Owners";
+export const alt = "Book Direct — Rent to Trusted Guests, Rent from Trusted Owners";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -15,6 +15,7 @@ export const contentType = "image/png";
 const CREAM = "#F6F1E8";
 const TEAL = "#0F4D45";
 const INK = "#16302B";
+const CORAL = "#D9663F";
 
 export default function OpengraphImage() {
   const logo = readFileSync(join(process.cwd(), "public", "key-logo.png"));
@@ -27,31 +28,47 @@ export default function OpengraphImage() {
           width: "100%",
           height: "100%",
           display: "flex",
+          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           background: CREAM,
-          padding: "72px 80px",
+          padding: "44px 64px",
         }}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={logoSrc}
           alt=""
-          width={210}
-          height={420}
-          style={{ marginRight: 72, objectFit: "contain" }}
+          width={140}
+          height={250}
+          style={{ objectFit: "contain", marginBottom: 18 }}
         />
+        <div
+          style={{
+            fontSize: 36,
+            fontWeight: 700,
+            color: TEAL,
+            letterSpacing: 4,
+            marginBottom: 22,
+          }}
+        >
+          BOOK DIRECT
+        </div>
         <div
           style={{
             display: "flex",
             flexDirection: "column",
-            fontSize: 68,
+            alignItems: "center",
+            fontSize: 78,
             fontWeight: 700,
-            lineHeight: 1.16,
+            lineHeight: 1.2,
           }}
         >
-          <div style={{ color: INK }}>Rent to Trusted Guests</div>
+          <div style={{ color: INK, marginBottom: 20 }}>Rent to Trusted Guests</div>
           <div style={{ color: TEAL }}>Rent from Trusted Owners</div>
+        </div>
+        <div style={{ fontSize: 30, fontWeight: 600, color: CORAL, marginTop: 36 }}>
+          famguest.com
         </div>
       </div>
     ),
