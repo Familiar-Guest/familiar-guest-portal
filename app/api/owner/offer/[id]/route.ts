@@ -123,10 +123,13 @@ export async function PATCH(
     const v = Number(body[key]);
     return Number.isFinite(v) && v >= 0 ? Math.round(v) : null;
   }
+  // Single timing override; legacy day-fields are mirrored to it for back-compat.
+  const balanceLead = parsePolicy("policy_balance_lead_days");
   const policyFields = {
     policy_checkin_email_days:    parsePolicy("policy_checkin_email_days"),
-    policy_deposit_required_days: parsePolicy("policy_deposit_required_days"),
-    policy_full_payment_due_days: parsePolicy("policy_full_payment_due_days"),
+    policy_balance_lead_days:     balanceLead,
+    policy_deposit_required_days: balanceLead,
+    policy_full_payment_due_days: balanceLead,
     policy_refund_100_days:       parsePolicy("policy_refund_100_days"),
     policy_refund_50_days:        parsePolicy("policy_refund_50_days"),
     policy_deposit_pct:           parsePolicy("policy_deposit_pct"),

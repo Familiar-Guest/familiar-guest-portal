@@ -34,8 +34,7 @@ export interface OfferInitial {
   paid?: boolean; // editing an already-paid booking
   // Per-booking policy overrides
   policy_checkin_email_days?: string;
-  policy_deposit_required_days?: string;
-  policy_full_payment_due_days?: string;
+  policy_balance_lead_days?: string;
   policy_refund_100_days?: string;
   policy_refund_50_days?: string;
   policy_deposit_pct?: string;
@@ -91,8 +90,7 @@ export function OfferForm({
     currency: initial?.currency ?? initialProperty?.currency ?? "usd",
     // Per-booking policy overrides (seeded from global policies on mount)
     policy_checkin_email_days:    initial?.policy_checkin_email_days    ?? "",
-    policy_deposit_required_days: initial?.policy_deposit_required_days ?? "",
-    policy_full_payment_due_days: initial?.policy_full_payment_due_days ?? "",
+    policy_balance_lead_days:     initial?.policy_balance_lead_days     ?? "",
     policy_refund_100_days:       initial?.policy_refund_100_days       ?? "",
     policy_refund_50_days:        initial?.policy_refund_50_days        ?? "",
     policy_deposit_pct:           initial?.policy_deposit_pct           ?? "",
@@ -140,8 +138,7 @@ export function OfferForm({
     setForm((f) => ({
       ...f,
       policy_checkin_email_days:    f.policy_checkin_email_days    || String(p.checkin_email_days),
-      policy_deposit_required_days: f.policy_deposit_required_days || String(p.deposit_required_days),
-      policy_full_payment_due_days: f.policy_full_payment_due_days || String(p.full_payment_due_days),
+      policy_balance_lead_days:     f.policy_balance_lead_days     || String(p.balance_lead_days ?? 45),
       policy_refund_100_days:       f.policy_refund_100_days       || String(p.refund_100_days),
       policy_refund_50_days:        f.policy_refund_50_days        || String(p.refund_50_days),
       policy_deposit_pct:           f.policy_deposit_pct           || String(p.deposit_pct),
@@ -517,16 +514,10 @@ export function OfferForm({
                 onChange={(e) => set("policy_checkin_email_days", e.target.value)} />
             </div>
             <div className="bk-field">
-              <label htmlFor="p_deposit_req">Deposit required</label>
-              <input id="p_deposit_req" type="number" min="0" step="1"
-                value={form.policy_deposit_required_days}
-                onChange={(e) => set("policy_deposit_required_days", e.target.value)} />
-            </div>
-            <div className="bk-field">
-              <label htmlFor="p_full_pay">Full payment due</label>
-              <input id="p_full_pay" type="number" min="0" step="1"
-                value={form.policy_full_payment_due_days}
-                onChange={(e) => set("policy_full_payment_due_days", e.target.value)} />
+              <label htmlFor="p_balance_lead">Collect balance</label>
+              <input id="p_balance_lead" type="number" min="1" step="1"
+                value={form.policy_balance_lead_days}
+                onChange={(e) => set("policy_balance_lead_days", e.target.value)} />
             </div>
             <div className="bk-field">
               <label htmlFor="p_deposit_pct">Deposit %</label>

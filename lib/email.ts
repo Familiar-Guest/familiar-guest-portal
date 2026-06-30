@@ -283,11 +283,11 @@ function emailAddress(b: Booking, property: Property | null): string {
 /** The refund-policy lines shown to guests (payment schedule + cancellation terms). */
 function policyLines(b: Booking, policy: OwnerPolicy, kind: PaymentKind): string[] {
   const lines: string[] = [];
-  if (kind === "deposit" && b.balance_due_date) {
+  if (kind === "deposit" && (b.balance_charge_date || b.balance_due_date)) {
     lines.push(
-      `Balance of ${formatMoney(b.balance_cents, b.currency)} is due by ${formatDate(
-        b.balance_due_date
-      )} (${policy.full_payment_due_days} days before check-in).`
+      `Balance of ${formatMoney(b.balance_cents, b.currency)} is automatically charged to your card on ${formatDate(
+        (b.balance_charge_date || b.balance_due_date)!
+      )} (${policy.balance_lead_days} days before check-in). We'll remind you beforehand.`
     );
   }
   lines.push(
